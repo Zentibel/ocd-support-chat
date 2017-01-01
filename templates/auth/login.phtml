@@ -1,0 +1,15 @@
+<form method="post" action="<?= $this->url('auth-login') ?>" class="auth">
+
+    <h1>Login</h1>
+
+    <label for="username" id="username-label">Username:</label>
+    <input type="text" name="username" id="username" placeholder="Username"><br>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" placeholder="Password"><br>
+
+    <input type="hidden" name="__csrf_value" value="<?= $this->csrfToken() ?>">
+
+    <input type="submit" value="Login">
+
+</form>

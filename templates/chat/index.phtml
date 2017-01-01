@@ -1,0 +1,118 @@
+<style>
+input#compose-message {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 40px;
+}
+
+span.rounded > img.avatar {
+    display: inline;
+    height: 100%;
+    width: auto;
+    min-width: 100%;
+    margin: 0 auto;
+}
+
+section#content {
+    overflow-y: scroll;
+}
+span.timestamp {
+    color: #CCC;
+    float: right;
+}
+
+div.chat-message {
+}
+
+span.rounded {
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+</style>
+
+<div id="chat-log">
+
+</div>
+
+<form id="compose">
+<input type="text" id="compose-message" placeholder="Don't be shy, type a message!" autocomplete="off">
+</form>
+
+<script>
+var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
+
+var latestMessageTimestamp = 0;
+var receivedMessageKeys = {};
+
+function getLatestMessages(id) {
+    $.getJSON('/messages/' + id, function(messages) {
+        for (i=0; i<messages.length; i++) {
+            message = messages[i];
+            if (receivedMessageKeys[message.key]
+             || message.timestamp < latestMessageTimestamp
+             || message.senderName == 'ocdbot'
+            ) {
+                continue;
+            }
+            latestMessageTimestamp = message.timestamp;
+            receivedMessageKeys[message.key] = true;
+
+            mTimestamp = moment.unix(message.timestamp);
+            timeDisplay = mTimestamp.fromNow();
+            timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss')
+
+            $('#chat-log').append('');
+            $('#chat-log').append(
+                '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
+                '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
+                '<b>' + message.senderName + ':</b> ' + markdown.toHTML(message.message) + '<br>'
+            );
+            if (message.media) {
+                for (j=0; j<message.media.length; j++) {
+                    $message.append('<img src="' + message.media[j].thumbnail + '"><br>');
+                }
+            }
+            //$('#chat-log').append('</div>');
+
+        }
+        setTimeout(function(){ updateScroll('content'); }, 100);
+    });
+};
+
+setInterval(function(){
+    $('span.timestamp').each(function() {
+        mTimestamp = moment.unix($(this).data('timestamp'));
+        $(this).text(mTimestamp.fromNow());
+    });
+}, 60000);
+
+function updateScroll(el) {
+    var element = document.getElementById(el);
+    element.scrollTop = element.scrollHeight;
+}
+updateScroll('content');
+
+EventBus.addEventListener('window:resize:height', function() {
+    updateScroll('content');
+});
+
+$(document).ready(function() {
+    getLatestMessages(ROOM_ID);
+
+    $('form#compose').submit(function(event) {
+     $('#compose-message').attr('disabled','disabled');
+     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val() }, function(result) {
+         $('#compose-message').removeAttr('disabled');
+         $('#compose-message').val('');
+     });
+     event.preventDefault();
+    });
+
+});
+</script>

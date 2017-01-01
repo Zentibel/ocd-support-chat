@@ -1,0 +1,92 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.1/zxcvbn.js"></script>
+
+<style>
+#username.available {
+    border-color: #0F0;
+}
+#username.unavailable {
+    border-color: #F00;
+}
+#username.short {
+    border-color: #00F;
+}
+
+input[type="checkbox"]#show-pass {
+    display:none;
+}
+input[type="checkbox"]#show-pass + label {
+    display: inline-block;
+    float: right;
+    width: 20px;
+    height: 20px;
+    cursor:pointer;
+    transform: translateY(-20px);
+}
+input[type="checkbox"]#show-pass:checked + label {
+    /*background-color: #0F0;*/
+}
+</style>
+
+
+<form method="post" action="<?= $this->url('auth-register') ?>" class="auth">
+
+    <h1>Register</h1>
+
+    <label for="username" id="username-label">Username:</label>
+    <input type="text" name="username" id="username" placeholder="Username"><br>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" placeholder="Password">
+
+    <input type="checkbox" id="show-pass">
+    <label class="password-toggle" for="show-pass">
+        <i class="fa fa-eye" aria-hidden="true"></i>
+    </label>
+
+    <br>
+    <div id="password-feedback">
+        <ul id="password-suggestions">
+        </ul>
+    </div>
+
+    <input type="hidden" name="__csrf_value" value="<?= $this->csrfToken() ?>">
+
+    <input type="submit" value="Sign Up">
+
+</form>
+
+<script>
+$(document).ready(function() {
+$.toggleShowPassword({
+    field: '#password',
+    control: '#show-pass'
+});
+    $("#username").keyup(function() {
+        $('#username').removeClass('available unavailable short');
+
+        if ($('#username').val().length < 3) {
+            console.log('Too short');
+            $('#username').addClass('short');
+            return false;
+        }
+
+        $.getJSON('<?= $this->url('auth-username-available') ?>', {username: $('#username').val()}, function(data) {
+            console.log(data);
+            $('#username').addClass((data) ? 'available' : 'unavailable');
+        });
+    });
+
+    $("#password").keyup(function() {
+        result = zxcvbn($('#password').val());
+        //$('#console').text(JSON.stringify(result, null, '\t'));
+        $('#password-suggestions').html('');
+        if (result.feedback.suggestions.length > 0) {
+            $(result.feedback.suggestions).each(function() {
+                //$('#password-suggestions').append('<li>' + this + '</li>');
+            });
+        }
+    });
+
+});
+
+</script>
