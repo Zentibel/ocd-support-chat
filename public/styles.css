@@ -207,7 +207,6 @@ form.auth label {
     display: none;
 }
 form.auth {
-    padding: 50px;
     margin: 0px auto;
-    width: 300px;
+    max-width: 300px;
 }
