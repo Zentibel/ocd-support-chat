@@ -35,7 +35,8 @@ return [
                     'input_validator' => Auth\Validator\RegisterUser::class,
                     'cqrs_target' => Auth\Command\RegisterUser::class,
                     'new_uuid_field' => 'userId',
-                    'redirect_route' => 'community/list',
+                    'redirect_route'  => 'community-chat',
+                    'redirect_params' => 'community:ocd',
                     'cqrs_ignore_fields' => 'password',
                 ],
             ],
@@ -76,7 +77,8 @@ return [
             ],
             'options' => [
                 'defaults' => [
-                    'redirect_route' => 'community/list',
+                    'redirect_route'  => 'community-chat',
+                    'redirect_params' => 'community:ocd',
                 ],
             ],
             'allowed_methods' => ['POST'],
@@ -107,7 +109,7 @@ return [
             'allowed_methods' => ['POST'],
             'options' => [
                 'defaults' => [
-                    'redirect_route' => 'community/list',
+                    'redirect_route' => 'home',
                 ],
             ],
         ],
@@ -147,7 +149,7 @@ return [
                     'cqrs_ignore_fields' => 'password',
                     'password_field' => 'newPassword',
                     'password_hash_field' => 'newPasswordHash',
-                    'redirect_route' => 'community/list',
+                    'redirect_route' => 'home',
                 ],
             ],
         ],

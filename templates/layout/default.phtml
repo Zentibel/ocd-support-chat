@@ -50,9 +50,9 @@
         </label>
 
         <ul>
-            <li><a href="<?= $this->url('home') ?>">Home</a></li>
-            <li><a href="<?= $this->url('community/list') ?>">Communities</a></li>
             <? if ($this->ident()): ?>
+                <li><a href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">OChatD</a></li>
+                <li><a href="<?= $this->url('avatar-form') ?>">Set Avatar</a></li>
                 <li><a href="<?= $this->url('auth-logout') ?>">Logout</a></li>
             <? else: ?>
                 <li><a href="<?= $this->url('auth-login-form') ?>">Login</a></li>

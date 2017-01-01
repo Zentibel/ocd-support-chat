@@ -32,7 +32,7 @@ final class Redirect
 
             foreach ($redirectParams as $param) {
                 list($routeParam, $postParam) = explode(':', $param);
-                $routeParams[$routeParam] = $payload[$postParam];
+                $routeParams[$routeParam] = $payload[$postParam] ?? $postParam;
             }
 
             if ($request->getAttribute('redirect_with_current_route_params', false)) {
