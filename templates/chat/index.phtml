@@ -120,6 +120,29 @@ var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
 <? endif; ?>
 
+var autolinker = new Autolinker( {
+    urls : {
+        schemeMatches : true,
+        wwwMatches    : true,
+        tldMatches    : true
+    },
+    email       : false,
+    phone       : false,
+    mention     : false,
+    hashtag     : false,
+
+    stripPrefix : false,
+    newWindow   : true,
+
+    truncate : {
+        length   : 0,
+        location : 'end'
+    },
+
+    className : ''
+} );
+
+
 var latestMessageTimestamp = 0;
 var receivedMessageKeys = {};
 
@@ -138,14 +161,16 @@ function getLatestMessages(id) {
 
             mTimestamp = moment.unix(message.timestamp);
             timeDisplay = mTimestamp.fromNow();
-            timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss')
+            timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
+
+            messageRendered = autolinker.link(markdown.toHTML(message.message));
 
             $('#chat-log').append('');
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
                 '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
                 '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
-               '<div class="message">'+ markdown.toHTML(message.message) + '</div>'
+               '<div class="message">'+ messageRendered + '</div>'
             );
             if (message.media) {
                 for (j=0; j<message.media.length; j++) {
