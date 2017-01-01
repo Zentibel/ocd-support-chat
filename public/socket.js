@@ -17,4 +17,8 @@ socket.on('disconnect', function(){
         .addClass('disconnected');
 });
 
+socket.on('chat-message', function (data) {
+    getLatestMessages(ROOM_ID);
+});
+
 });
