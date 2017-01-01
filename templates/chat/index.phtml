@@ -1,3 +1,7 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
+
 <style>
 form#compose {
     position: fixed;
@@ -14,9 +18,13 @@ textarea#compose-message {
     resize: none;
     padding: 5px;
     padding-right: 70px;
+    padding-left: 35px;
 
     border: none;
     outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 button#send-button {
@@ -30,6 +38,21 @@ button#send-button {
     width: 70px;
     height: 50px;
     outline: none;
+}
+
+label#attach-media-button {
+    display: block;
+    position: fixed;
+    cursor: pointer;
+    left: 0px;
+    bottom: 0px;
+    background: none;
+    border: none;
+    border-right: 1px solid #DDD;
+    width: 30px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
 }
 
 span.rounded > img.avatar {
@@ -98,18 +121,37 @@ blockquote p {
   display: inline;
 }
 
+input[type="file"] {
+    display: none;
+}
+
+div#pending-media {
+    position: relative;
+    top: -1px;
+    border-bottom: 1px solid #CCC;
+}
+
+div#pending-media canvas, div#pending-media img {
+    padding: 2px;
+    max-width: 150px;
+}
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 
 <div id="chat-log">
 
 </div>
 
 <form id="compose">
+
+    <div id="pending-media"></div>
+
+    <input type="file" id="files" accept="image/*">
+    <label for="files" class="stretch-height" id="attach-media-button"><i class="fa fa-plus" aria-hidden="true"></i></label>
+
     <textarea id="compose-message" placeholder="Don't be shy, type a message!" autocomplete="off"></textarea>
 
-    <button id="send-button">Send &raquo;</button>
+    <button class="stretch-height" id="send-button">Send &raquo;</button>
 
 </form>
 
@@ -165,7 +207,6 @@ function getLatestMessages(id) {
 
             messageRendered = autolinker.link(markdown.toHTML(message.message));
 
-            $('#chat-log').append('');
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
                 '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
@@ -177,7 +218,6 @@ function getLatestMessages(id) {
                     $('#chat-log').append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
                 }
             }
-            //$('#chat-log').append('</div>');
 
         }
         setTimeout(function(){ updateScroll('content'); }, 100);
@@ -206,8 +246,10 @@ $(document).ready(function() {
     $('#compose-message').each(function(){
         autosize(this);
     }).on('autosize:resized', function(){
-        $('section#content').css('margin-bottom', $(this).height() + 12 + 'px');
-        $('button#send-button').height($(this).height() + 12);
+        newHeight = $(this).height() + 12;
+        $('section#content').css('margin-bottom', newHeight + 'px');
+        $('.stretch-height').height(newHeight);
+        $('.stretch-height').css('line-height', newHeight + 'px');
         updateScroll('content');
     });
 
@@ -253,5 +295,41 @@ $(document).keydown(function (e) {
 $(document).keyup(function (e) {
     if(e.keyCode == 16) shiftDown = false;
 });
+
+
+
+
+function handleFileSelect(evt) {
+    var file = evt.target.files[0];
+    console.log(file);
+
+    if (file.type == 'image/gif') {
+        var reader = new FileReader();
+         reader.onload = function (e) {
+            $('div#pending-media').append('<img src="'+e.target.result+'">');
+            newHeight = $('form#compose').height() + 1;
+            $('section#content').css('margin-bottom', newHeight + 'px');
+            updateScroll('content');
+         }
+         reader.readAsDataURL(file);
+    } else {
+        loadImage(
+            file,
+            function (img) {
+                $('div#pending-media').append(img);
+                newHeight = $('form#compose').height() + 1;
+                $('section#content').css('margin-bottom', newHeight + 'px');
+                updateScroll('content');
+            },
+            {
+                maxWidth: 700,
+                maxHeight: 500,
+                canvas: true
+            }
+        );
+    }
+}
+
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 </script>
