@@ -13,7 +13,7 @@ textarea#compose-message {
     max-height: 180px;
     resize: none;
     padding: 5px;
-    padding-right: 100px;
+    padding-right: 70px;
 
     border: none;
     outline: none;
@@ -27,7 +27,7 @@ button#send-button {
     background: none;
     border: none;
     border-left: 1px solid #DDD;
-    width: 100px;
+    width: 70px;
     height: 50px;
     outline: none;
 }
@@ -170,12 +170,20 @@ $(document).ready(function() {
     getLatestMessages(ROOM_ID);
 
     $('form#compose').submit(function(event) {
+     event.preventDefault();
+     if (!$('#compose-message').val().trim()) {
+         return;
+     }
+
      $('#compose-message').attr('disabled','disabled');
+     $('button#send-button').html('Sending');
      $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val() }, function(result) {
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
+         $('button#send-button').html('Send &raquo;');
+
+         autosize.update($('#compose-message'));
      });
-     event.preventDefault();
     });
 
 });
