@@ -46,7 +46,7 @@ class MessageProjector
 
         $this->redis->publish('new-message', $e->roomId);
         $username = $this->userFinder->findUsernameByUserId($e->userId);
-        $this->redis->publish('message-to-gliph', "{$username}: {$e->message}");
+        $this->redis->publish('message-to-gliph-' . $e->roomId, "{$username}: {$e->message}");
 
         return $e->messageId;
     }

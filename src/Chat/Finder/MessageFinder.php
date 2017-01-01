@@ -12,7 +12,7 @@ class MessageFinder
         $this->redis = $redis;
     }
 
-    public function latestMessages($roomId, $limit = 20)
+    public function latestMessages($roomId, $limit = 50)
     {
         $messageKeys = $this->redis->zrange('chat:messages:'.$roomId, '-'.$limit, '-1');
 

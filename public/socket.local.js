@@ -1,5 +1,8 @@
+var socket;
+
 $(document).ready(function() {
-var socket = io('localhost:9999');
+
+socket = io('localhost:9999');
 
 
 socket.on('connect', function(){
@@ -14,8 +17,4 @@ socket.on('disconnect', function(){
         .addClass('disconnected');
 });
 
-  socket.on('chat-message', function (data) {
-      getLatestMessages(data);
-    console.log(data);
-  });
 });

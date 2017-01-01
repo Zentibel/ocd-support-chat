@@ -107,6 +107,12 @@ EventBus.addEventListener('window:resize:height', function() {
 });
 
 $(document).ready(function() {
+
+setTimeout(function() {
+  socket.on('chat-message', function (data) {
+    getLatestMessages(ROOM_ID);
+  });
+}, 150);
     getLatestMessages(ROOM_ID);
 
     $('form#compose').submit(function(event) {

@@ -63,7 +63,7 @@ class GliphMessagePoller:
         self.localChatId       = localChatId
         self.paginate          = False
 
-        self.redisPubSub.subscribe('message-to-gliph')
+        self.redisPubSub.subscribe('message-to-gliph-dd0c62bd-c4f2-4286-affa-256bfcc93955')
 
     def sendMessages(self):
         message = self.redisPubSub.get_message()

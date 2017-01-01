@@ -63,7 +63,7 @@ class GliphMessagePoller:
         self.localChatId       = localChatId
         self.paginate          = False
 
-        self.redisPubSub.subscribe('message-to-gliph')
+        self.redisPubSub.subscribe('message-to-gliph-e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
 
     def sendMessages(self):
         message = self.redisPubSub.get_message()
@@ -71,7 +71,7 @@ class GliphMessagePoller:
             self.gliphSession.send_message(self.gliphConnectionId, text=message['data'])
 
     def getMessages(self):
-        messages = self.gliphSession.messages(self.gliphConnectionId, paginate=self.paginate, limit=50)
+        messages = self.gliphSession.messages(self.gliphConnectionId, paginate=self.paginate, limit=250)
         self.paginate = {'after': messages[0]['after']}
         if len(messages[1]) == 0:
             return # no new messages right now...

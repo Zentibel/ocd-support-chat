@@ -1,4 +1,7 @@
+var socket;
+
 $(document).ready(function() {
+
 var socket = io('');
 
 
@@ -14,8 +17,4 @@ socket.on('disconnect', function(){
         .addClass('disconnected');
 });
 
-  socket.on('chat-message', function (data) {
-      getLatestMessages(data);
-    console.log(data);
-  });
 });
