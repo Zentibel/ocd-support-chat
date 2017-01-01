@@ -34,6 +34,15 @@ class UserProjector
 
     public function onAvatarChanged(AvatarChanged $e)
     {
+        $current = $this->redis->hGet(
+            'user:' . $e->userId,
+            'avatar'
+        );
+
+        if (strpos($current, 'avatars') !== false) {
+            @unlink('public' . $current);
+        }
+
         $this->redis->hSet(
             'user:' . $e->userId,
             'avatar',
