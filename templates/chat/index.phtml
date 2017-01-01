@@ -75,7 +75,7 @@ function getLatestMessages(id) {
             );
             if (message.media) {
                 for (j=0; j<message.media.length; j++) {
-                    $message.append('<img src="' + message.media[j].thumbnail + '"><br>');
+                    $('#chat-log').append('<img src="' + message.media[j].thumbnail + '"><br>');
                 }
             }
             //$('#chat-log').append('</div>');

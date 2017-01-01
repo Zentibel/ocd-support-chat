@@ -30,9 +30,10 @@ class GliphMedia:
 class GliphMessage:
 
     def __init__(self, message):
+        now = time.time()
         self.id            = message['id']
         self.sender        = message['sender']
-        self.created_on    = time.time() + message['created_on']
+        self.created_on    = now + message['created_on']
         self.message_text  = ''
         self.media         = []
 
