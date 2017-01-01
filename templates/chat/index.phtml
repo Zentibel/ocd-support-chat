@@ -47,6 +47,10 @@ span.rounded {
 <script>
 var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 
+<? if ($this->routeParam('community') == 'ocdmods'): ?>
+var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
+<? endif; ?>
+
 var latestMessageTimestamp = 0;
 var receivedMessageKeys = {};
 
