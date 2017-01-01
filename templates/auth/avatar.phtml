@@ -8,6 +8,7 @@ div#avatar-preview {
     height: 150px;
     margin: 0 auto;
     overflow: hidden;
+    text-align: center;
 }
 div#avatar-preview canvas, div#avatar-preview img {
     display: inline;
@@ -64,10 +65,6 @@ div.avatar-set {
     text-align: center;
 }
 
-img.loading-indicator {
-    visibility: hidden;
-}
-
 
 </style>
 
@@ -88,14 +85,12 @@ img.loading-indicator {
     Done! This is now your avatar!
 </div>
 
-<img src="/loading.gif" class="loading-indicator">
-
 <script>
 
 function handleFileSelect(evt) {
     var file = evt.target.files[0];
     $('div.avatar-set').hide();
-    $('#avatar-preview').html('<img src="/loading.gif">');
+    $('#avatar-preview').text('Processing...');
 
     loadImage(
         file,
