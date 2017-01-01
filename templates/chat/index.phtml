@@ -4,13 +4,13 @@
 
 <style>
 form#compose {
-    position: fixed;
-    bottom: 0px;
     width: 100%;
     border-top: 1px solid #DDD;
+    position: relative;
+    top: -1px;
 }
 
-textarea#compose-message {
+textarea#compose-message, textarea#compose-message:focus {
     box-sizing: border-box;
     width: 100%;
     min-height: 40px;
@@ -65,8 +65,8 @@ span.rounded > img.avatar {
 
 section#content {
     overflow-y: scroll;
-    margin-bottom: 50px;
 }
+
 span.timestamp {
     color: #DDD;
     float: right;
@@ -130,34 +130,38 @@ input[type="file"] {
 }
 
 div#pending-media {
-    position: relative;
-    top: -1px;
-    border-bottom: 1px solid #CCC;
+    background-color: #FFF;
 }
 
 div#pending-media canvas, div#pending-media img {
-    padding: 2px;
+    margin: 5px;
     max-height: 125px;
 }
 </style>
 
+<section id="content">
 
 <div id="chat-log">
 
 </div>
+</section>
 
-<form id="compose">
+<footer>
 
     <div id="pending-media"></div>
 
-    <input type="file" id="files" accept="image/*">
-    <label for="files" class="stretch-height" id="attach-media-button"><i class="fa fa-plus" aria-hidden="true"></i></label>
+    <form id="compose">
 
-    <textarea id="compose-message" placeholder="Don't be shy, type a message!" autocomplete="off"></textarea>
+        <input type="file" id="files" accept="image/*">
+        <label for="files" class="stretch-height" id="attach-media-button"><i class="fa fa-plus" aria-hidden="true"></i></label>
 
-    <button class="stretch-height" id="send-button">Send &raquo;</button>
+        <textarea id="compose-message" placeholder="Don't be shy, type a message!" autocomplete="off"></textarea>
 
-</form>
+        <button class="stretch-height" id="send-button">Send &raquo;</button>
+
+    </form>
+
+</footer>
 
 <script>
 var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
@@ -241,7 +245,7 @@ function updateScroll(el) {
 }
 updateScroll('content');
 
-EventBus.addEventListener('window:resize:height', function() {
+EventBus.addEventListener('window:resize', function() {
     updateScroll('content');
 });
 
@@ -251,7 +255,6 @@ $(document).ready(function() {
         autosize(this);
     }).on('autosize:resized', function(){
         newHeight = $(this).height() + 12;
-        $('section#content').css('margin-bottom', newHeight + 'px');
         $('.stretch-height').height(newHeight);
         $('.stretch-height').css('line-height', newHeight + 'px');
         updateScroll('content');
@@ -311,8 +314,6 @@ function handleFileSelect(evt) {
         var reader = new FileReader();
          reader.onload = function (e) {
             $('div#pending-media').append('<img src="'+e.target.result+'">');
-            newHeight = $('form#compose').height() + 1;
-            $('section#content').css('margin-bottom', newHeight + 'px');
             updateScroll('content');
          }
          reader.readAsDataURL(file);
@@ -321,8 +322,6 @@ function handleFileSelect(evt) {
             file,
             function (img) {
                 $('div#pending-media').append(img);
-                newHeight = $('form#compose').height() + 1;
-                $('section#content').css('margin-bottom', newHeight + 'px');
                 updateScroll('content');
             },
             {

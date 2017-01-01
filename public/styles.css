@@ -15,6 +15,7 @@ body {
     flex-direction: column;
     background-color: #FFF;
 }
+
 section {
     flex: 1 1 auto;
     margin-top: 41px;
@@ -185,19 +186,10 @@ div.banner {
     color: #000;
     text-align: center;
 }
+
 footer {
     border-top: 1px solid #DDD;
-    background-repeat: no-repeat;
-    background-position: right;
-    background-size: 130px;
-    background-color: #FFF;
-    padding: 10px;
-    height: 25px;
-    line-height: 25px;
-    color: #888;
 }
-
-
 
 form.auth input {
     display: block;
