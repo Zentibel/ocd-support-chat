@@ -37,7 +37,7 @@ class UserProjector
         $current = $this->redis->hGet(
             'user:' . $e->userId,
             'avatar'
-        );
+        ) ?: '';
 
         if (strpos($current, 'avatars') !== false) {
             @unlink('public' . $current);
