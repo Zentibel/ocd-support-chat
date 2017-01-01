@@ -9,7 +9,7 @@ div#avatar-preview {
     margin: 0 auto;
     overflow: hidden;
 }
-div#avatar-preview canvas {
+div#avatar-preview canvas, div#avatar-preview img {
     display: inline;
     height: 100%;
     width: auto;
@@ -65,9 +65,7 @@ div.avatar-set {
 }
 
 img.loading-indicator {
-    display: none;
-    width: 150px;
-    margin: 0 auto;
+    visibility: none;
 }
 
 
@@ -81,7 +79,6 @@ img.loading-indicator {
 
 <button id="save">Make This Your Avatar</button>
 
-<img src="/loading.gif" class="loading-indicator">
 
 <div class="upload-status">
     <div class="upload-status-progress"></div>
@@ -91,17 +88,18 @@ img.loading-indicator {
     Done! This is now your avatar!
 </div>
 
+<img src="/loading.gif" class="loading-indicator">
+
 <script>
 
 function handleFileSelect(evt) {
     var file = evt.target.files[0];
     $('div.avatar-set').hide();
-    $('img.loading-indicator').show();
+    $('#avatar-preview').html('<img src="/loading.gif">');
 
     loadImage(
         file,
         function (img) {
-            $('img.loading-indicator').hide();
             $('#avatar-preview').html(img);
             $('button#save').show();
             //document.body.appendChild(img);
