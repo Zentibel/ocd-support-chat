@@ -64,6 +64,12 @@ div.avatar-set {
     text-align: center;
 }
 
+img.loading-indicator {
+    display: none;
+    width: 150px;
+    margin: 0 auto;
+}
+
 
 </style>
 
@@ -74,6 +80,8 @@ div.avatar-set {
 <div id="avatar-preview"></div>
 
 <button id="save">Make This Your Avatar</button>
+
+<img src="/loading.gif" class="loading-indicator">
 
 <div class="upload-status">
     <div class="upload-status-progress"></div>
@@ -87,12 +95,13 @@ div.avatar-set {
 
 function handleFileSelect(evt) {
     var file = evt.target.files[0];
-    console.log(file);
     $('div.avatar-set').hide();
+    $('img.loading-indicator').show();
 
     loadImage(
         file,
         function (img) {
+            $('img.loading-indicator').hide();
             $('#avatar-preview').html(img);
             $('button#save').show();
             //document.body.appendChild(img);
