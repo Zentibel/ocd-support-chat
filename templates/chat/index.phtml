@@ -254,8 +254,8 @@ $(document).ready(function() {
     $('#compose-message').each(function(){
         autosize(this);
     }).on('autosize:resized', function(){
-        newHeight = $(this).height() + 12;
-        $('.stretch-height').height(newHeight);
+        newHeight = $('form#compose').height() + 1;
+        $('.stretch-height').css('height', newHeight + 'px');
         $('.stretch-height').css('line-height', newHeight + 'px');
         updateScroll('content');
     });
