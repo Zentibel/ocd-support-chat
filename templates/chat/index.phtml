@@ -26,16 +26,23 @@ div.chat-message {
 }
 
 span.rounded {
+    vertical-align: middle;
     display: inline-block;
     position: relative;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     margin: 0 auto;
     overflow: hidden;
 }
 div#chat-log img {
     max-width: 95%;
+}
+span.sender {
+    margin-left: 15px;
+    font-weight: bold;
+    position: relative;
+    top: 2px;
 }
 </style>
 
@@ -78,7 +85,7 @@ function getLatestMessages(id) {
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
                 '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
-                '<b>' + message.senderName + ':</b> ' + markdown.toHTML(message.message) + '<br>'
+                '<span class="sender">' + message.senderName + ':</span> ' + markdown.toHTML(message.message) + '<br>'
             );
             if (message.media) {
                 for (j=0; j<message.media.length; j++) {
