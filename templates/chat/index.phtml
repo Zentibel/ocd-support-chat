@@ -45,7 +45,7 @@ section#content {
     margin-bottom: 50px;
 }
 span.timestamp {
-    color: #CCC;
+    color: #DDD;
     float: right;
 }
 
@@ -67,6 +67,12 @@ span.sender {
     font-weight: bold;
     position: relative;
     top: 2px;
+}
+
+span.sender.source-gliph:after {
+    content: ' (via gliph)';
+    color: #DDD;
+    font-weight: normal;
 }
 
 div.message {
@@ -119,7 +125,7 @@ function getLatestMessages(id) {
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
                 '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
-                '<span class="sender">' + message.senderName + ':</span> ' +
+                '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
                '<div class="message">'+ markdown.toHTML(message.message) + '</div>'
             );
             if (message.media) {
