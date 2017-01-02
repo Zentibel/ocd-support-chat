@@ -8,14 +8,13 @@ var redisClient = redis.createClient();
 
 app.listen(9999);
 
-latestMessages = {};
-
 sub.subscribe('new-message');
 //redisClient.publish('message-to-gliph', "Shepherd: testing");
 sub.on('message', function (channel, chatId) {
-    console.log(chatId);
+    console.log('New message: ' + chatId);
 
-    io.emit('chat-message', chatId);
+    io.to(chatId).emit('new-message');
+
     //messages = redisClient.zrangebyscore([message, '-inf', '+inf'], function(err, resp) {
     //    console.log(message);
     //    console.log(err);
@@ -30,5 +29,20 @@ function handler (req, res) {
 }
 
 io.on('connection', function (socket) {
+
+    socket.on('join-room', function(room) {
+        socket.join(room);
+        socket.room = room;
+    });
+
+    socket.on('media-upload-progress', function(data) {
+        console.log('Media upload progress: ' + data.percent + '% ' + data.mediaId);
+        io.to(socket.room).emit('media-upload-progress', data);
+    });
+
+    socket.on('media-upload-complete', function(mediaId) {
+        console.log('Media uploaded: ' + mediaId);
+        io.to(socket.room).emit('media-upload-complete', mediaId);
+    });
 
 });

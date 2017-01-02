@@ -107,22 +107,5 @@ return [
             ],
 
         ],
-
-        [
-            'name' => 'media-upload',
-            'path' => '/media',
-            'middleware' => [
-                Auth\Middleware\AssertIsAuthenticated::class,
-                Common\Middleware\HandleMediaUpload::class,
-                Common\Middleware\StaticView::class,
-            ],
-            'allowed_methods' => ['POST'],
-            'options' => [
-                'defaults' => [
-                    'new_uuid_field' => 'mediaId',
-                    'view' => 'auth::avatar',
-                ],
-            ],
-        ],
     ],
 ];

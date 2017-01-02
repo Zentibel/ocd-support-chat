@@ -15,4 +15,5 @@ class SendMessage
 
     private $message;
 
+    private $media;
 }

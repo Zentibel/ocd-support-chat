@@ -31,6 +31,11 @@ class MessageFinder
     private function processMessage($messageKey)
     {
         $message = $this->redis->hgetall($messageKey);
+
+        if (!isset($message['sender'])) {
+            return false; // TODO how/why does this happen? development quirk?
+        }
+
         $sender = $this->redis->hgetall('user:'.$message['sender']);
 
         $senderName = $sender['username'];
@@ -43,6 +48,10 @@ class MessageFinder
             'message' => $message['message'],
             'timestamp' => $message['timestamp'],
         ];
+
+        if (isset($message['media']) && $message['media']) {
+            $response['media'] = explode('#', $message['media']);
+        }
 
         return $response;
 

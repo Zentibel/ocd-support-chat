@@ -2,17 +2,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 
-    <? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
-
-        <script src="/socket.io.min.js"></script>
-        <script src="/socket.local.js"></script>
-
-    <? else: ?>
-
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="/socket.js"></script>
-
-    <? endif;?>
 
 <style>
 form#compose {
@@ -176,12 +165,56 @@ div#pending-media canvas, div#pending-media img {
 </footer>
 
 <script>
+
 var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 
 <? if ($this->routeParam('community') == 'ocdmods'): ?>
 var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
 <? endif; ?>
 
+</script>
+
+<? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
+    <script src="/socket.io.min.js"></script>
+    <script>
+        var socket = io('localhost:9999');
+    </script>
+<? else: ?>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+    </script>
+<? endif;?>
+
+<script>
+    socket.on('connect', function(){
+        socket.emit('join-room', ROOM_ID);
+        $('nav svg.logo, nav img.logo')
+            .removeClass('disconnected')
+            .addClass('connected');
+    });
+
+    socket.on('disconnect', function(){
+        $('nav svg.logo')
+            .removeClass('connected')
+            .addClass('disconnected');
+    });
+
+    socket.on('new-message', function (data) {
+        getLatestMessages(ROOM_ID);
+    });
+
+    socket.on('media-upload-progress', function (data) {
+        displayMediaProgress(data.mediaId, data.percent);
+    });
+
+    socket.on('media-upload-complete', function (mediaId) {
+        displayMedia(mediaId);
+    });
+</script>
+
+
+<script>
 var autolinker = new Autolinker( {
     urls : {
         schemeMatches : true,
@@ -211,8 +244,9 @@ var receivedMessageKeys = {};
 function getLatestMessages(id) {
     $.getJSON('/messages/' + id, function(messages) {
         for (i=0; i<messages.length; i++) {
-            message = messages[i];
-            if (receivedMessageKeys[message.key]
+            var message = messages[i];
+            if (!message
+             || receivedMessageKeys[message.key]
              || message.timestamp < latestMessageTimestamp
              || message.senderName == 'ocdbot'
             ) {
@@ -221,11 +255,11 @@ function getLatestMessages(id) {
             latestMessageTimestamp = message.timestamp;
             receivedMessageKeys[message.key] = true;
 
-            mTimestamp = moment.unix(message.timestamp);
-            timeDisplay = mTimestamp.fromNow();
-            timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
+            var mTimestamp     = moment.unix(message.timestamp);
+            var timeDisplay    = mTimestamp.fromNow();
+            var timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
 
-            messageRendered = autolinker.link(markdown.toHTML(message.message));
+            var messageRendered = autolinker.link(markdown.toHTML(message.message));
 
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
@@ -233,9 +267,18 @@ function getLatestMessages(id) {
                 '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
                '<div class="message">'+ messageRendered + '</div>'
             );
-            if (message.media) {
+            if (message.media && message.source =='gliph') {
                 for (j=0; j<message.media.length; j++) {
                     $('#chat-log').append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
+                }
+            }
+            if (message.media && message.source =='native') {
+                for (j=0; j<message.media.length; j++) {
+                    var parts = message.media[j].split('.');
+                    var div = $('<div class="message media"><span class="loaded"></span></div>');
+                    var img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
+                    img.attr('src', img.data('src'));
+                    $('#chat-log').append(div.append(img));
                 }
             }
 
@@ -243,6 +286,32 @@ function getLatestMessages(id) {
         setTimeout(function(){ updateScroll('content'); }, 100);
     });
 };
+
+function displayMediaProgress(mediaId, percent) {
+    percentRounded = Math.round(percent);
+    $('img#'+mediaId).parent().find('span.loaded').text(percentRounded + '%');
+};
+
+function displayMedia(mediaId) {
+    //var mediaId = e.target;
+    var $img    = $('img#'+mediaId);
+    $img.removeAttr('src').attr('src', $img.data('src'));
+    $img.parent().find('span.loaded').remove();
+};
+
+function announceMediaProgress(e) {
+    socket.emit('media-upload-progress', e.target);
+};
+
+function announceMediaReady(e) {
+    socket.emit('media-upload-complete', e.target);
+};
+
+EventBus.addEventListener('chat:media-upload-complete', announceMediaReady);
+EventBus.addEventListener('chat:media-upload-progress', announceMediaProgress);
+
+//EventBus.addEventListener('chat:media-upload-complete', displayMedia);
+
 
 setInterval(function(){
     $('span.timestamp').each(function() {
@@ -261,11 +330,24 @@ EventBus.addEventListener('window:resize', function() {
     updateScroll('content');
 });
 
-$(document).ready(function() {
+function sendMessage(mediaFiles) {
+     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(result) {
+         $('#compose-message').removeAttr('disabled');
+         $('#compose-message').val('');
+         $('button#send-button').removeAttr('disabled');
+         $('button#send-button').html('Send &raquo;');
+         $('#pending-media').html('');
+         autosize.update($('#compose-message'));
+         $('#compose-message').focus();
+     });
+}
 
-    $('#compose-message').each(function(){
+$(document).ready(function() {
+    $('#compose-message').focus();
+
+    $('#compose-message').each(function() {
         autosize(this);
-    }).on('autosize:resized', function(){
+    }).on('autosize:resized', function() {
         newHeight = $('form#compose').height() + 1;
         $('.stretch-height').css('height', newHeight + 'px');
         $('.stretch-height').css('line-height', newHeight + 'px');
@@ -275,20 +357,34 @@ $(document).ready(function() {
     getLatestMessages(ROOM_ID);
 
     $('form#compose').submit(function(event) {
-     event.preventDefault();
-     if (!$('#compose-message').val().trim()) {
-         return;
-     }
 
-     $('#compose-message').attr('disabled','disabled');
-     $('button#send-button').html('Sending');
-     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val() }, function(result) {
-         $('#compose-message').removeAttr('disabled');
-         $('#compose-message').val('');
-         $('button#send-button').html('Send &raquo;');
-         autosize.update($('#compose-message'));
-         $('#compose-message').focus();
-     });
+        event.preventDefault();
+
+        if (mediaBlobs.length == 0 && !$('#compose-message').val().trim()) {
+            return;
+        }
+
+        $('#compose-message').attr('disabled','disabled');
+        $('#send-button').attr('disabled','disabled');
+
+        if (mediaBlobs.length > 0) {
+
+            var mediaManager = new MediaManager();
+            mediaManager.addBlobs(mediaBlobs, function(media) {
+                sendMessage(this.getMediaFilenames());
+                mediaBlobs = [];
+                this.upload();
+            });
+
+            return;
+        }
+
+        if (!$('#compose-message').val().trim()) {
+            return;
+        }
+
+        sendMessage(false);
+
     });
 
 });
@@ -316,17 +412,23 @@ $(document).keyup(function (e) {
 });
 
 
-
+var mediaBlobs = [];
 
 function handleFileSelect(evt) {
     var file = evt.target.files[0];
     console.log(file);
 
     if (file.type == 'image/gif') {
+
+        mediaBlobs.push(file);
+        console.log(mediaBlobs);
+
         var reader = new FileReader();
          reader.onload = function (e) {
-            $('div#pending-media').append('<img src="'+e.target.result+'">');
-            updateScroll('content');
+             $('div#pending-media').append(
+                 $('<img src="'+e.target.result+'">')
+             );
+             updateScroll('content');
          }
          reader.readAsDataURL(file);
     } else {
@@ -335,6 +437,10 @@ function handleFileSelect(evt) {
             function (img) {
                 $('div#pending-media').append(img);
                 updateScroll('content');
+                img.toBlob(function (blob) {
+                        mediaBlobs.push(blob);
+                        console.log(mediaBlobs);
+                }, 'image/jpeg');
             },
             {
                 maxWidth: 700,
@@ -343,6 +449,8 @@ function handleFileSelect(evt) {
             }
         );
     }
+
+    $('#compose-message').focus();
 }
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);

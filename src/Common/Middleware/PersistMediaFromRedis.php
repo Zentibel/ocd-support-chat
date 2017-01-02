@@ -6,32 +6,51 @@ use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Predis\Client;
 use Zend\Diactoros\Response\JsonResponse;
+use Auth\AuthService;
+use Zend\Expressive\Router\RouteResult;
 
 class PersistMediaFromRedis
 {
     private $redis;
 
-    public function __construct(Client $redis)
+    private $authService;
+
+    public function __construct(Client $redis, AuthService $authService)
     {
         $this->redis = $redis;
+        $this->authService = $authService;
     }
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next)
     {
+        $userId     = $this->authService->getIdentity()->id;
         $key        = $request->getAttribute('media_id_key', 'mediaId');
         $destFolder = $request->getAttribute('media_dest_path', 'default');
-        $payload    = $request->getParsedBody();
-        $mediaId    = $payload[$key];
-        $media      = $this->redis->hgetall('media:'.$mediaId);
+
+        if ($request->getMethod() === 'POST') {
+            $mediaId  = $request->getParsedBody()[$key] ?? false;
+        }
+        if ($request->getMethod() === 'GET') {
+            $mediaId  = $request->getAttribute(RouteResult::class)->getMatchedParams()[$key] ?? false;
+        }
+
+        $rKey       = "media:{$userId}:{$mediaId}";
+        $media      = $this->redis->hgetall($rKey);
+
+        if(!$media) {
+            throw new \Exception('Invalid media');
+        }
+
         $ext        =
             ($media['contentType'] == 'image/jpeg' ? 'jpg' : false) ?:
             ($media['contentType'] == 'image/png'  ? 'png' : false) ?:
-            '.wtf';
+            ($media['contentType'] == 'image/gif'  ? 'gif' : false) ?:
+            'wtf';
         $mediaPath  = "public/uploads/{$destFolder}/{$mediaId}.{$ext}";
 
         file_put_contents($mediaPath, $media['data']);
 
-        $this->redis->del('media:'.$mediaId);
+        $this->redis->del($rKey);
 
 
         if ($key = $request->getAttribute('media_path_cqrs_key', false)) {
