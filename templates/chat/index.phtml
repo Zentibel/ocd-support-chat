@@ -279,10 +279,13 @@ function getLatestMessages(id) {
             if (message.media && message.source =='native') {
                 for (j=0; j<message.media.length; j++) {
                     var parts = message.media[j].split('.');
-                    var div = $('<div class="message media"><span class="loaded"></span></div>');
-                    var img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
-                    img.attr('src', img.data('src'));
-                    $('#chat-log').append(div.append(img));
+                    var $div = $('<div class="message media"><span class="loaded"></span></div>');
+                    var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
+                    $img.attr('src', $img.data('src'));
+                    var tmpImg = new Image();
+                    tmpImg.onload = function() { console.log('image loaded'); updateScroll('content'); };
+                    tmpImg.src = $img.attr('src');
+                    $('#chat-log').append($div.append($img));
                 }
             }
 
@@ -345,6 +348,11 @@ function sendMessage(mediaFiles) {
          $('#compose-message').focus();
      });
 }
+
+$(document).on('wake', function() {
+    console.log('Waking up...');
+    getLatestMessages(ROOM_ID);
+});
 
 $(document).ready(function() {
     $('#compose-message').focus();

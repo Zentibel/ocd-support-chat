@@ -9,6 +9,7 @@
     border-color: #00F;
 }
 </style>
+<section id="content">
 <form method="post" action="<?= $this->url('community-create') ?>" class="auth">
     <label for="path">Path:</label>
     /c/<input type="text" name="path" placeholder="path" id="path"><br>
@@ -20,6 +21,7 @@
 
     <input type="submit" value="Create Community">
 </form>
+</section>
 <script>
     $("#path").keyup(function() {
         $('#path').removeClass('available unavailable short');

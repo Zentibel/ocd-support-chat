@@ -76,3 +76,29 @@ $(window).resize(function() {
 
 });
 
+
+/**
+ * Detect browser suspensions...
+ */
+(function($){
+
+var TIMEOUT = 10000;
+var lastTime = Date.now();
+
+setInterval(function() {
+  var currentTime = Date.now();
+  if (currentTime > (lastTime + TIMEOUT + 2000)) {
+    $(document).wake();
+  }
+  lastTime = currentTime;
+}, TIMEOUT);
+
+$.fn.wake = function(callback) {
+  if (typeof callback === 'function') {
+    return $(this).on('wake', callback);
+  } else {
+    return $(this).trigger('wake');
+  }
+};
+
+})(jQuery);
