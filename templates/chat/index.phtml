@@ -172,6 +172,10 @@ var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
 <? endif; ?>
 
+<? if ($this->routeParam('community') == 'test'): ?>
+var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
+<? endif; ?>
+
 </script>
 
 <? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
