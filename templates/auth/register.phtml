@@ -8,7 +8,7 @@
     border-color: #F00;
 }
 #username.short {
-    border-color: #00F;
+    border-color: #F00;
 }
 
 input[type="checkbox"]#show-pass {
@@ -34,7 +34,7 @@ input[type="checkbox"]#show-pass:checked + label {
     <h1>Register</h1>
 
     <label for="username" id="username-label">Username:</label>
-    <input type="text" name="username" id="username" placeholder="Username"><br>
+    <input type="text" name="username" id="username" placeholder="Username" maxlength="15"><br>
 
     <label for="password">Password:</label>
     <input type="password" name="password" id="password" placeholder="Password">
@@ -63,7 +63,7 @@ $.toggleShowPassword({
     field: '#password',
     control: '#show-pass'
 });
-    $("#username").keyup(function() {
+    $("#username").blur(function() {
         $('#username').removeClass('available unavailable short');
 
         if ($('#username').val().length < 3) {
@@ -82,6 +82,10 @@ $.toggleShowPassword({
         result = zxcvbn($('#password').val());
         //$('#console').text(JSON.stringify(result, null, '\t'));
         $('#password-suggestions').html('');
+        //console.log(result);
+        if (result.feedback.warning) {
+            $('#password-suggestions').append('<li>' + result.feedback.warning + '</li>');
+        }
         if (result.feedback.suggestions.length > 0) {
             $(result.feedback.suggestions).each(function() {
                 //$('#password-suggestions').append('<li>' + this + '</li>');
