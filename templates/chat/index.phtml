@@ -2,6 +2,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 
+    <? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
+
+        <script src="/socket.io.min.js"></script>
+        <script src="/socket.local.js"></script>
+
+    <? else: ?>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/socket.js"></script>
+
+    <? endif;?>
+
 <style>
 form#compose {
     width: 100%;
