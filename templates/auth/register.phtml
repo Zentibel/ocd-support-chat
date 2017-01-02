@@ -63,7 +63,7 @@ $.toggleShowPassword({
     field: '#password',
     control: '#show-pass'
 });
-    $("#username").blur(function() {
+    $("#username").keyup(function() {
         $('#username').removeClass('available unavailable short');
 
         if ($('#username').val().length < 3) {
