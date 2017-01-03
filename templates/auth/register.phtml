@@ -31,8 +31,7 @@ form, .mdl-button, .mdl-textfield {
 
 <div class="mdl-grid" style="width: 340px;">
 
-    <form method="post" action="<?= $this->url('auth-register') ?>" autocomplete="off">
-    <input type="password" name="password_fake" style="display: none">
+    <form method="post" action="<?= $this->url('auth-register') ?>">
     <div class="mdl-cell mdl-cell--12-col">
         <h5>Register</h5>
     </div>
@@ -50,7 +49,7 @@ form, .mdl-button, .mdl-textfield {
 
     <div class="mdl-cell mdl-cell--12-col">
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="password" id="password" name="password" minlength="6">
+        <input class="mdl-textfield__input" type="password" id="password" name="password" minlength="6" autocomplete="new-password">
         <label class="mdl-textfield__label" for="password">Password</label>
       </div>
 

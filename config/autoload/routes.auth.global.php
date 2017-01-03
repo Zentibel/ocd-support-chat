@@ -37,7 +37,7 @@ return [
                     'new_uuid_field' => 'userId',
                     'redirect_route'  => 'community-chat',
                     'redirect_params' => 'community:ocd',
-                    'cqrs_ignore_fields' => 'password|password_fake',
+                    'cqrs_ignore_fields' => 'password',
                 ],
             ],
         ],
