@@ -38,3 +38,15 @@ form, .mdl-button, .mdl-textfield {
     </div>
 </form>
 </div>
+<script>
+setTimeout(function() {
+  $.each($('.mdl-textfield'), function() {
+    var input = $(this).find("input");
+    var len = input.val().length;
+    var type = input.attr("type");
+
+    if (len > 0 || type == "password")
+      $(this).addClass("is-dirty");
+  });
+}, 100);
+</script>
