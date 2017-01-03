@@ -1,0 +1,11 @@
+svg.connected > g > path {
+    fill: #FFF;
+}
+
+svg.connected > path:first-child {
+    fill: #FFF;
+}
+
+svg.disconnected > path:first-child {
+    fill: #F00;
+}

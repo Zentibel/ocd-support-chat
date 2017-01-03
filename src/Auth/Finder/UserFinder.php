@@ -26,12 +26,12 @@ class UserFinder
     public function findByUsername($username)
     {
         return $this->findByUserId(
-            $this->redis->hGet('index:usernames', $username)
+            $this->redis->hGet('index:usernames', strtolower($username))
         );
     }
 
     public function usernameIsAvailable($username)
     {
-        return !$this->redis->hExists('index:usernames', $username);
+        return !$this->redis->hExists('index:usernames', strtolower($username));
     }
 }

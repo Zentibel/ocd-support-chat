@@ -63,7 +63,7 @@ class UserProjector
 
     public function onUserRegistered(UserRegistered $e)
     {
-        $this->redis->hSet('index:usernames', $e->username, $e->userId);
+        $this->redis->hSet('index:usernames', strtolower($e->username), $e->userId);
         $this->redis->hMSet('user:' . $e->userId,
             [
             'id'           => $e->userId,

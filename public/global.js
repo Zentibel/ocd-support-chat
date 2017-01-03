@@ -14,12 +14,10 @@
         control.bind('click', function () {
             nextIcon = control.next().children('i');
             if (control.is(':checked')) {
-                nextIcon.removeClass('fa-eye');
-                nextIcon.addClass('fa-eye-slash');
+                nextIcon.text('visibility_off');
                 field.attr('type', 'text');
             } else {
-                nextIcon.removeClass('fa-eye-slash');
-                nextIcon.addClass('fa-eye');
+                nextIcon.text('visibility');
                 field.attr('type', 'password');
             }
         })
@@ -87,7 +85,7 @@ var lastTime = Date.now();
 
 setInterval(function() {
   var currentTime = Date.now();
-  if (currentTime > (lastTime + TIMEOUT + 2000)) {
+  if (currentTime > (lastTime + TIMEOUT + 1000)) {
     $(document).wake();
   }
   lastTime = currentTime;

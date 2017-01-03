@@ -20,31 +20,44 @@ input[type="checkbox"]#show-pass + label {
     width: 20px;
     height: 20px;
     cursor:pointer;
-    transform: translateY(-20px);
+    transform: translateY(-45px);
 }
-input[type="checkbox"]#show-pass:checked + label {
-    /*background-color: #0F0;*/
+form, .mdl-button, .mdl-textfield {
+    width: 100%;
 }
 </style>
 
 
-<section id="content">
-<form method="post" action="<?= $this->url('auth-register') ?>" class="auth">
 
-    <h1>Register</h1>
+<div class="mdl-grid" style="width: 340px;">
 
-    <label for="username" id="username-label">Username:</label>
-    <input type="text" name="username" id="username" placeholder="Username" maxlength="15"><br>
+    <form method="post" action="<?= $this->url('auth-register') ?>">
+    <div class="mdl-cell mdl-cell--12-col">
+        <h5>Register</h5>
+    </div>
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" placeholder="Password">
 
-    <input type="checkbox" id="show-pass">
-    <label class="password-toggle" for="show-pass">
-        <i class="fa fa-eye" aria-hidden="true"></i>
-    </label>
 
-    <br>
+    <div class="mdl-cell mdl-cell--12-col">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" id="username" name="username" maxlength="20" minlength="3" pattern="[A-Z,a-z,0-9,-,\.,_]*" autocomplete="off">
+        <label class="mdl-textfield__label" for="username">Username</label>
+        <span class="mdl-textfield__error">Allowed: A-Z, 0-9, dash, period, underscore.</span>
+      </div>
+    </div>
+
+
+    <div class="mdl-cell mdl-cell--12-col">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="password" id="password" name="password" minlength="6">
+        <label class="mdl-textfield__label" for="password">Password</label>
+      </div>
+
+        <input type="checkbox" id="show-pass">
+        <label for="show-pass"><i class="material-icons">visibility</i></label>
+    </div>
+
+
     <div id="password-feedback">
         <ul id="password-suggestions">
         </ul>
@@ -52,10 +65,15 @@ input[type="checkbox"]#show-pass:checked + label {
 
     <input type="hidden" name="__csrf_value" value="<?= $this->csrfToken() ?>">
 
-    <input type="submit" value="Sign Up">
 
+    <div class="mdl-cell mdl-cell--12-col">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+          Register
+        </button>
+    </div>
 </form>
-</section>
+</div>
+
 
 <script>
 $(document).ready(function() {
@@ -73,8 +91,16 @@ $.toggleShowPassword({
         }
 
         $.getJSON('<?= $this->url('auth-username-available') ?>', {username: $('#username').val()}, function(data) {
-            console.log(data);
-            $('#username').addClass((data) ? 'available' : 'unavailable');
+            if (!data) {
+                $('#username').parent().addClass('is-invalid');
+
+                $error = $('#username').siblings('.mdl-textfield__error');
+                $error.data('original-message', $error.text())
+                      .text('That username is taken.');
+            } else {
+                $error = $('#username').siblings('.mdl-textfield__error');
+                $error.text($error.data('original-message'));
+            }
         });
     });
 

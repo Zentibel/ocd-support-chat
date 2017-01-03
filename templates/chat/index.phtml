@@ -1,71 +1,18 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 
 
 <style>
-form#compose {
-    width: 100%;
-    border-top: 1px solid #DDD;
-    position: relative;
-    top: -1px;
-}
-
-textarea#compose-message, textarea#compose-message:focus {
-    box-sizing: border-box;
-    width: 100%;
-    min-height: 40px;
-    max-height: 180px;
-    resize: none;
-    padding: 5px;
-    padding-right: 70px;
-    padding-left: 35px;
-
-    border: none;
-    outline: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-}
-
-button#send-button {
-    position: fixed;
-    cursor: pointer;
-    right: 0px;
-    bottom: 0px;
-    background: none;
-    border: none;
-    border-left: 1px solid #DDD;
-    width: 70px;
-    height: 50px;
-    outline: none;
-}
-
-label#attach-media-button {
-    display: block;
-    position: fixed;
-    cursor: pointer;
-    left: 0px;
-    bottom: 0px;
-    background: none;
-    border: none;
-    border-right: 1px solid #DDD;
-    width: 30px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-}
-
 span.rounded > img.avatar {
     display: inline;
     height: 100%;
     width: auto;
     min-width: 100%;
     margin: 0 auto;
-}
-
-section#content {
-    overflow-y: scroll;
 }
 
 span.timestamp {
@@ -136,33 +83,105 @@ div#pending-media {
 
 div#pending-media canvas, div#pending-media img {
     margin: 5px;
-    max-height: 125px;
+    max-height: 75px;
+}
+
+form#compose {
+    width: 100%;
+}
+
+form#compose button {
+}
+
+textarea#compose-message, textarea#compose-message:focus {
+    box-sizing: border-box;
+    min-height: 20px;
+    max-height: 180px;
+    width: 100%;
+    resize: none;
+    font-size: 16px;
+    padding: 5px 60px;
+    padding-top: 15px;
+    border: none;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+button#send-button {
+    position: fixed;
+    cursor: pointer;
+    right: 0px;
+    bottom: 0px;
+    background: none;
+    border: none;
+    border-left: 1px solid #DDD;
+    width: 70px;
+    height: 50px;
+    outline: none;
+}
+
+label#attach-media-button {
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 2;
+}
+
+.footer-light {
+    background-color: #FFF;
+    padding: 0px;
+}
+
+main#content {
+    padding: 20px;
+}
+
+form#compose .mdl-grid {
+    padding: 0;
+}
+form#compose .mdl-button {
+    min-width: 20px !important;
+    position: fixed;
+    bottom: 10px;
+    height: 40px;
+}
+form#compose .mdl-button.send {
+    right: 0px;
 }
 </style>
 
-<section id="content">
+  <main id="content" class="mdl-layout__content" style="flex: 1 1 auto; overflow-y: scroll;">
+    <div id="chat-log"></div>
+  </main>
 
-<div id="chat-log">
-
-</div>
-</section>
-
-<footer>
-
+  <footer class="mdl-mega-footer footer-light mdl-shadow--8dp">
+    <form id="compose">
     <div id="pending-media"></div>
 
-    <form id="compose">
+    <div class="mdl-grid">
 
-        <input type="file" id="files" accept="image/*">
-        <label for="files" class="stretch-height" id="attach-media-button"><i class="fa fa-plus" aria-hidden="true"></i></label>
+        <div class="attach mdl-button mdl-js-button mdl-js-ripple-effect">
+          <label id="attach-media-button" for="files"></label>
+          <input type="file" id="files" accept="image/*">
+          <i class="material-icons">attach_file</i>
+        </div>
 
-        <textarea id="compose-message" placeholder="Don't be shy, type a message!" autocomplete="off"></textarea>
+        <textarea id="compose-message" placeholder="Message" autocomplete="off"></textarea>
 
-        <button class="stretch-height" id="send-button">Send &raquo;</button>
+        <button class="send mdl-button mdl-js-button mdl-js-ripple-effect">
+          <i class="material-icons">send</i>
+        </button>
+    </div>
+
 
     </form>
 
-</footer>
+  </footer>
 
 <script>
 
@@ -193,13 +212,13 @@ var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
 <script>
     socket.on('connect', function(){
         socket.emit('join-room', ROOM_ID);
-        $('nav svg.logo, nav img.logo')
+        $('svg.logo, img.logo')
             .removeClass('disconnected')
             .addClass('connected');
     });
 
     socket.on('disconnect', function(){
-        $('nav svg.logo')
+        $('svg.logo')
             .removeClass('connected')
             .addClass('disconnected');
     });
@@ -404,7 +423,7 @@ $(document).ready(function() {
 
 var shiftDown = false;
 var chatForm = $("#compose");
-var messageBox = chatForm.children("textarea");
+var messageBox = $('#compose-message');
 
 $(document).keypress(function (e) {
     if(e.keyCode == 13) {

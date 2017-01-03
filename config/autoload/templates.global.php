@@ -18,9 +18,10 @@ return [
     ],
 
     'templates' => [
-        'layout' => 'layout/default',
+        'layout' => 'layout/material',
         'map' => [
             'layout/default' => 'templates/layout/default.phtml',
+            'layout/material' => 'templates/layout/material.phtml',
             'error/error'    => 'templates/error/error.phtml',
             'error/404'      => 'templates/error/404.phtml',
         ],
