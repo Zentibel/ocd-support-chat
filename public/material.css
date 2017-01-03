@@ -9,3 +9,7 @@ svg.connected > path:first-child {
 svg.disconnected > path:first-child {
     fill: #F00;
 }
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
