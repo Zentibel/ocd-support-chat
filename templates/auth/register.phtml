@@ -1,16 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.1/zxcvbn.js"></script>
 
 <style>
-#username.available {
-    border-color: #0F0;
-}
-#username.unavailable {
-    border-color: #F00;
-}
-#username.short {
-    border-color: #F00;
-}
-
 input[type="checkbox"]#show-pass {
     display:none;
 }
@@ -85,8 +75,6 @@ $.toggleShowPassword({
         $('#username').removeClass('available unavailable short');
 
         if ($('#username').val().length < 3) {
-            console.log('Too short');
-            $('#username').addClass('short');
             return false;
         }
 
