@@ -212,7 +212,7 @@ var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
 <script>
     socket.on('connect', function(){
         socket.emit('join-room', ROOM_ID);
-        $('svg.logo, img.logo')
+        $('svg.logo')
             .removeClass('disconnected')
             .addClass('connected');
     });
@@ -312,7 +312,7 @@ function getLatestMessages(id) {
             }
 
         }
-        setTimeout(function(){ updateScroll('content'); }, 100);
+        setTimeout(function(){ updateScroll('content'); }, 750);
     }; // end success function
 
     $.ajax({
@@ -328,10 +328,10 @@ function getLatestMessages(id) {
           this.tryCount++;
           if (this.tryCount <= this.retryLimit) {
               console.log('Error getting messages. Retrying...');
-              $.ajax(this);
-              return;
+              setTimeout(function(xhr) {
+                  $.ajax(xhr);
+              }.bind(null, this), 1500);
           }
-          return;
       }
     });
 };
