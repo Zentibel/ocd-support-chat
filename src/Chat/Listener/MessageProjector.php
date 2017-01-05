@@ -53,7 +53,7 @@ class MessageProjector
         $this->redis->publish('new-message', $e->roomId);
 
         $username = $this->userFinder->findUsernameByUserId($e->userId);
-        $gliphMsg = "{$username}: {$e->message}";
+        $gliphMsg = "{$username} says:\n\n{$e->message}";
 
         if (is_array($e->media)) {
             $imgCount = count($e->media);
