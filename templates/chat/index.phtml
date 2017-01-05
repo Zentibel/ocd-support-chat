@@ -312,6 +312,8 @@ function getLatestMessages(id) {
             }
 
         }
+        updateScroll('content');
+        setTimeout(function(){ updateScroll('content'); }, 250);
         setTimeout(function(){ updateScroll('content'); }, 750);
     }; // end success function
 
