@@ -265,7 +265,10 @@ var latestMessageTimestamp = 0;
 var receivedMessageKeys = {};
 
 function getLatestMessages(id) {
-    $.getJSON('/messages/' + id, function(messages) {
+    var success = function(messages) {
+        $('svg.logo, img.logo')
+            .removeClass('disconnected')
+            .addClass('connected');
         for (i=0; i<messages.length; i++) {
             var message = messages[i];
             if (!message
@@ -310,7 +313,28 @@ function getLatestMessages(id) {
 
         }
         setTimeout(function(){ updateScroll('content'); }, 100);
+    }; // end success function
+
+    $.ajax({
+      dataType: 'json',
+      tryCount : 0,
+      retryLimit : 50000,
+      url: '/messages/' + id,
+      success: success,
+      error : function(xhr, textStatus, errorThrown ) {
+          $('svg.logo')
+              .removeClass('connected')
+              .addClass('disconnected');
+          this.tryCount++;
+          if (this.tryCount <= this.retryLimit) {
+              console.log('Error getting messages. Retrying...');
+              $.ajax(this);
+              return;
+          }
+          return;
+      }
     });
+    $.getJSON('/messages/' + id, );
 };
 
 function displayMediaProgress(mediaId, percent) {
