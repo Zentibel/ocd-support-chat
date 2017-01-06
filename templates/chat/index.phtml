@@ -287,9 +287,13 @@ function getLatestMessages(id) {
 
             var messageRendered = autolinker.link(markdown.toHTML(message.message));
 
+            tsId = 'ts-' + message.timestamp.replace(/\./,'');
             $('#chat-log').append(
                 '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
-                '<span class="timestamp" data-timestamp="'+message.timestamp+'" title="'+timeDisplayAlt+'">' + timeDisplay + '</span>' +
+                '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
+                '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
+                    timeDisplayAlt +
+                '</div>' +
                 '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
                '<div class="message">'+ messageRendered + '</div>'
             );
@@ -314,7 +318,7 @@ function getLatestMessages(id) {
         }
         updateScroll('content');
         setTimeout(function(){ updateScroll('content'); }, 250);
-        setTimeout(function(){ updateScroll('content'); }, 750);
+        setTimeout(function(){ updateScroll('content'); componentHandler.upgradeDom(); }, 750);
     }; // end success function
 
     $.ajax({
