@@ -29,26 +29,29 @@
       <nav class="mdl-navigation">
 
         <? if ($this->ident()): ?>
-        <button id="menu-upper-right"
-                class="mdl-button mdl-js-button mdl-button--icon">
-          <i class="material-icons">more_vert</i>
-        </button>
 
-        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-            for="menu-upper-right">
+            <button id="menu-upper-right"
+                    class="mdl-button mdl-js-button mdl-button--icon">
+              <i class="material-icons">more_vert</i>
+            </button>
 
-            <a class="mdl-menu__item" href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">Chat</a>
-            <a class="mdl-menu__item" href="<?= $this->url('avatar-form') ?>">Change Avatar</a>
-            <a class="mdl-menu__item mdl-menu__item--full-bleed-divider" href="<?= $this->url('auth-logout') ?>">Logout</a>
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                for="menu-upper-right">
 
-            <div disabled class="mdl-menu__item" id="app-version">...</div>
-            <script>document.getElementById('app-version').innerText = APP_VERSION;</script>
+                <a class="mdl-menu__item" href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">Chat</a>
+                <a class="mdl-menu__item" href="<?= $this->url('avatar-form') ?>">Change Avatar</a>
+                <a class="mdl-menu__item mdl-menu__item--full-bleed-divider" href="<?= $this->url('auth-logout') ?>">Logout</a>
 
-        </ul>
+                <div disabled class="mdl-menu__item" id="app-version">...</div>
+                <script>document.getElementById('app-version').innerText = APP_VERSION;</script>
+
+            </ul>
 
         <? else: ?>
+
             <a class="mdl-navigation__link" href="<?= $this->url('auth-login-form') ?>">Login</a>
             <a class="mdl-navigation__link" href="<?= $this->url('auth-register-form') ?>">Register</a>
+
         <? endif ?>
 
       </nav>
@@ -61,4 +64,3 @@
 
 </body>
 </html>
-
