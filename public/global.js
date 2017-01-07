@@ -48,6 +48,8 @@ $(document).ready(function() {
 
             // Replace IMG with SVG
             $img.replaceWith($svg);
+
+            EventBus.dispatch('svg:ready');
         }, 'xml');
     });
 });

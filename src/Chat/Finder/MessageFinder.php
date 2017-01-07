@@ -84,6 +84,7 @@ class MessageFinder
         $response = [
             'source' => 'gliph',
             'key' => $messageKey,
+            'id' => $message['id'],
             'senderName' => $senderName,
             'senderAvatar' => '/gliph-media/' . ($sender['photo:thumbnail'] ?? 'nopic') . '.png',
             'message' => $message['text'],

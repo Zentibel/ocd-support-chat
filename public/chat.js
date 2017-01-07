@@ -46,5 +46,7 @@ function Chat(roomId) {
             this.loadedMessages[message.id] = true;
             EventBus.dispatch('chat:message-loaded', message);
         }).bind(this));
+
+        EventBus.dispatch('chat:messages-loaded');
     }
 }
