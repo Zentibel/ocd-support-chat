@@ -583,7 +583,7 @@ var onMessagesLoaded = function(e) {
     newMessageCount = e.target;
     if (newMessageCount > 0) {
         setTimeout(function() {
-            $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
+            $('#content').scrollTop($topMessage.offset().top - 25);
             loadingMore = false;
         }, 50);
     }
