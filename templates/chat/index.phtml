@@ -584,7 +584,13 @@ var onMessagesLoaded = function(e) {
     if (newMessageCount > 0) {
         setTimeout(function() {
             $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
-        }, 50);
+        }, 100);
+        setTimeout(function() {
+            $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
+        }, 200);
+        setTimeout(function() {
+            $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
+        }, 300);
     }
     $('#chat-log > .mdl-progress').remove();
     EventBus.removeEventListener('chat:messages-loaded', onMessagesLoaded);
