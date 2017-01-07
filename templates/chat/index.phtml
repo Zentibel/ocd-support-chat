@@ -324,17 +324,7 @@ function renderMessage(e) {
     }
 
     if (sortval <= $first.find('span.timestamp').data('timestamp')) {
-
-        var oldHeight = $('#chat-log').prop('scrollHeight');
-        var oldScroll = $('#content').scrollTop();
-
         $message.insertBefore($first);
-
-        var newHeight = $('#content').prop('scrollHeight');
-        var newScroll = oldScroll + newHeight - oldHeight;
-
-        $('#content').scrollTop(newScroll);
-
         return;
 
     }
@@ -586,22 +576,35 @@ function handleFileSelect(evt) {
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-
-
 // This needs to be made smarter
 var loadingMore = false;
+var $topMessage = false;
+var onMessagesLoaded = function(e) {
+    newMessageCount = e.target;
+    if (newMessageCount > 0) {
+        setTimeout(function() {
+            $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
+        }, 50);
+    }
+    $('#chat-log > .mdl-progress').remove();
+    EventBus.removeEventListener('chat:messages-loaded', onMessagesLoaded);
+    loadingMore = false;
+}
+
 $('main#content').on('scroll', function() {
-    if (loadingMore || this.scrollTop > 1000) {
+    if (loadingMore || this.scrollTop > 1) {
         return;
     }
+
+    EventBus.addEventListener('chat:messages-loaded', onMessagesLoaded);
     loadingMore = true;
-
-    setTimeout(function() {
-        loadingMore = false;
-    }, 1000);
-
-    before = $('.chat-message').first().find('span.timestamp').data('timestamp');
+    $topMessage = $('.chat-message').first();
+    var before = $('.chat-message').first().find('span.timestamp').data('timestamp');
     thisChat.loadMessages(50, before);
+
+    $('#chat-log').prepend('<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>');
+    componentHandler.upgradeDom();
+
 });
 
 </script>

@@ -39,14 +39,16 @@ function Chat(roomId) {
     }
 
     var xhrSuccess = function(fetchedMessages) {
+        this.newMessageCount = 0;
         fetchedMessages.forEach((function(message) {
             if (this.loadedMessages[message.id]) {
                 return;
             }
+            this.newMessageCount++;
             this.loadedMessages[message.id] = true;
             EventBus.dispatch('chat:message-loaded', message);
         }).bind(this));
 
-        EventBus.dispatch('chat:messages-loaded');
+        EventBus.dispatch('chat:messages-loaded', this.newMessageCount);
     }
 }
