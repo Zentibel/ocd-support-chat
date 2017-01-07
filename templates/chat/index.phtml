@@ -581,6 +581,7 @@ var loadingMore = false;
 var $topMessage = false;
 var onMessagesLoaded = function(e) {
     newMessageCount = e.target;
+    $('#chat-log > .mdl-progress').remove();
     if (newMessageCount > 0) {
         $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
         setTimeout(function() {
@@ -591,11 +592,10 @@ var onMessagesLoaded = function(e) {
         }, 200);
         setTimeout(function() {
             $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
+            loadingMore = false;
         }, 300);
     }
-    $('#chat-log > .mdl-progress').remove();
     EventBus.removeEventListener('chat:messages-loaded', onMessagesLoaded);
-    loadingMore = false;
 }
 
 $('main#content').on('scroll', function() {
