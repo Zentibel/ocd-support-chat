@@ -582,9 +582,10 @@ var $topMessage = false;
 var onMessagesLoaded = function(e) {
     newMessageCount = e.target;
     if (newMessageCount > 0) {
+        $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
         setTimeout(function() {
             $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
-        }, 100);
+        }, 50);
         setTimeout(function() {
             $('#content').scrollTop($topMessage.offset().top - $topMessage.outerHeight() - 25);
         }, 200);
