@@ -45,6 +45,7 @@ return [
             'middleware' => [
                 Auth\Middleware\AssertIsAuthenticated::class,
                 Common\Middleware\CqrsPayloadFromRouteParams::class,
+                Common\Middleware\CqrsPayloadFromQuery::class,
                 Common\Middleware\DispatchCqrsRequest::class,
                 Common\Middleware\ReturnJsonResponse::class,
             ],

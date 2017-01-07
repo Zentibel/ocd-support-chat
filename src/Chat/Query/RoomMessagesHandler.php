@@ -14,6 +14,7 @@ final class RoomMessagesHandler
 
     public function __invoke(RoomMessages $query)
     {
-        return $this->finder->latestMessages($query->roomId);
+        return $this->finder->chatMessages($query->roomId, $query->limit, $query->before);
+        //return $this->finder->latestMessages($query->roomId);
     }
 }

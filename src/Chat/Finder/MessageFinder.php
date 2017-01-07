@@ -12,6 +12,22 @@ class MessageFinder
         $this->redis = $redis;
     }
 
+    public function chatMessages($roomId, $limit = 50, $max = '+inf')
+    {
+        $messageKeys = $this->redis->zrevrangebyscore('chat:messages:'.$roomId, $max, '-inf', 'LIMIT', 0, $limit);
+
+        $messages = [];
+        foreach ($messageKeys as $messageKey) {
+            if (strpos($messageKey, 'gliph') !== false) {
+                $message = $this->processGliphMessage($messageKey);
+            } else {
+                $message = $this->processMessage($messageKey);
+            }
+            $messages[] = $message;
+        }
+        return $messages;
+    }
+
     public function latestMessages($roomId, $limit = 50)
     {
         $messageKeys = $this->redis->zrange('chat:messages:'.$roomId, '-'.$limit, '-1');
@@ -42,6 +58,7 @@ class MessageFinder
 
         $response = [
             'source' => 'native',
+            'id' => $message['id'],
             'key' => $messageKey,
             'senderName' => $senderName,
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',

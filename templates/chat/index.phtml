@@ -1,9 +1,23 @@
+<? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
+    <script src="/socket.io.min.js"></script>
+    <script>
+        var socket = io('localhost:9999');
+    </script>
+<? else: ?>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+    </script>
+<? endif;?>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
+
+<script src="/chat.js"></script>
 
 
 <style>
@@ -91,9 +105,6 @@ form#compose {
     width: 100%;
 }
 
-form#compose button {
-}
-
 textarea#compose-message, textarea#compose-message:focus {
     box-sizing: border-box;
     min-height: 20px;
@@ -154,6 +165,11 @@ form#compose .mdl-button {
 form#compose .mdl-button.send {
     right: 0px;
 }
+
+
+.mdl-progress {
+    margin: 50px auto;
+}
 </style>
 
   <main id="content" class="mdl-layout__content" style="flex: 1 1 auto; overflow-y: scroll;">
@@ -189,56 +205,43 @@ form#compose .mdl-button.send {
 var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 
 <? if ($this->routeParam('community') == 'ocdmods'): ?>
-var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
+    var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
 <? endif; ?>
 
 <? if ($this->routeParam('community') == 'test'): ?>
-var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
+    var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
 <? endif; ?>
 
-</script>
 
-<? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
-    <script src="/socket.io.min.js"></script>
-    <script>
-        var socket = io('localhost:9999');
-    </script>
-<? else: ?>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-    </script>
-<? endif;?>
+var thisChat = new Chat(ROOM_ID);
 
-<script>
-    socket.on('connect', function(){
-        socket.emit('join-room', ROOM_ID);
+socket.on('connect', function(){
+    socket.emit('join-room', ROOM_ID);
+    setTimeout(function(){
         $('svg.logo')
             .removeClass('disconnected')
             .addClass('connected');
-    });
+    }, 1500);
+});
 
-    socket.on('disconnect', function(){
-        $('svg.logo')
-            .removeClass('connected')
-            .addClass('disconnected');
-    });
+socket.on('disconnect', function(){
+    $('svg.logo')
+        .removeClass('connected')
+        .addClass('disconnected');
+});
 
-    socket.on('new-message', function (data) {
-        getLatestMessages(ROOM_ID);
-    });
+socket.on('new-message', function (data) {
+    thisChat.loadMessages(3); // todo implement 'since'
+});
 
-    socket.on('media-upload-progress', function (data) {
-        displayMediaProgress(data.mediaId, data.percent);
-    });
+socket.on('media-upload-progress', function (data) {
+    displayMediaProgress(data.mediaId, data.percent);
+});
 
-    socket.on('media-upload-complete', function (mediaId) {
-        displayMedia(mediaId);
-    });
-</script>
+socket.on('media-upload-complete', function (mediaId) {
+    displayMedia(mediaId);
+});
 
-
-<script>
 var autolinker = new Autolinker( {
     urls : {
         schemeMatches : true,
@@ -262,71 +265,128 @@ var autolinker = new Autolinker( {
 } );
 
 
-var latestMessageTimestamp = 0;
-var receivedMessageKeys = {};
+EventBus.addEventListener('chat:message-loaded', renderMessage);
 
-function getLatestMessages(id) {
+function renderMessage(e) {
+    message = e.target;
+    if (message.senderName == 'ocdbot') {
+        return;
+    }
+
+    var mTimestamp      = moment.unix(message.timestamp);
+    var timeDisplay     = mTimestamp.fromNow();
+    var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
+    var messageRendered = autolinker.link(markdown.toHTML(message.message));
+
+    var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
+
+    tsId = 'ts-' + message.timestamp.replace(/\./,'');
+    $message.append(
+        '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
+        '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
+        '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
+            timeDisplayAlt +
+        '</div>' +
+        '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
+       '<div class="message">'+ messageRendered + '</div>'
+    );
+    if (message.media && message.source =='gliph') {
+        for (j=0; j<message.media.length; j++) {
+            $message.append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
+        }
+    }
+    if (message.media && message.source =='native') {
+        for (var i=0; i<message.media.length; i++) {
+            var parts = message.media[i].split('.');
+            var $div = $('<div class="message media"><span class="loaded"></span></div>');
+            var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
+            $img.attr('src', $img.data('src'));
+            var tmpImg = new Image();
+            tmpImg.onload = function() { console.log('image loaded'); updateScroll('content'); };
+            tmpImg.src = $img.attr('src');
+            $message.append($div.append($img));
+        }
+    }
+
+    var sortval = parseFloat(message.timestamp);
+    var $first = $('.chat-message').first();
+
+    if ($first.length === 0) {
+        $('#chat-log').html($message);
+        return;
+    }
+
+    if (sortval <= $first.find('span.timestamp').data('timestamp')) {
+
+        var oldHeight = $('#chat-log').prop('scrollHeight');
+        var oldScroll = $('#content').scrollTop();
+
+        $message.insertBefore($first);
+        componentHandler.upgradeDom();
+
+        var newHeight = $('#content').prop('scrollHeight');
+        var newScroll = oldScroll + newHeight - oldHeight;
+
+        $('#content').scrollTop(newScroll);
+
+        return;
+
+    }
+
+    var $last = $('.chat-message').last();
+    if (sortval >= $last.find('span.timestamp').data('timestamp')) {
+        $message.insertAfter($last);
+        componentHandler.upgradeDom();
+        updateScroll('content');
+        return;
+    }
+
+    // Binary search to find correct position for the message.
+    var count = 0;
+    var $messages = $('.chat-message');
+    do {
+       var index = parseInt($message.length / 2)
+       var $compare = $message.eq(index);
+       var compare = $compare.data('timestamp');
+       if (sortval === compare) {
+          break; // hmmm
+       } else if (sortval < compare) {
+          $messages = $messages.slice(index, $messages.length);
+       } else {
+          $messages = $messages.slice(0, index);
+       }
+    } while ($messages.length > 1);
+
+    if (sortval === compare || sortval > compare) {
+        $message.insertAfter($compare);
+        componentHandler.upgradeDom();
+    } else {
+        $message.insertBefore($compare);
+        componentHandler.upgradeDom();
+    }
+    console.log('Binary-inserted message');
+}
+
+function getLatestMessages(roomId, before) {
+    return;
     var success = function(messages) {
         $('svg.logo, img.logo')
             .removeClass('disconnected')
             .addClass('connected');
-        for (i=0; i<messages.length; i++) {
-            var message = messages[i];
-            if (!message
-             || receivedMessageKeys[message.key]
-             || message.timestamp < latestMessageTimestamp
-             || message.senderName == 'ocdbot'
-            ) {
-                continue;
-            }
-            latestMessageTimestamp = message.timestamp;
-            receivedMessageKeys[message.key] = true;
 
-            var mTimestamp     = moment.unix(message.timestamp);
-            var timeDisplay    = mTimestamp.fromNow();
-            var timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
+        messages.reverse().forEach(renderMessage);
 
-            var messageRendered = autolinker.link(markdown.toHTML(message.message));
-
-            tsId = 'ts-' + message.timestamp.replace(/\./,'');
-            $('#chat-log').append(
-                '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
-                '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
-                '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
-                    timeDisplayAlt +
-                '</div>' +
-                '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
-               '<div class="message">'+ messageRendered + '</div>'
-            );
-            if (message.media && message.source =='gliph') {
-                for (j=0; j<message.media.length; j++) {
-                    $('#chat-log').append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
-                }
-            }
-            if (message.media && message.source =='native') {
-                for (j=0; j<message.media.length; j++) {
-                    var parts = message.media[j].split('.');
-                    var $div = $('<div class="message media"><span class="loaded"></span></div>');
-                    var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
-                    $img.attr('src', $img.data('src'));
-                    var tmpImg = new Image();
-                    tmpImg.onload = function() { console.log('image loaded'); updateScroll('content'); };
-                    tmpImg.src = $img.attr('src');
-                    $('#chat-log').append($div.append($img));
-                }
-            }
-
-        }
         updateScroll('content');
+        componentHandler.upgradeDom();
         setTimeout(function(){ updateScroll('content'); }, 250);
-        setTimeout(function(){ updateScroll('content'); componentHandler.upgradeDom(); }, 750);
-    }; // end success function
+        setTimeout(function(){ updateScroll('content'); }, 750);
+    };
 
     $.ajax({
       dataType: 'json',
       tryCount : 0,
       retryLimit : 50000,
-      url: '/messages/' + id,
+      url: '/messages/' + roomId,
       success: success,
       error : function(xhr, textStatus, errorThrown ) {
           $('svg.logo')
@@ -366,9 +426,6 @@ function announceMediaReady(e) {
 EventBus.addEventListener('chat:media-upload-complete', announceMediaReady);
 EventBus.addEventListener('chat:media-upload-progress', announceMediaProgress);
 
-//EventBus.addEventListener('chat:media-upload-complete', displayMedia);
-
-
 setInterval(function(){
     $('span.timestamp').each(function() {
         mTimestamp = moment.unix($(this).data('timestamp'));
@@ -400,10 +457,15 @@ function sendMessage(mediaFiles) {
 
 $(document).on('wake', function() {
     console.log('Waking up...');
-    getLatestMessages(ROOM_ID);
+    $('#chat-log').html('<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>');
+    componentHandler.upgradeDom();
+    thisChat.reset();
+    // just reset the message log?
+    thisChat.loadMessages(50);
 });
 
 $(document).ready(function() {
+    thisChat.loadMessages(50);
     $('#compose-message').focus();
 
     $('#compose-message').each(function() {
@@ -415,7 +477,7 @@ $(document).ready(function() {
         updateScroll('content');
     });
 
-    getLatestMessages(ROOM_ID);
+    //getLatestMessages(ROOM_ID);
 
     $('form#compose').submit(function(event) {
 
@@ -515,5 +577,23 @@ function handleFileSelect(evt) {
 }
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+
+// This needs to be made smarter
+var loadingMore = false;
+$('main#content').on('scroll', function() {
+    if (loadingMore || this.scrollTop > 1000) {
+        return;
+    }
+    loadingMore = true;
+
+    setTimeout(function() {
+        loadingMore = false;
+    }, 1000);
+
+    before = $('.chat-message').first().find('span.timestamp').data('timestamp');
+    thisChat.loadMessages(50, before);
+});
 
 </script>
