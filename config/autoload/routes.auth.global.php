@@ -146,7 +146,7 @@ return [
                 'defaults' => [
                     'input_validator' => Auth\Validator\ChangePassword::class,
                     'cqrs_target' => Auth\Command\ChangePassword::class,
-                    'cqrs_ignore_fields' => 'password',
+                    'cqrs_ignore_fields' => 'newPassword|password',
                     'password_field' => 'newPassword',
                     'password_hash_field' => 'newPasswordHash',
                     'redirect_route' => 'home',
