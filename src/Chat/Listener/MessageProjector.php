@@ -58,7 +58,7 @@ class MessageProjector
         if (is_array($e->media)) {
             $gliphMsg .= "\n\n";
             foreach ($e->media as $media) {
-                $gliphMsg .= "\n  https://chat.ocd.community/uploads/default/{$media}";
+                $gliphMsg .= "https://chat.ocd.community/uploads/default/{$media}\n";
 
             }
         }
