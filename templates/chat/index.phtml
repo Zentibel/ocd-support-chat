@@ -266,15 +266,6 @@ function sendMessage(mediaFiles) {
      });
 }
 
-$(document).on('wake', function() {
-    console.log('Waking up...');
-    $('#chat-log').html('<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>');
-    componentHandler.upgradeDom();
-    thisChat.reset();
-    // just reset the message log?
-    thisChat.loadMessages(20);
-});
-
 $(document).ready(function() {
 
     thisChat.loadMessages(20);
@@ -387,6 +378,17 @@ function handleFileSelect(evt) {
 }
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+$(document).on('wake', function() {
+    console.log('Waking up...');
+    EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
+    $('#chat-log').html('');
+    $('main#content .mdl-progress').removeClass('off');
+    componentHandler.upgradeDom();
+    thisChat.reset();
+    // just reset the message log?
+    thisChat.loadMessages(20);
+});
 
 /**
  * Manage scrolling...
