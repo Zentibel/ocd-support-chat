@@ -13,3 +13,171 @@ svg.disconnected > path:first-child {
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px white inset;
 }
+
+#content.stretch {
+    flex: 1 1 auto;
+    overflow-y: scroll;
+}
+
+span.rounded > img.avatar {
+    display: inline;
+    height: 100%;
+    width: auto;
+    min-width: 100%;
+    margin: 0 auto;
+}
+
+span.timestamp {
+    color: #BBB;
+    float: right;
+    cursor: default;
+}
+
+span.rounded {
+    vertical-align: middle;
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+div#chat-log img {
+    max-width: 95%;
+}
+span.sender {
+    margin-left: 10px;
+    font-weight: bold;
+    position: relative;
+    top: 2px;
+}
+
+span.sender.source-gliph:after {
+    content: ' (via gliph)';
+    color: #BBB;
+    font-weight: normal;
+}
+
+div.message a {
+    word-break: break-all;
+}
+
+div.message {
+    margin-left: 50px;
+}
+
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+div#pending-media {
+    background-color: #FFF;
+}
+
+div#pending-media canvas, div#pending-media img {
+    margin: 5px;
+    max-height: 75px;
+}
+
+form#compose {
+    width: 100%;
+}
+
+textarea#compose-message, textarea#compose-message:focus {
+    box-sizing: border-box;
+    min-height: 20px;
+    max-height: 180px;
+    width: 100%;
+    resize: none;
+    font-size: 16px;
+    padding: 5px 60px;
+    padding-top: 15px;
+    border: none;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+button#send-button {
+    position: fixed;
+    cursor: pointer;
+    right: 0px;
+    bottom: 0px;
+    background: none;
+    border: none;
+    border-left: 1px solid #DDD;
+    width: 70px;
+    height: 50px;
+    outline: none;
+}
+
+label#attach-media-button {
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 2;
+}
+
+.footer-light {
+    background-color: #FFF;
+    padding: 0px;
+}
+
+main#content {
+    padding: 20px;
+}
+
+form#compose .mdl-grid {
+    padding: 0;
+}
+form#compose .mdl-button {
+    min-width: 20px !important;
+    position: fixed;
+    bottom: 10px;
+    height: 40px;
+}
+form#compose .mdl-button.send {
+    right: 0px;
+}
+
+
+.mdl-progress {
+    height: 4px;
+    margin: 10px auto;
+    transition: all 0.25s;
+}
+.mdl-progress.off {
+    height: 0px;
+}
+
+#content {
+    position: relative;
+}
+#chat-log {
+    overflow: auto;
+    display: none;
+}

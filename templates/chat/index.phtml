@@ -1,167 +1,7 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
-
-<script src="/chat.js"></script>
-
-
-<style>
-span.rounded > img.avatar {
-    display: inline;
-    height: 100%;
-    width: auto;
-    min-width: 100%;
-    margin: 0 auto;
-}
-
-span.timestamp {
-    color: #BBB;
-    float: right;
-    cursor: default;
-}
-
-span.rounded {
-    vertical-align: middle;
-    display: inline-block;
-    position: relative;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    margin: 0 auto;
-    overflow: hidden;
-}
-div#chat-log img {
-    max-width: 95%;
-}
-span.sender {
-    margin-left: 10px;
-    font-weight: bold;
-    position: relative;
-    top: 2px;
-}
-
-span.sender.source-gliph:after {
-    content: ' (via gliph)';
-    color: #BBB;
-    font-weight: normal;
-}
-
-div.message a {
-    word-break: break-all;
-}
-
-div.message {
-    margin-left: 50px;
-}
-
-blockquote {
-  background: #f9f9f9;
-  border-left: 10px solid #ccc;
-  margin: 1.5em 10px;
-  padding: 0.5em 10px;
-  quotes: "\201C""\201D""\2018""\2019";
-}
-blockquote:before {
-  color: #ccc;
-  content: open-quote;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
-}
-blockquote p {
-  display: inline;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-div#pending-media {
-    background-color: #FFF;
-}
-
-div#pending-media canvas, div#pending-media img {
-    margin: 5px;
-    max-height: 75px;
-}
-
-form#compose {
-    width: 100%;
-}
-
-textarea#compose-message, textarea#compose-message:focus {
-    box-sizing: border-box;
-    min-height: 20px;
-    max-height: 180px;
-    width: 100%;
-    resize: none;
-    font-size: 16px;
-    padding: 5px 60px;
-    padding-top: 15px;
-    border: none;
-    outline: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-}
-
-button#send-button {
-    position: fixed;
-    cursor: pointer;
-    right: 0px;
-    bottom: 0px;
-    background: none;
-    border: none;
-    border-left: 1px solid #DDD;
-    width: 70px;
-    height: 50px;
-    outline: none;
-}
-
-label#attach-media-button {
-  height: 100%;
-  width: 100%;
-  cursor: pointer;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  z-index: 2;
-}
-
-.footer-light {
-    background-color: #FFF;
-    padding: 0px;
-}
-
-main#content {
-    padding: 20px;
-}
-
-form#compose .mdl-grid {
-    padding: 0;
-}
-form#compose .mdl-button {
-    min-width: 20px !important;
-    position: fixed;
-    bottom: 10px;
-    height: 40px;
-}
-form#compose .mdl-button.send {
-    right: 0px;
-}
-
-
-.mdl-progress {
-    margin: 50px auto;
-}
-</style>
-
-  <main id="content" class="mdl-layout__content" style="flex: 1 1 auto; overflow-y: scroll;">
-    <div id="chat-log"></div>
+  <main id="content" class="mdl-layout__content stretch">
+    <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+    <div id="chat-log">
+    </div>
   </main>
 
   <footer class="mdl-mega-footer footer-light mdl-shadow--8dp">
@@ -187,6 +27,16 @@ form#compose .mdl-button.send {
     </form>
 
   </footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js"></script>
+
+<script src="/chat.js"></script>
 
 <? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
     <script src="/socket.io.min.js"></script>
@@ -216,7 +66,6 @@ var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 var thisChat = new Chat(ROOM_ID);
 
 var logoConnected = function() {
-    EventBus.addEventListener('svg:ready', logoConnected);
     $('svg.logo')
         .removeClass('disconnected')
         .addClass('connected');
@@ -271,14 +120,11 @@ var autolinker = new Autolinker( {
 } );
 
 
+var billy = new Audio('/bleat.mp3');
+
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
-EventBus.addEventListener('chat:messages-loaded', function() {
-    componentHandler.upgradeDom();
-});
-
-function renderMessage(e) {
-    message = e.target;
+function renderMessage(event, message) {
     if (message.senderName == 'ocdbot') {
         return;
     }
@@ -301,7 +147,7 @@ function renderMessage(e) {
        '<div class="message">'+ messageRendered + '</div>'
     );
     if (message.media && message.source =='gliph') {
-        for (j=0; j<message.media.length; j++) {
+        for (var j=0; j<message.media.length; j++) {
             $message.append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
         }
     }
@@ -309,7 +155,7 @@ function renderMessage(e) {
         for (var i=0; i<message.media.length; i++) {
             var parts = message.media[i].split('.');
             var $div = $('<div class="message media"><span class="loaded"></span></div>');
-            var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[j] + '">');
+            var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[i] + '">');
             $img.attr('src', $img.data('src'));
             $message.append($div.append($img));
         }
@@ -318,13 +164,21 @@ function renderMessage(e) {
     var sortval = parseFloat(message.timestamp);
     var $first = $('.chat-message').first();
 
+    $message.imagesLoaded().progress(function(instance, image) {
+        if (image.isLoaded) {
+            EventBus.dispatch('chat:message-media-loaded', this, image);
+        }
+    });
+
     if ($first.length === 0) {
-        $('#chat-log').html($message);
+        $('#chat-log').append($message);
+        EventBus.dispatch('chat:first-message-rendered');
         return;
     }
 
     if (sortval <= $first.find('span.timestamp').data('timestamp')) {
         $message.insertBefore($first);
+        EventBus.dispatch('chat:message-prepended');
         return;
 
     }
@@ -332,7 +186,8 @@ function renderMessage(e) {
     var $last = $('.chat-message').last();
     if (sortval >= $last.find('span.timestamp').data('timestamp')) {
         $message.insertAfter($last);
-        updateScroll('content');
+        EventBus.dispatch('chat:message-appended');
+        billy.play();
         return;
     }
 
@@ -359,42 +214,6 @@ function renderMessage(e) {
     }
     console.log('Binary-inserted message');
 }
-
-function getLatestMessages(roomId, before) {
-    return;
-    var success = function(messages) {
-        $('svg.logo, img.logo')
-            .removeClass('disconnected')
-            .addClass('connected');
-
-        messages.reverse().forEach(renderMessage);
-
-        updateScroll('content');
-        componentHandler.upgradeDom();
-        setTimeout(function(){ updateScroll('content'); }, 250);
-        setTimeout(function(){ updateScroll('content'); }, 750);
-    };
-
-    $.ajax({
-      dataType: 'json',
-      tryCount : 0,
-      retryLimit : 50000,
-      url: '/messages/' + roomId,
-      success: success,
-      error : function(xhr, textStatus, errorThrown ) {
-          $('svg.logo')
-              .removeClass('connected')
-              .addClass('disconnected');
-          this.tryCount++;
-          if (this.tryCount <= this.retryLimit) {
-              console.log('Error getting messages. Retrying...');
-              setTimeout(function(xhr) {
-                  $.ajax(xhr);
-              }.bind(null, this), 1500);
-          }
-      }
-    });
-};
 
 function displayMediaProgress(mediaId, percent) {
     percentRounded = Math.round(percent);
@@ -430,7 +249,6 @@ function updateScroll(el) {
     var element = document.getElementById(el);
     element.scrollTop = element.scrollHeight;
 }
-updateScroll('content');
 
 EventBus.addEventListener('window:resize', function() {
     updateScroll('content');
@@ -454,17 +272,12 @@ $(document).on('wake', function() {
     componentHandler.upgradeDom();
     thisChat.reset();
     // just reset the message log?
-    thisChat.loadMessages(50);
+    thisChat.loadMessages(20);
 });
 
 $(document).ready(function() {
-    thisChat.loadMessages(50);
-    setTimeout(function(){ updateScroll('content'); }, 200);
-    setTimeout(function(){ updateScroll('content'); }, 300);
-    setTimeout(function(){ updateScroll('content'); }, 400);
-    setTimeout(function(){ updateScroll('content'); }, 500);
 
-    $('#compose-message').focus();
+    thisChat.loadMessages(20);
 
     $('#compose-message').each(function() {
         autosize(this);
@@ -475,38 +288,37 @@ $(document).ready(function() {
         updateScroll('content');
     });
 
-    //getLatestMessages(ROOM_ID);
 
-    $('form#compose').submit(function(event) {
+});
 
-        event.preventDefault();
+$('form#compose').submit(function(event) {
 
-        if (mediaBlobs.length == 0 && !$('#compose-message').val().trim()) {
-            return;
-        }
+    event.preventDefault();
 
-        $('#compose-message').attr('disabled','disabled');
-        $('#send-button').attr('disabled','disabled');
+    if (mediaBlobs.length == 0 && !$('#compose-message').val().trim()) {
+        return;
+    }
 
-        if (mediaBlobs.length > 0) {
+    $('#compose-message').attr('disabled','disabled');
+    $('#send-button').attr('disabled','disabled');
 
-            var mediaManager = new MediaManager();
-            mediaManager.addBlobs(mediaBlobs, function(media) {
-                sendMessage(this.getMediaFilenames());
-                mediaBlobs = [];
-                this.upload();
-            });
+    if (mediaBlobs.length > 0) {
 
-            return;
-        }
+        var mediaManager = new MediaManager();
+        mediaManager.addBlobs(mediaBlobs, function(media) {
+            sendMessage(this.getMediaFilenames());
+            mediaBlobs = [];
+            this.upload();
+        });
 
-        if (!$('#compose-message').val().trim()) {
-            return;
-        }
+        return;
+    }
 
-        sendMessage(false);
+    if (!$('#compose-message').val().trim()) {
+        return;
+    }
 
-    });
+    sendMessage(false);
 
 });
 
@@ -576,35 +388,68 @@ function handleFileSelect(evt) {
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-// This needs to be made smarter
-var loadingMore = false;
-var $topMessage = false;
-var onMessagesLoaded = function(e) {
-    newMessageCount = e.target;
-    if (newMessageCount > 0) {
-        setTimeout(function() {
-            $('#content').scrollTop($topMessage.offset().top - 25);
-            loadingMore = false;
-        }, 50);
-    }
-    $('#chat-log > .mdl-progress').remove();
-    EventBus.removeEventListener('chat:messages-loaded', onMessagesLoaded);
+/**
+ * Manage scrolling...
+ */
+var scrollToBottom = function() {
+    updateScroll('content');
 }
 
-$('main#content').on('scroll', function() {
-    if (loadingMore || this.scrollTop > 1) {
+var holdCurrentScrollPos = function(event) {
+    if (!scrollLock) {
         return;
     }
 
-    EventBus.addEventListener('chat:messages-loaded', onMessagesLoaded);
-    loadingMore = true;
+    var newPosition = $('#content').scrollTop() + $topMessage.offset().top - $topMessage.outerHeight() - 20;
+
+    $('#content').scrollTop(newPosition);
+}
+
+var $topMessage = false;
+var scrollLock = false;
+
+var finishedLoadingOldMessages = function() {
+    $('main#content .mdl-progress').addClass('off');
+    EventBus.removeEventListener('chat:messages-loaded', finishedLoadingOldMessages);
+    // Probably buggy if any images take over 250ms to load.
+    // TODO: Find a way to trigger a real event once all media is loaded.
+    setTimeout(function() {
+        scrollLock = false;
+        EventBus.removeEventListener('chat:message-loaded', holdCurrentScrollPos);
+        EventBus.removeEventListener('chat:message-media-loaded', holdCurrentScrollPos);
+    }, 250);
+}
+
+var chatLogScrolled = function() {
+    if (scrollLock || this.scrollTop > 25) {
+        return;
+    }
+
+    console.log('Reached top. Loading more messages...');
+
+    $('main#content .mdl-progress').removeClass('off');
+    EventBus.addEventListener('chat:message-prepended', holdCurrentScrollPos);
+    EventBus.addEventListener('chat:message-media-loaded', holdCurrentScrollPos);
+    EventBus.addEventListener('chat:messages-loaded', finishedLoadingOldMessages);
     $topMessage = $('.chat-message').first();
-    var before = $('.chat-message').first().find('span.timestamp').data('timestamp');
-    thisChat.loadMessages(50, before);
+    scrollLock  = true;
+    var before  = $('.chat-message').first().find('span.timestamp').data('timestamp');
+    thisChat.loadMessages(25, before);
+}
 
-    $('#chat-log').prepend('<div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>');
+var firstMessagesLoaded = function() {
+    console.log('Messages loaded!');
+    $('main#content > .mdl-progress').addClass('off');
+    setTimeout(function() {
+        $('#chat-log').fadeIn();
+        scrollToBottom();
+    }, 250);
     componentHandler.upgradeDom();
+    EventBus.removeEventListener('chat:messages-loaded', firstMessagesLoaded);
+    $('main#content').on('scroll', chatLogScrolled);
+}
 
-});
+EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
+EventBus.addEventListener('chat:message-appended', scrollToBottom);
 
 </script>
