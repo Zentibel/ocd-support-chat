@@ -56,8 +56,11 @@ class MessageProjector
         $gliphMsg = "{$username} says:\n\n{$e->message}";
 
         if (is_array($e->media)) {
-            $imgCount = count($e->media);
-            $gliphMsg .= "\n\n({$imgCount} image(s) attached. Sign into the new chat to view.)";
+            $gliphMsg .= "\n\n";
+            foreach ($e->media as $media) {
+                $gliphMsg .= "\n  https://chat.ocd.community/uploads/default/{$media}";
+
+            }
         }
 
         $this->redis->publish('message-to-gliph-' . $e->roomId, $gliphMsg);
