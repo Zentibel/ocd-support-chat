@@ -166,7 +166,7 @@ function renderMessage(event, message) {
 
     $message.imagesLoaded().progress(function(instance, image) {
         if (image.isLoaded) {
-            EventBus.dispatch('chat:message-media-loaded', this, image);
+            EventBus.dispatch('chat:message-media-loaded', $message, image);
         }
     });
 
@@ -453,5 +453,6 @@ var firstMessagesLoaded = function() {
 
 EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
 EventBus.addEventListener('chat:message-appended', scrollToBottom);
+EventBus.addEventListener('chat:message-appended', function() { componentHandler.upgradeDom(); });
 
 </script>
