@@ -382,7 +382,8 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 $(document).on('wake', function() {
     console.log('Waking up...');
     EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
-    $('#chat-log').html('');
+    scrollLock = true;
+    $('#chat-log').hide().html('');
     $('main#content .mdl-progress').removeClass('off');
     componentHandler.upgradeDom();
     thisChat.reset();
@@ -437,7 +438,7 @@ var chatLogScrolled = function() {
     $topMessage = $('.chat-message').first();
     scrollLock  = true;
     var before  = $('.chat-message').first().find('span.timestamp').data('timestamp');
-    thisChat.loadMessages(25, before);
+    thisChat.loadMessages(20, before);
 }
 
 var firstMessagesLoaded = function() {
@@ -449,6 +450,7 @@ var firstMessagesLoaded = function() {
     }, 250);
     componentHandler.upgradeDom();
     EventBus.removeEventListener('chat:messages-loaded', firstMessagesLoaded);
+    scrollLock = false;
     $('main#content').on('scroll', chatLogScrolled);
 }
 
