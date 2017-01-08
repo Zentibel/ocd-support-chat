@@ -225,6 +225,11 @@ function displayMediaProgress(mediaId, percent) {
 function displayMedia(mediaId) {
     //var mediaId = e.target;
     var $img    = $('img#'+mediaId);
+    $img.imagesLoaded().progress(function(instance, image) {
+        if (image.isLoaded) {
+            EventBus.dispatch('chat:message-media-loaded', null, image);
+        }
+    });
     $img.removeAttr('src').attr('src', $img.data('src'));
     $img.parent().find('span.loaded').remove();
 };
@@ -396,6 +401,18 @@ $(document).on('wake', function() {
 /**
  * Manage scrolling...
  */
+
+
+var stayAtBottom = function() {
+    if (($('#content')[0].scrollHeight - $('#content').scrollTop()) < 1000) {
+        console.log('Bump down');
+        scrollToBottom();
+    } else {
+        console.log('Do not bump down');
+    }
+}
+EventBus.addEventListener('chat:message-media-loaded', stayAtBottom);
+
 var scrollToBottom = function() {
     updateScroll('content');
 }
