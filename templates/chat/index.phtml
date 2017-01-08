@@ -424,7 +424,7 @@ var finishedLoadingOldMessages = function() {
 }
 
 var chatLogScrolled = function() {
-    if (scrollLock || this.scrollTop > 25) {
+    if (scrollLock || this.scrollTop >= 1) {
         return;
     }
 
@@ -435,10 +435,12 @@ var chatLogScrolled = function() {
     EventBus.addEventListener('chat:message-prepended', holdCurrentScrollPos);
     EventBus.addEventListener('chat:message-media-loaded', holdCurrentScrollPos);
     EventBus.addEventListener('chat:messages-loaded', finishedLoadingOldMessages);
-    $topMessage = $('.chat-message').first();
-    scrollLock  = true;
-    var before  = $('.chat-message').first().find('span.timestamp').data('timestamp');
-    thisChat.loadMessages(20, before);
+    setTimeout(function() {
+        $topMessage = $('.chat-message').first();
+        scrollLock  = true;
+        var before  = $('.chat-message').first().find('span.timestamp').data('timestamp');
+        thisChat.loadMessages(20, before);
+    }, 500);
 }
 
 var firstMessagesLoaded = function() {
