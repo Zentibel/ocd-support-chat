@@ -66,9 +66,11 @@ var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 var thisChat = new Chat(ROOM_ID);
 
 var logoConnected = function() {
+    setTimeout(function(){
     $('svg.logo')
         .removeClass('disconnected')
         .addClass('connected');
+    }, 500);
 }
 var logoDisconnected = function() {
     $('svg.logo')

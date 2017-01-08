@@ -1,3 +1,6 @@
+path {
+    transition: fill 250ms linear;
+}
 svg.connected > g > path {
     fill: #FFF;
 }
