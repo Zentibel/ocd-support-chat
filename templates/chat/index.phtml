@@ -430,6 +430,10 @@ var chatLogScrolled = function() {
     console.log('Reached top. Loading more messages...');
 
     $('main#content .mdl-progress').removeClass('off');
+    setTimeout(function() {
+        $('main#content .mdl-progress').addClass('off');
+    }, 350);
+
     EventBus.addEventListener('chat:message-prepended', holdCurrentScrollPos);
     EventBus.addEventListener('chat:message-media-loaded', holdCurrentScrollPos);
     EventBus.addEventListener('chat:messages-loaded', finishedLoadingOldMessages);
