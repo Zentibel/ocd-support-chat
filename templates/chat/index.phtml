@@ -52,16 +52,25 @@
 
 <script>
 
-var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
+<? if ($this->routeParam('community')): ?>
 
-<? if ($this->routeParam('community') == 'ocdmods'): ?>
-    var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
+    var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
+
+    <? if ($this->routeParam('community') == 'ocdmods'): ?>
+        var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
+    <? endif; ?>
+
+    <? if ($this->routeParam('community') == 'test'): ?>
+        var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
+    <? endif; ?>
+
 <? endif; ?>
 
-<? if ($this->routeParam('community') == 'test'): ?>
-    var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
-<? endif; ?>
+<? if ($this->routeParam('username')): ?>
 
+    var ROOM_ID = '<?= $this->privateChat($this->routeParam('username')) ?>';
+
+<? endif; ?>
 
 var thisChat = new Chat(ROOM_ID);
 
@@ -140,7 +149,7 @@ function renderMessage(event, message) {
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
     $message.append(
-        '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
+        '<span class="rounded"><a href="/p/' + message.senderName + '"><img class="avatar" src="' + message.senderAvatar + '"></a></span>' +
         '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +

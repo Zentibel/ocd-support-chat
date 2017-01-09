@@ -40,6 +40,23 @@ return [
         ],
 
         [
+            'name' => 'private-chat',
+            'path' => '/p/{username:[^/]+}',
+            'middleware' => [
+                Auth\Middleware\AssertIsAuthenticated::class,
+                Common\Middleware\StaticView::class,
+
+            ],
+            'allowed_methods' => ['GET'],
+            'options' => [
+                'defaults' => [
+                    'view' => 'chat::index',
+                ],
+            ],
+
+        ],
+
+        [
             'name' => 'chat-messages',
             'path' => '/messages/{roomId:[^/]+}',
             'middleware' => [

@@ -40,6 +40,7 @@ return [
             'ident' => Auth\ViewHelper\IdentityFactory::class,
             'csrfToken' => Common\ViewHelper\CsrfTokenFactory::class,
             'routeParam' => Common\ViewHelper\RouteParamFactory::class,
+            'privateChat' => Chat\ViewHelper\PrivateChatFactory::class,
         ],
         // zend-servicemanager-style configuration for adding view helpers:
         // - 'aliases'
