@@ -135,6 +135,10 @@ var billy = new Audio('/bleat.mp3');
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
+$('div#chat-log').on('click', 'span.sender.source-native', function() {
+    window.location = '/p/' + $(this).text().replace(/:/,'');
+});
+
 function renderMessage(event, message) {
     if (message.senderName == 'ocdbot') {
         return;
@@ -149,7 +153,7 @@ function renderMessage(event, message) {
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
     $message.append(
-        '<span class="rounded"><a href="/p/' + message.senderName + '"><img class="avatar" src="' + message.senderAvatar + '"></a></span>' +
+        '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
         '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +

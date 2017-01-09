@@ -54,6 +54,7 @@ span.sender {
     font-weight: bold;
     position: relative;
     top: 2px;
+    cursor: pointer;
 }
 
 span.sender.source-gliph:after {
