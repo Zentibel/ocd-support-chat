@@ -1,3 +1,13 @@
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Title</span>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+    </nav>
+  </div>
+
   <main id="content" class="mdl-layout__content stretch">
     <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
     <div id="chat-log">
@@ -108,6 +118,7 @@ socket.on('media-upload-complete', function (mediaId) {
 });
 
 var notification = new Audio('/notification.mp3');
+var myStorage = localStorage;
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
@@ -221,7 +232,7 @@ function displayMedia(mediaId) {
     //var mediaId = e.target;
     var $img    = $('img#'+mediaId);
     $img.imagesLoaded().progress(function(instance, image) {
-        if (image.isLoaded) {
+        if (image.isLoaded) {                                        $('#compose-message')
             EventBus.dispatch('chat:message-media-loaded', null, image);
         }
     });
@@ -271,6 +282,13 @@ function sendMessage(mediaFiles) {
 $(document).ready(function() {
 
     thisChat.loadMessages(20);
+
+    $('#compose-message').val(myStorage.getItem('compose:'+ROOM_ID));
+
+    $('#compose-message').on('keyup', function() {
+        console.log('Saving: '+$('#compose-message').val());
+        myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
+    });
 
     $('#compose-message').each(function() {
         autosize(this);
