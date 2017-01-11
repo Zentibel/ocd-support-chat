@@ -147,7 +147,7 @@ function renderMessage(event, message) {
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
-    var messageRendered = autolinker.link(markdown.toHTML(message.message));
+    var messageRendered = markdown.toHTML(autolinker.link(message.message));
 
     var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
 
