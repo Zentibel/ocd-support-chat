@@ -28,9 +28,8 @@
 
   </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.2.2/markdown-it.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
@@ -108,35 +107,18 @@ socket.on('media-upload-complete', function (mediaId) {
     displayMedia(mediaId);
 });
 
-var autolinker = new Autolinker( {
-    urls : {
-        schemeMatches : true,
-        wwwMatches    : true,
-        tldMatches    : true
-    },
-    email       : false,
-    phone       : false,
-    mention     : false,
-    hashtag     : false,
-
-    stripPrefix : false,
-    newWindow   : true,
-
-    truncate : {
-        length   : 0,
-        location : 'end'
-    },
-
-    className : ''
-} );
-
-
 var notification = new Audio('/notification.mp3');
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
 $('div#chat-log').on('click', 'span.sender.source-native', function() {
     window.location = '/p/' + $(this).text().replace(/:/,'');
+});
+
+var md = markdownit({
+  html: false,
+  linkify: true,
+  typographer: true
 });
 
 function renderMessage(event, message) {
@@ -147,7 +129,7 @@ function renderMessage(event, message) {
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
-    var messageRendered = markdown.toHTML(autolinker.link(message.message));
+    var messageRendered = md.render(message.message);
 
     var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
 
