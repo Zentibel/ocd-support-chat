@@ -131,7 +131,7 @@ var autolinker = new Autolinker( {
 } );
 
 
-//var billy = new Audio('/bleat.mp3');
+var notification = new Audio('/notification.mp3');
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
@@ -202,7 +202,7 @@ function renderMessage(event, message) {
     if (sortval >= $last.find('span.timestamp').data('timestamp')) {
         $message.insertAfter($last);
         EventBus.dispatch('chat:message-appended');
-        //billy.play();
+        notification.play();
         return;
     }
 
