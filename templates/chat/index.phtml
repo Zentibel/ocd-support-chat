@@ -299,7 +299,7 @@ $(document).ready(function() {
 
     $('#compose-message').on('keyup mouseup select', function(e) {
         console.log(e);
-        if (e.type = "select") {
+        if (e.type == "select") {
             alert('SELECTION');
         }
         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
