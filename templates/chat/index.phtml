@@ -282,37 +282,23 @@ function sendMessage(mediaFiles) {
      });
 }
 
-function setSelectionRange(input, selectionStart, selectionEnd) {
-  if (input.setSelectionRange) {
-    input.focus();
-    input.setSelectionRange(selectionStart, selectionEnd);
-  }
-  else if (input.createTextRange) {
-    var range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', selectionEnd);
-    range.moveStart('character', selectionStart);
-    range.select();
-  }
-}
-
 $(document).ready(function() {
 
     thisChat.loadMessages(20);
 
-    $('#compose-message').val(myStorage.getItem('compose:'+ROOM_ID));
-
-    setSelectionRange(
-        $('#compose-message')[0],
-        myStorage.getItem('compose:selectionStart:'+ROOM_ID),
-        myStorage.getItem('compose:selectionEnd:'+ROOM_ID)
-    );
+    // Restore cursor position on unfinished message.
+    //
+    if (myStorage.getItem('compose:'+ROOM_ID)) {
+        $('#compose-message').focus();
+        $('#compose-message').val(myStorage.getItem('compose:'+ROOM_ID));
+        $('#compose-message').selectRange(
+            myStorage.getItem('compose:selectionStart:'+ROOM_ID),
+            myStorage.getItem('compose:selectionEnd:'+ROOM_ID)
+        );
+    }
 
     $('#compose-message').on('keyup mouseup', function() {
-        console.log('Saving: '+$('#compose-message').val());
         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
-        console.log($('#compose-message')[0].selectionStart);
-        console.log($('#compose-message')[0].selectionEnd);
         myStorage.setItem('compose:selectionStart:'+ROOM_ID, $('#compose-message')[0].selectionStart);
         myStorage.setItem('compose:selectionEnd:'+ROOM_ID, $('#compose-message')[0].selectionEnd);
     });
@@ -453,10 +439,7 @@ $(document).on('wake', function() {
 
 var stayAtBottom = function() {
     if (($('#content')[0].scrollHeight - $('#content').scrollTop()) < 1000) {
-        console.log('Bump down');
         scrollToBottom();
-    } else {
-        console.log('Do not bump down');
     }
 }
 EventBus.addEventListener('chat:message-media-loaded', stayAtBottom);
@@ -511,7 +494,7 @@ var chatLogScrolled = function() {
 }
 
 var firstMessagesLoaded = function() {
-    console.log('Messages loaded!');
+    console.log('Initial messages loaded!');
     $('main#content > .mdl-progress').addClass('off');
     setTimeout(function() {
         $('#chat-log').fadeIn();

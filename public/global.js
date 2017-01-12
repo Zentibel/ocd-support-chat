@@ -102,3 +102,31 @@ $.fn.wake = function(callback) {
 };
 
 })(jQuery);
+
+/**
+ * Set cursor position in input fields.
+ *
+ * Note, the field needs to be focused first, which this method does not do.
+ *
+ * From: http://stackoverflow.com/a/841121
+ */
+$.fn.selectRange = function(start, end) {
+    if(end === undefined) {
+        end = start;
+    }
+    console.log('Selecting range...');
+    return this.each(function() {
+        if('selectionStart' in this) {
+            this.selectionStart = start;
+            this.selectionEnd = end;
+        } else if(this.setSelectionRange) {
+            this.setSelectionRange(start, end);
+        } else if(this.createTextRange) {
+            var range = this.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', start);
+            range.select();
+        }
+    });
+};
