@@ -26,7 +26,7 @@
           <i class="material-icons">attach_file</i>
         </div>
 
-        <textarea id="compose-message" placeholder="Message" autocomplete="off"></textarea>
+        <textarea id="compose-message" placeholder="Message" autocomplete="off" autofocus="true" spellcheck="true"></textarea>
 
         <button class="send mdl-button mdl-js-button mdl-js-ripple-effect">
           <i class="material-icons">send</i>
@@ -289,7 +289,7 @@ $(document).ready(function() {
     // Restore cursor position on unfinished message.
     //
     if (myStorage.getItem('compose:'+ROOM_ID)) {
-        $('#compose-message').focus();
+        //$('#compose-message').focus();
         $('#compose-message').val(myStorage.getItem('compose:'+ROOM_ID));
         $('#compose-message').selectRange(
             myStorage.getItem('compose:selectionStart:'+ROOM_ID),
@@ -297,10 +297,14 @@ $(document).ready(function() {
         );
     }
 
-    $('#compose-message').on('keyup mouseup select', function(e) {
+    $('#compose-message').on('select keyup mouseup', function(e) {
         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
-        myStorage.setItem('compose:selectionStart:'+ROOM_ID, $('#compose-message')[0].selectionStart);
-        myStorage.setItem('compose:selectionEnd:'+ROOM_ID, $('#compose-message')[0].selectionEnd);
+
+        // Weird bug if you click to unselect text, it actually takes a couple ms to reflect in the dom.
+        setTimeout(function() {
+            myStorage.setItem('compose:selectionStart:'+ROOM_ID, $('#compose-message')[0].selectionStart);
+            myStorage.setItem('compose:selectionEnd:'+ROOM_ID, $('#compose-message')[0].selectionEnd);
+        }, 10);
     });
 
     $('#compose-message').each(function() {
