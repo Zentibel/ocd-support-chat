@@ -114,7 +114,6 @@ $.fn.selectRange = function(start, end) {
     if(end === undefined) {
         end = start;
     }
-    console.log('Selecting range...');
     return this.each(function() {
         if('selectionStart' in this) {
             this.selectionStart = start;
