@@ -297,7 +297,8 @@ $(document).ready(function() {
         );
     }
 
-    $('#compose-message').on('keyup mouseup', function() {
+    $('#compose-message').on('keyup mouseup select', function(e) {
+        console.log(e);
         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
         myStorage.setItem('compose:selectionStart:'+ROOM_ID, $('#compose-message')[0].selectionStart);
         myStorage.setItem('compose:selectionEnd:'+ROOM_ID, $('#compose-message')[0].selectionEnd);
