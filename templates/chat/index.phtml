@@ -1,10 +1,10 @@
   <div class="mdl-layout__drawer">
-    <span class="mdl-layout-title">Title</span>
+    <span class="mdl-layout-title">Comming Soon</span>
     <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Stuff</a>
+      <a class="mdl-navigation__link" href="">Will</a>
+      <a class="mdl-navigation__link" href="">Be</a>
+      <a class="mdl-navigation__link" href="">Here</a>
     </nav>
   </div>
 
@@ -271,6 +271,9 @@ function sendMessage(mediaFiles) {
      $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(result) {
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
+         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
+         myStorage.setItem('compose:selectionStart:'+ROOM_ID, 0);
+         myStorage.setItem('compose:selectionEnd:'+ROOM_ID, 0);
          $('button#send-button').removeAttr('disabled');
          $('button#send-button').html('Send &raquo;');
          $('#pending-media').html('');
@@ -279,15 +282,39 @@ function sendMessage(mediaFiles) {
      });
 }
 
+function setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  }
+  else if (input.createTextRange) {
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
+  }
+}
+
 $(document).ready(function() {
 
     thisChat.loadMessages(20);
 
     $('#compose-message').val(myStorage.getItem('compose:'+ROOM_ID));
 
-    $('#compose-message').on('keyup', function() {
+    setSelectionRange(
+        $('#compose-message')[0],
+        myStorage.getItem('compose:selectionStart:'+ROOM_ID),
+        myStorage.getItem('compose:selectionEnd:'+ROOM_ID)
+    );
+
+    $('#compose-message').on('keyup mouseup', function() {
         console.log('Saving: '+$('#compose-message').val());
         myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
+        console.log($('#compose-message')[0].selectionStart);
+        console.log($('#compose-message')[0].selectionEnd);
+        myStorage.setItem('compose:selectionStart:'+ROOM_ID, $('#compose-message')[0].selectionStart);
+        myStorage.setItem('compose:selectionEnd:'+ROOM_ID, $('#compose-message')[0].selectionEnd);
     });
 
     $('#compose-message').each(function() {
@@ -298,6 +325,14 @@ $(document).ready(function() {
         $('.stretch-height').css('line-height', newHeight + 'px');
         updateScroll('content');
     });
+
+    componentHandler.upgradeDom();
+
+    //setTimeout(function() {
+    //    $('.mdl-layout__drawer-button i.material-icons').addClass('mdl-badge mdl-badge--overlap').attr('data-badge', 4);
+    //    componentHandler.upgradeDom();
+    //}, 1000);
+
 
 
 });

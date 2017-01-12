@@ -1,3 +1,7 @@
+svg {
+    width: 32px;
+    height: 32px;
+}
 path {
     transition: fill 250ms linear;
 }
@@ -11,6 +15,11 @@ svg.connected > path:first-child {
 
 svg.disconnected > path:first-child {
     fill: #F00;
+}
+div.mdl-layout-icon-svg {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
 }
 
 input:-webkit-autofill {

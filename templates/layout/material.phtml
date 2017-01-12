@@ -20,7 +20,9 @@
 <body>
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
   <header class="chat-header mdl-layout__header">
-    <div class="mdl-layout-icon">
+    <div class="mdl-layout__header-row">
+
+    <div class="mdl-layout-icon-svg">
         <svg class="logo inline-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
             <path d="M31.805,41.953c0-5.497,2.443-10.57,6.546-14.639c-0.238-0.004-0.474-0.013-0.712-0.013  c-16.615,0-30.087,9.948-30.087,22.221c0,9.36,7.837,17.36,18.926,20.634l-0.585,12.604l8.693-11.016c0,0,1.642,0,3.053,0  c7.925,0,15.129-2.267,20.502-5.965C43.185,63.725,31.805,53.826,31.805,41.953z"></path>
 
@@ -29,7 +31,7 @@
             </g>
         </svg>
     </div>
-    <div class="mdl-layout__header-row">
+
       <span class="mdl-layout__title">
         <? if ($this->routeParam('username')): ?>
 
@@ -38,12 +40,13 @@
         <? endif; ?>
       </span>
       <div class="mdl-layout-spacer"></div>
+
       <nav class="mdl-navigation">
 
         <? if ($this->ident()): ?>
 
             <button id="menu-upper-right"
-                    class="mdl-button mdl-js-button mdl-button--icon">
+                    class="mdl-button mdl-js-button mdl-button--icon" >
               <i class="material-icons">more_vert</i>
             </button>
 
