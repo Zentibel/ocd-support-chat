@@ -79,6 +79,8 @@ class GliphMessagePoller:
 
     def saveMessages(self, messages):
         for message in messages:
+            if message['sender'] == '55270d999e9ad15171548416':
+                continue # skip ocdbot messages entirely
             message = GliphMessage(message)
             self.saveUser(message.sender)
             self.saveMessage(message)

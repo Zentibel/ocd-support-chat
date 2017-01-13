@@ -129,7 +129,8 @@ $('div#chat-log').on('click', 'span.sender.source-native', function() {
 var md = markdownit({
   html: false,
   linkify: true,
-  typographer: true
+  typographer: true,
+  breaks: true,
 });
 
 function renderMessage(event, message) {

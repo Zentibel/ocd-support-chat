@@ -1,79 +1,67 @@
 # Chat site with Gliph integration
 
-
----
+-----------------------------------------------
 
 ## Users
 
-#### Hash `user:{userId}`
+### Hash `user:{userId}`
 
-* `id`
-* `username`
+* `id` guid of this user
+* `username` username of this user, case preserved
 * `passwordHash`
 
-#### Hash `index:usernames`
+### [Index] Hash `index:usernames`
 
-* `{username}`: `{userId}`
+* `key` username lowercased
+* `value` user guid
 
----
-
-## Communities
-
-#### Hash `community:{communityId}`
-
-* `id`
-* `path`
-* `name`
-* `ownerId`
-
-#### Hash `index:community-paths`
-
-* `{path}`: `{communityId}`
-
-
-#### Sorted Set `index:featured-communities`
-
-* `{featuredCommunityIdN}`
-* `{featuredCommunityIdN}`
-* `{featuredCommunityIdN}`
-* `{featuredCommunityIdN}`
-* ...etc
-
-
-#### Set `community:members:{communityId}`
-
-* `{memberUserIdN}`
-* `{memberUserIdN}`
-* `{memberUserIdN}`
-* `{memberUserIdN}`
-* ...etc
-
----
+-----------------------------------------------
 
 ## Chat Rooms
 
-#### Sorted Set `chatroom:{chatroomId}`
+### Sorted Set `chat:messages:{chatId}`
 
-* `{messageIdN}`
-* `{messageIdN}`
-* `{messageIdN}`
-* `{messageIdN}`
+* `{messageKeyN}`
+* `{messageKeyN}`
+* `{messageKeyN}`
+* `{messageKeyN}`
 * ...etc
 
+> **Note:** The values stored in this sorted set are _not_ the message GUIDs. They
+> are the full Redis key of the message hash, such as
+> `message:02a723b2-7f33-4868-a962-51864c880273` or
+> `gliph:message:5877950d3f47a5022667871e`
 
-#### Hash `message:{messageId}`
+Latest 100 message keys for a room:
 
-* `userId`
-* `message`
+```
+redis-cli zrevrangebyscore chat:messages:dd0c62bd-c4f2-4286-affa-256bfcc93955 +inf -inf LIMIT 0 100
+```
+
+Latest 100 messages with full content for a room:
+
+```
+redis-cli zrevrangebyscore chat:messages:dd0c62bd-c4f2-4286-affa-256bfcc93955 +inf -inf LIMIT 0 100 | xargs -L 1 redis-cli hgetall
+```
 
 
+### Hash `message:{messageId}`
+
+These are specifically messages sent from THIS client, not imported messages from Gliph (see `gliph:message:{gliphMessageId}`).
+
+* `id` guid of this message
+* `sender` guid of the user who sent the message
+* `roomId` guid of the room the message was sent to
+* `message` text content of the message.
+* `timestamp` unix timestamp to 0.1ms
+* `media` (optional) media filenames, split by #
 
 
----
+-----------------------------------------------
 
-# Gliph integration data
+## Gliph integration data
 
-#### Hash: `gliph:user:{gliphId}`
+### Hash: `gliph:user:{gliphId}`
 
 * `gliph_id`
 * `facet:Pseudonym`
@@ -90,13 +78,43 @@
 * `credential` (if linked)
 
 
-#### Hash: `gliph:message:{gliphMessageId}`
+### Hash: `gliph:message:{gliphMessageId}`
 
-* `gliphUserId` (gliph user id)
-* `gliphMessageId`
-* `connection_id`
-* `content`
-* `media`
+* `id` (gliph message id)
+* `connection` (gliph connection id)
+* `sender` (gliph user id)
+* `timestamp`
+* `text`
+* `media` Formatted as `thumbnailID|fullsizeID#thumbnailID|fullsizeID`
 
-TODO: Support media?
+-----------------------------------------------
 
+## Communities (Not really used yet)
+
+### Hash `community:{communityId}`
+
+* `id`
+* `path`
+* `name`
+* `ownerId`
+
+### Set `community:members:{communityId}`
+
+* `{memberUserIdN}`
+* `{memberUserIdN}`
+* `{memberUserIdN}`
+* `{memberUserIdN}`
+* ...etc
+
+### Hash `index:community-paths`
+
+* `{path}`: `{communityId}`
+
+
+### Sorted Set `index:featured-communities`
+
+* `{featuredCommunityIdN}`
+* `{featuredCommunityIdN}`
+* `{featuredCommunityIdN}`
+* `{featuredCommunityIdN}`
+* ...etc
