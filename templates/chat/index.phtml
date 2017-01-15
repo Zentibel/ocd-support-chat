@@ -133,6 +133,15 @@ var md = markdownit({
   breaks: true,
 });
 
+var defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    tokens[idx].attrPush(['target', '_blank']); // open links in new tab
+    return defaultRender(tokens, idx, options, env, self);
+};
+
 function renderMessage(event, message) {
     if (message.senderName == 'ocdbot') {
         return;
@@ -269,6 +278,7 @@ EventBus.addEventListener('window:resize', function() {
 });
 
 function sendMessage(mediaFiles) {
+    // TODO: Retry, then handle error.
      $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(result) {
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
