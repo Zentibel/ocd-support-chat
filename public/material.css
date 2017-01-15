@@ -1,3 +1,6 @@
+body {
+    overflow-y: hidden; /* disable chrome pull-down-to-refresh */
+}
 svg {
     width: 32px;
     height: 32px;
