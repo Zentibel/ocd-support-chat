@@ -132,6 +132,10 @@ a.yt-thumbnail-link i {
     margin: 50px auto;
 }
 
+div.message.media {
+    margin-bottom: 15px;
+}
+
 form#compose {
     width: 100%;
 }
