@@ -157,7 +157,7 @@ function renderMessage(event, message) {
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
-    var messageRendered = md.render(message.message);
+    var $messageRendered = $('<div class="message">'+ md.render(message.message) + '</div>');
 
     var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
 
@@ -168,14 +168,30 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> ' +
-       '<div class="message">'+ messageRendered + '</div>'
+        '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> '
     );
+
+    $message.append($messageRendered);
+
+    function ytVidId(url) {
+      var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+      return (url.match(p)) ? RegExp.$1 : false;
+    }
+
+    $messageRendered.find('a').each(function(_, link) {
+        if (ytId = ytVidId($(link).attr('href'))) {
+            var $div = $('<div class="message media"></div>');
+            var $img = $('<a href="' + $(link).attr('href') + '" target="_blank"><img class="chat-media" src="https://img.youtube.com/vi/' +ytId+ '/default.jpg"></a>');
+            $message.append($div.append($img));
+        }
+    });
+
     if (message.media && message.source =='gliph') {
         for (var j=0; j<message.media.length; j++) {
             $message.append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
         }
     }
+
     if (message.media && message.source =='native') {
         for (var i=0; i<message.media.length; i++) {
             var parts = message.media[i].split('.');
