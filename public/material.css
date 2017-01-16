@@ -115,6 +115,23 @@ div#pending-media canvas, div#pending-media img {
     max-height: 75px;
 }
 
+a.yt-thumbnail-link {
+    position: relative;
+}
+
+a.yt-thumbnail-link img {
+    max-height: 200px;
+}
+
+a.yt-thumbnail-link i {
+    color: #e52d27;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 100px;
+    margin: 50px auto;
+}
+
 form#compose {
     width: 100%;
 }

@@ -181,7 +181,7 @@ function renderMessage(event, message) {
     $messageRendered.find('a').each(function(_, link) {
         if (ytId = ytVidId($(link).attr('href'))) {
             var $div = $('<div class="message media"></div>');
-            var $img = $('<a href="' + $(link).attr('href') + '" target="_blank"><img class="chat-media" src="https://img.youtube.com/vi/' +ytId+ '/default.jpg"></a>');
+            var $img = $('<a class="yt-thumbnail-link" href="' + $(link).attr('href') + '" target="_blank"><i class="material-icons">play_circle_filled</i><img class="chat-media yt-thumbnail" src="https://img.youtube.com/vi/' +ytId+ '/hqdefault.jpg"></a>');
             $message.append($div.append($img));
         }
     });
