@@ -273,7 +273,7 @@ setInterval(function(){
         mTimestamp = moment.unix($(this).data('timestamp'));
         $(this).text(mTimestamp.fromNow());
     });
-}, 60000);
+}, 10000);
 
 function updateScroll(el) {
     var element = document.getElementById(el);
