@@ -195,6 +195,7 @@ client = GliphSession(debug=False, client='GliphBridge/0.0.1 (Shepherd)')
 client.login(username='ocdbot', passphrase='gliphtest')
 
 #gliphConnection = '58637bba3f47a502266696c3' # Test Room
+pprint(sys.argv)
 gliphConnection = sys.argv[1]
 localChatId = sys.argv[2]
 poll = GliphMessagePoller(r, gliphConnection, client, localChatId)
