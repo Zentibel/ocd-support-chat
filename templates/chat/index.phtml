@@ -473,7 +473,7 @@ function processMedia(file) {
 
             smallImg.toBlob(function (lowResBlob) {
                 $mediaContainer.data('lowres-blob', lowResBlob);
-            }, 'image/png');
+            }, 'image/jpeg');
 
             // if gif, append raw gif
             if (file.type == 'image/gif') {
