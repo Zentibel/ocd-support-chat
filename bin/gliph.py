@@ -937,6 +937,22 @@ class GliphSession(object):
         r = self._request('delete', 'messages', params, with_auth=True)
         return r['success']
 
+    def send_message_multi(self, connection_id, text=None, image=None,
+                     bitcoin=None, expire=None, delay=None):
+        params = {'connection_id': connection_id}
+        if expire is not None:
+            params['expire'] = expire
+        if delay is not None:
+            params['delay'] = delay
+        params['content'] = self._build_message_multi(text, image, bitcoin)
+
+        r = self._request('create', 'messages', params, with_auth=True)
+
+        if r['success']:
+            return r['message']
+        else:
+            return False
+
     def send_message(self, connection_id, text=None, image=None,
                      bitcoin=None, expire=None, delay=None):
         params = {'connection_id': connection_id}
@@ -953,6 +969,51 @@ class GliphSession(object):
         else:
             return False
 
+    def _build_message_multi(self, text=None, images=None, bitcoin=None):
+        content = {'content_type': 'multipart/related', 'content': []}
+        if text is not None:
+            text_part = {'content_type': 'text/plain', 'content': text}
+            content['content'].append(text_part)
+
+        if images is not None:
+            for image in images:
+                if 'thumb' in image:
+                    content_id, key = self.upload_media_put(image['thumb']['data'])
+                    thumb_part = {'content_type': image['thumb']['type'],
+                                  'content_id': content_id, 'key': key,
+                                  'rel': 'thumbnail'}
+
+                content_id, key = self.upload_media_put(image['full']['data'])
+                full_part = {'content_type': image['full']['type'],
+                             'content_id': content_id, 'key': key,
+                             'rel': 'fullsize'}
+
+
+                if 'thumb' in image:
+                    image_part = {'content_type': 'multipart/alternative',
+                                  'content': [thumb_part, full_part]}
+                else:
+                    image_part = full_part
+
+                content['content'].append(image_part)
+
+                if image['full']['type'] == 'image/gif':
+                    text_part = {'content_type': 'text/plain', 'content': '(animated gif, click to load)'}
+                    content['content'].append(text_part)
+
+        if bitcoin is not None:
+            bitcoin_part = {'content_type': 'x-gliph/bitcoin',
+                            'content': {'amount': bitcoin}}
+            content['content'].append(bitcoin_part)
+
+        if len(content['content']) == 0:
+            print "At least one part is required"
+            raise Exception
+        elif len(content['content']) == 1:
+            content = content['content'][0]
+
+        return content
+
     def _build_message(self, text=None, image=None, bitcoin=None):
         content = {'content_type': 'multipart/related', 'content': []}
         if text is not None:
@@ -962,7 +1023,7 @@ class GliphSession(object):
         if image is not None:
             if 'thumb' in image:
                 content_id, key = self.upload_media_put(image['thumb'])
-                thumb_part = {'content_type': 'image/png',
+                thumb_part = {'content_type': 'image/gif',
                               'content_id': content_id, 'key': key,
                               'rel': 'thumbnail'}
             content_id, key = self.upload_media_put(image['full'])

@@ -67,7 +67,14 @@ class MessageFinder
         ];
 
         if (isset($message['media']) && $message['media']) {
-            $response['media'] = explode('#', $message['media']);
+            $media = explode('#', $message['media']);
+            foreach ($media as $item) {
+                $item = explode('|', $item);
+                $response['media'][] = [
+                    'thumbnail' => $item[0],
+                    'fullsize' => $item[1] ?? false,
+                ];
+            }
         }
 
         return $response;

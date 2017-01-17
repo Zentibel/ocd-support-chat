@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 from gliph import *
+from pprint import pprint
 import redis
 import time
 import os
+import sys
+import getopt
 
-gliphDataDir = '{0}/public/gliph-media'.format(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+GLIPH_DATA_DIR  = '{0}/public/gliph-media'.format(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+UPLOAD_DATA_DIR = '{0}/public/uploads/default'.format(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 class GliphMedia:
 
@@ -13,8 +17,8 @@ class GliphMedia:
         self.fullsize  = ( media[1]['content_id'], media[1]['key'] )
 
     def download(self, gliph):
-        thumbnailPath = '{0}/{1}.png'.format(gliphDataDir, self.thumbnail[0])
-        fullsizePath  = '{0}/{1}.png'.format(gliphDataDir, self.fullsize[0])
+        thumbnailPath = '{0}/{1}.png'.format(GLIPH_DATA_DIR, self.thumbnail[0])
+        fullsizePath  = '{0}/{1}.png'.format(GLIPH_DATA_DIR, self.fullsize[0])
 
         if not os.path.isfile(thumbnailPath):
             thumbnailBytes = gliph.download_media_get(self.thumbnail[0], self.thumbnail[1])
@@ -63,12 +67,47 @@ class GliphMessagePoller:
         self.localChatId       = localChatId
         self.paginate          = False
 
-        self.redisPubSub.subscribe('message-to-gliph-dd0c62bd-c4f2-4286-affa-256bfcc93955')
+        self.redisPubSub.subscribe('message-to-gliph-{0}'.format(sys.argv[2]))
 
     def sendMessages(self):
-        message = self.redisPubSub.get_message()
-        if message:
-            self.gliphSession.send_message(self.gliphConnectionId, text=message['data'])
+        messageToSend = self.redisPubSub.get_message()
+        if not messageToSend or messageToSend['type'] != 'message':
+            return
+
+        print 'Message to send...'
+        message = self.redis.hgetall(messageToSend['data'])
+        sender  = self.redis.hgetall('user:{0}'.format(message['sender']))['username']
+        imagesToSend = []
+        if 'media' in message:
+            print 'Media attached...'
+            media = message['media'].split('#')
+            for image in media:
+                image = image.split('|')
+
+                with open('{0}/{1}'.format(UPLOAD_DATA_DIR, image[0]), 'r') as content_file:
+                    thumbnail = content_file.read()
+
+                thumb = {'type': self._filenameToContentType(image[0]), 'data': thumbnail}
+
+                if len(image) > 1:
+                    with open('{0}/{1}'.format(UPLOAD_DATA_DIR, image[1]), 'r') as content_file:
+                        fullsize = content_file.read()
+
+                    full = {'type': self._filenameToContentType(image[1]), 'data': fullsize}
+                    imagesToSend.append({'thumb': thumb, 'full': full});
+                else:
+                    imagesToSend.append({'full': thumb});
+
+        messageText = "{0} says:\n\n{1}".format(sender, message['message'])
+        self.gliphSession.send_message_multi(self.gliphConnectionId, text=messageText, image=imagesToSend)
+
+    def _filenameToContentType(self, filename):
+        if filename[-4:] == '.gif':
+            return 'image/gif'
+        if filename[-4:] == '.jpg':
+            return 'image/jpeg'
+        if filename[-4:] == '.png':
+            return 'image/png'
 
     def getMessages(self):
         messages = self.gliphSession.messages(self.gliphConnectionId, paginate=self.paginate, limit=50)
@@ -156,7 +195,7 @@ client = GliphSession(debug=False, client='GliphBridge/0.0.1 (Shepherd)')
 client.login(username='ocdbot', passphrase='gliphtest')
 
 #gliphConnection = '58637bba3f47a502266696c3' # Test Room
-gliphConnection = '550c2e3d45b4ad77502716b4' # OChatD
-localChatId = 'dd0c62bd-c4f2-4286-affa-256bfcc93955'
+gliphConnection = sys.argv[1]
+localChatId = sys.argv[2]
 poll = GliphMessagePoller(r, gliphConnection, client, localChatId)
 poll.start()

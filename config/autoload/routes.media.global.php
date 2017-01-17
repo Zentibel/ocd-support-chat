@@ -43,5 +43,19 @@ return [
                 ],
             ],
         ],
+        [
+            'name' => 'media-404',
+            'path' => '/uploads/default/{mediaFile:[^/]+}',
+            'middleware' => [
+                Common\Middleware\StaticView::class,
+            ],
+            'allowed_methods' => ['GET'],
+            'options' => [
+                'defaults' => [
+                    'view' => 'chat::media-loading',
+                    'layout' => 'layout::none',
+                ],
+            ],
+        ],
     ],
 ];

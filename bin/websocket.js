@@ -3,8 +3,9 @@
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app);
 var redis = require("redis");
-var sub = redis.createClient();
 var redisClient = redis.createClient();
+var sub = redis.createClient();
+var pub = redis.createClient();
 
 app.listen(9999);
 
@@ -40,6 +41,9 @@ io.on('connection', function (socket) {
         io.to(socket.room).emit('media-upload-progress', data);
     });
 
+    socket.on('message-upload-complete', function(messageId) {
+        pub.publish('message-to-gliph-'+socket.room, 'message:'+messageId);
+    });
     socket.on('media-upload-complete', function(mediaId) {
         console.log('Media uploaded: ' + mediaId);
         io.to(socket.room).emit('media-upload-complete', mediaId);

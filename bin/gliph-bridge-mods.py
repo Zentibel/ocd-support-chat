@@ -65,6 +65,19 @@ class GliphMessagePoller:
 
         self.redisPubSub.subscribe('message-to-gliph-e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
 
+    def sendTestMessage(self):
+        with open('/home/ecoury/workspace/ocdchat/public/uploads/default/c9f4c5f6-c305-4c4a-a9a4-5c835214637d.gif', 'r') as content_file:
+            thumbnail = content_file.read()
+        with open('/home/ecoury/1000x1000.png', 'r') as content_file:
+            fullsize = content_file.read()
+        #with open('/home/ecoury/250x250.png', 'r') as content_file:
+        #    thumbnail = content_file.read()
+        #with open('/home/ecoury/1000x1000.png', 'r') as content_file:
+        #    fullsize = content_file.read()
+
+        thisImage = {'thumb': thumbnail, 'full': fullsize}
+        self.gliphSession.send_message(self.gliphConnectionId, text='test, please ignore', image=thisImage)
+
     def sendMessages(self):
         message = self.redisPubSub.get_message()
         if message:
@@ -159,4 +172,5 @@ client.login(username='ocdbot', passphrase='gliphtest')
 gliphConnection = '5538258f3f47a55f184f45ba' # OChatD
 localChatId = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825'
 poll = GliphMessagePoller(r, gliphConnection, client, localChatId)
+poll.sendTestMessage()
 poll.start()

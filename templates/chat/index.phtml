@@ -16,13 +16,12 @@
 
   <footer class="mdl-mega-footer footer-light mdl-shadow--8dp">
     <form id="compose">
-    <div id="pending-media"></div>
 
     <div class="mdl-grid">
 
         <div class="attach mdl-button mdl-js-button mdl-js-ripple-effect">
           <label id="attach-media-button" for="files"></label>
-          <input type="file" id="files" accept="image/*">
+          <input type="file" id="files" accept="image/*" multiple="multiple">
           <i class="material-icons">attach_file</i>
         </div>
 
@@ -34,6 +33,7 @@
     </div>
 
 
+    <div id="pending-media"></div>
     </form>
 
   </footer>
@@ -45,6 +45,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js"></script>
 
+<script src="/media-uploader.js?1"></script>
 <script src="/chat.js?1"></script>
 
 <? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
@@ -150,7 +151,7 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
 };
 
 function renderMessage(event, message) {
-    if (message.senderName == 'ocdbot') {
+    if (!message || message.senderName == 'ocdbot') {
         return;
     }
 
@@ -188,17 +189,24 @@ function renderMessage(event, message) {
 
     if (message.media && message.source =='gliph') {
         for (var j=0; j<message.media.length; j++) {
-            $message.append('<div class="message"><img src="' + message.media[j].thumbnail + '"></div>');
+            $message.append('<div class="message"><a href="'+ message.media[j].fullsize +'" target="_blank"><img src="' + message.media[j].thumbnail + '"></a></div>');
         }
     }
 
     if (message.media && message.source =='native') {
         for (var i=0; i<message.media.length; i++) {
-            var parts = message.media[i].split('.');
+            var parts = message.media[i].thumbnail.split('.');
             var $div = $('<div class="message media"><span class="loaded"></span></div>');
-            var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[i] + '">');
+            var $img = $('<img alt="Loading..." class="chat-media '+parts[1]+'" id="'+parts[0]+'" data-src="/uploads/default/' + message.media[i].thumbnail + '">');
             $img.attr('src', $img.data('src'));
-            $message.append($div.append($img));
+
+            if (message.media[i].fullsize) {
+                var $link = $('<a href="/uploads/default/'+ message.media[i].fullsize +'" target="_blank"></a>');
+                $link.append($img);
+                $message.append($div.append($link));
+            } else {
+                $message.append($div.append($img));
+            }
         }
     }
 
@@ -265,7 +273,7 @@ function displayMedia(mediaId) {
     //var mediaId = e.target;
     var $img    = $('img#'+mediaId);
     $img.imagesLoaded().progress(function(instance, image) {
-        if (image.isLoaded) {                                        $('#compose-message')
+        if (image.isLoaded) {
             EventBus.dispatch('chat:message-media-loaded', null, image);
         }
     });
@@ -300,9 +308,10 @@ EventBus.addEventListener('window:resize', function() {
     updateScroll('content');
 });
 
-function sendMessage(mediaFiles) {
+function sendMessage(mediaFiles, callback) {
     // TODO: Retry, then handle error.
-     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(result) {
+     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(messageId) {
+         console.log('Message sent');
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
          myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
@@ -313,6 +322,9 @@ function sendMessage(mediaFiles) {
          $('#pending-media').html('');
          autosize.update($('#compose-message'));
          $('#compose-message').focus();
+         if (callback) {
+             callback(messageId)
+         }
      });
 }
 
@@ -365,31 +377,52 @@ $('form#compose').submit(function(event) {
 
     event.preventDefault();
 
-    if (mediaBlobs.length == 0 && !$('#compose-message').val().trim()) {
+    $mediaToUpload = $('div#pending-media').children();
+
+    if ($mediaToUpload.length == 0 && !$('#compose-message').val().trim()) {
         return;
     }
 
     $('#compose-message').attr('disabled','disabled');
     $('#send-button').attr('disabled','disabled');
 
-    if (mediaBlobs.length > 0) {
+    // TODO overlay div over pending media?
+    var messageMedia = [];
 
-        var mediaManager = new MediaManager();
-        mediaManager.addBlobs(mediaBlobs, function(media) {
-            sendMessage(this.getMediaFilenames());
-            mediaBlobs = [];
-            this.upload();
+    for (var i = 0; i < $mediaToUpload.length; i++) {
+
+        $mediaDiv = $($mediaToUpload[i]);
+
+        var thisMedia = {};
+
+        if ($mediaDiv.data('lowres-blob')) {
+            thisMedia.lowRes = { blob: $($mediaToUpload[i]).data('lowres-blob') };
+        }
+
+        if ($mediaDiv.data('highres-blob')) {
+            thisMedia.highRes = { blob: $($mediaToUpload[i]).data('highres-blob') };
+        }
+
+        messageMedia.push(thisMedia);
+    }
+
+    if (messageMedia.length > 0) {
+        var uploader = new MediaUploader(messageMedia);
+
+        uploader.fetchMediaIdsForUpload(function() {
+            sendMessage(this.getMediaFilenames(), (function(messageId) {
+                this.upload((function(messageId) {
+                    console.log('ALL MEDIA UPLOADS ARE DONE! ' + messageId);
+                    socket.emit('message-upload-complete', messageId);
+                }).bind(this, messageId));
+            }).bind(this));
         });
-
         return;
     }
 
-    if (!$('#compose-message').val().trim()) {
-        return;
-    }
-
-    sendMessage(false);
-
+    sendMessage(false, function(messageId) {
+        socket.emit('message-upload-complete', messageId);
+    });
 });
 
 
@@ -415,42 +448,91 @@ $(document).keyup(function (e) {
 });
 
 
-var mediaBlobs = [];
+$('div#pending-media').on('click', 'i.material-icons', function() {
+    $(this).parent().remove();
+});
 
-function handleFileSelect(evt) {
-    var file = evt.target.files[0];
-    console.log(file);
+function processMedia(file) {
 
-    if (file.type == 'image/gif') {
+    var ext = (file.type == 'image/jpeg' ? '.jpg' : false) ||
+              (file.type == 'image/png'  ? '.png' : false) ||
+              (file.type == 'image/gif'  ? '.gif' : false) ||
+              false;
+    if (!ext) return false; // invalid media type
 
-        mediaBlobs.push(file);
-        console.log(mediaBlobs);
+    var $spinner = $('<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>');
+    $('div#pending-media').append($spinner);
+    componentHandler.upgradeDom();
+    setTimeout(function() { $spinner.addClass('animate-visible'); }, 50);
 
-        var reader = new FileReader();
-         reader.onload = function (e) {
-             $('div#pending-media').append(
-                 $('<img src="'+e.target.result+'">')
-             );
-             updateScroll('content');
-         }
-         reader.readAsDataURL(file);
-    } else {
-        loadImage(
-            file,
-            function (img) {
-                $('div#pending-media').append(img);
-                updateScroll('content');
-                img.toBlob(function (blob) {
-                        mediaBlobs.push(blob);
-                        console.log(mediaBlobs);
-                }, 'image/jpeg');
-            },
-            {
-                maxWidth: 700,
-                maxHeight: 500,
-                canvas: true
+    var $mediaContainer = $('<div class="message-media mdl-shadow--2dp"><i class="material-icons">backspace</i></div>');
+
+    loadImage(
+        file,
+        function (smallImg) {
+
+            smallImg.toBlob(function (lowResBlob) {
+                $mediaContainer.data('lowres-blob', lowResBlob);
+            }, 'image/png');
+
+            // if gif, append raw gif
+            if (file.type == 'image/gif') {
+                var reader = new FileReader();
+                 reader.onload = function (e) {
+                     $gifImg = $('<img class="highres" src="'+e.target.result+'">');
+                     $mediaContainer.data('highres-blob', file);
+                     $mediaContainer.append($gifImg);
+                     $spinner.remove();
+                     $('div#pending-media').append($mediaContainer);
+                     updateScroll('content');
+                 }
+                 reader.readAsDataURL(file);
+                 return;
+            } else {
+                $mediaContainer.append(smallImg);
             }
-        );
+
+
+            if (smallImg.width < 800 && smallImg.height < 600) {
+                // if image was already small, skip making a fullsize copy
+                $spinner.remove();
+                $('div#pending-media').append($mediaContainer);
+                updateScroll('content');
+                return;
+            }
+
+            // If we have a high res copy too
+            loadImage(
+                file,
+                function (largeImg) {
+                    largeImg.toBlob(function (highResBlob) {
+                        $mediaContainer.data('highres-blob', highResBlob);
+                        $spinner.remove();
+                        $('div#pending-media').append($mediaContainer);
+                        updateScroll('content');
+                    }, 'image/jpeg');
+                },
+                {
+                    maxWidth: 2560,
+                    maxHeight: 1920,
+                    canvas: true
+                }
+            );
+        },
+        {
+            maxWidth: 800,
+            maxHeight: 600,
+            canvas: true
+        }
+    );
+}
+
+
+var handleFileSelect = function(evt) {
+    var files = evt.target.files;
+
+    for (var i=0; i<files.length; i++) {
+        processMedia(files[i]);
     }
 
     $('#compose-message').focus();
@@ -469,6 +551,7 @@ $(document).on('wake', function() {
     // just reset the message log?
     thisChat.loadMessages(20);
 });
+
 
 /**
  * Manage scrolling...
