@@ -44,6 +44,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/favico.js/0.3.10/favico.min.js"></script>
 
 <script src="/media-uploader.js?1"></script>
 <script src="/chat.js?1"></script>
@@ -637,15 +638,25 @@ EventBus.addEventListener('chat:message-appended', scrollToBottom);
 EventBus.addEventListener('chat:message-appended', function() { componentHandler.upgradeDom(); });
 
 /**
- * Page title updating...
+ * Page title and favicon updating...
  */
 var focused     = true;
 var baseTitle   = '';
 var chatsMissed = 0;
+// https://github.com/ejci/favico.js/issues/85
+$('link[rel~="icon"]').each(function(_, el){
+    $(el).data('favicon', new Favico({
+        element: el,
+        animation:'popFade'
+    }));
+});
 
 function updatePageTitle() {
     if(!focused) {
         chatsMissed++;
+        $('link[rel~="icon"]').each(function(_, el){
+            $(el).data('favicon').badge(chatsMissed);
+        });
         document.title = '*' + chatsMissed + ' ' + baseTitle;
     }
 }
@@ -659,6 +670,9 @@ $(document).ready(function() {
     //When the window is focused...
     $(window).focus(function() {
         focused = true;
+        $('link[rel~="icon"]').each(function(_, el){
+            $(el).data('favicon').reset();
+        });
         //  window.document.title = baseTitle;
         //chrome bug: http://heyman.info/2010/oct/7/google-chrome-bug-when-setting-document-title/
         setTimeout(function() {
