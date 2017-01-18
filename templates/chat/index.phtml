@@ -221,12 +221,14 @@ function renderMessage(event, message) {
 
     if ($first.length === 0) {
         $('#chat-log').append($message);
+        componentHandler.upgradeDom();
         EventBus.dispatch('chat:first-message-rendered');
         return;
     }
 
     if (sortval <= $first.find('span.timestamp').data('timestamp')) {
         $message.insertBefore($first);
+        componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-prepended');
         return;
 
@@ -235,6 +237,7 @@ function renderMessage(event, message) {
     var $last = $('.chat-message').last();
     if (sortval >= $last.find('span.timestamp').data('timestamp')) {
         $message.insertAfter($last);
+        componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended');
         notification.play();
         return;
