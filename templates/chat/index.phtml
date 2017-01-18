@@ -476,7 +476,7 @@ function processMedia(file) {
 
             smallImg.toBlob(function (lowResBlob) {
                 $mediaContainer.data('lowres-blob', lowResBlob);
-            }, 'image/jpeg');
+            }, (file.type == 'image/gif') ? 'image/jpeg' : file.type);
 
             // if gif, append raw gif
             if (file.type == 'image/gif') {
@@ -513,7 +513,7 @@ function processMedia(file) {
                         $spinner.remove();
                         $('div#pending-media').append($mediaContainer);
                         updateScroll('content');
-                    }, 'image/jpeg');
+                    }, (file.type == 'image/gif') ? 'image/jpeg' : file.type);
                 },
                 {
                     orientation: true,
