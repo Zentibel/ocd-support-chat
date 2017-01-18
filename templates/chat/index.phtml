@@ -45,6 +45,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/favico.js/0.3.10/favico.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/lib/js/emojione.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/css/emojione.min.css">
+
 
 <script src="/media-uploader.js?1"></script>
 <script src="/chat.js?1"></script>
@@ -151,6 +154,20 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
     return defaultRender(tokens, idx, options, env, self);
 };
 
+/**
+ * Use old emoji check...
+ * https://github.com/Modernizr/Modernizr/issues/1688
+ */
+Modernizr.addTest('emoji', function() {
+  if (!Modernizr.canvastext) return false;
+  var node = document.createElement('canvas'),
+      ctx = node.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = '32px Arial';
+  ctx.fillText('\ud83d\ude03', 0, 0); // "smiling face with open mouth" emoji
+  return ctx.getImageData(16, 16, 1, 1).data[0] !== 0;
+});
+
 function renderMessage(event, message) {
     if (!message || message.senderName == 'ocdbot') {
         return;
@@ -159,7 +176,11 @@ function renderMessage(event, message) {
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
-    var $messageRendered = $('<div class="message">'+ md.render(message.message) + '</div>');
+    if (Modernizr.emoji) {
+        var $messageRendered = $('<div class="message">'+ md.render(message.message) + '</div>');
+    } else {
+        var $messageRendered = $('<div class="message">'+ emojione.toImage(md.render(message.message)) + '</div>');
+    }
 
     var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
 
