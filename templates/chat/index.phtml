@@ -636,4 +636,41 @@ EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
 EventBus.addEventListener('chat:message-appended', scrollToBottom);
 EventBus.addEventListener('chat:message-appended', function() { componentHandler.upgradeDom(); });
 
+/**
+ * Page title updating...
+ */
+var focused     = true;
+var baseTitle   = '';
+var chatsMissed = 0;
+
+function updatePageTitle() {
+    if(!focused) {
+        chatsMissed++;
+        document.title = '*' + chatsMissed + ' ' + baseTitle;
+    }
+}
+
+EventBus.addEventListener('chat:message-appended', updatePageTitle);
+
+$(document).ready(function() {
+    //store the base title
+    baseTitle = document.title;
+
+    //When the window is focused...
+    $(window).focus(function() {
+        focused = true;
+        //  window.document.title = baseTitle;
+        //chrome bug: http://heyman.info/2010/oct/7/google-chrome-bug-when-setting-document-title/
+        setTimeout(function() {
+            document.title = baseTitle;
+        }, 100);
+
+        chatsMissed = 0;
+    });
+
+    $(window).blur(function() {
+        focused = false;
+    });
+});
+
 </script>
