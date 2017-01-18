@@ -96,7 +96,7 @@ class GliphMessagePoller:
                     full = {'type': self._filenameToContentType(image[1]), 'data': fullsize}
                     imagesToSend.append({'thumb': thumb, 'full': full});
                 else:
-                    imagesToSend.append({'full': thumb});
+                    imagesToSend.append({'thumb': thumb, 'full': thumb});
 
         messageText = "{0} says:\n\n{1}".format(sender, message['message'])
         self.gliphSession.send_message_multi(self.gliphConnectionId, text=messageText, image=imagesToSend)
