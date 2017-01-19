@@ -49,10 +49,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/css/emojione.min.css">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.textcomplete/1.8.0/jquery.textcomplete.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Caret.js/0.3.1/jquery.caret.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/js/jquery.atwho.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/css/jquery.atwho.min.css">
 
+<link rel="stylesheet" href="/emoji-autocomplete.css">
+<script src="/emoji-autocomplete.js?1"></script>
 
 <script src="/media-uploader.js?1"></script>
 <script src="/chat.js?1"></script>
@@ -340,7 +344,8 @@ EventBus.addEventListener('window:resize', function() {
 
 function sendMessage(mediaFiles, callback) {
     // TODO: Retry, then handle error.
-     $.post('/messages/' + ROOM_ID, { message: $('#compose-message').val(), media: mediaFiles }, function(messageId) {
+    var messageText = emojione.shortnameToUnicode($('#compose-message').val());
+     $.post('/messages/' + ROOM_ID, { message: messageText, media: mediaFiles }, function(messageId) {
          console.log('Message sent');
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
