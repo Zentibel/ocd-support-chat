@@ -45,8 +45,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.1/imagesloaded.pkgd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/favico.js/0.3.10/favico.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/css/emojione.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Caret.js/0.3.1/jquery.caret.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/js/jquery.atwho.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/css/jquery.atwho.min.css">
 
 
 <script src="/media-uploader.js?1"></script>
@@ -705,6 +710,20 @@ $(document).ready(function() {
 
     $(window).blur(function() {
         focused = false;
+    });
+});
+
+
+/**
+ * Username autocomplete
+ */
+var AUTOCOMPLETE_USERNAMES = {};
+EventBus.addEventListener('chat:message-loaded', function(evt, message){
+    AUTOCOMPLETE_USERNAMES[message.senderName] = true;
+    $('textarea#compose-message').atwho({
+        at: '@',
+        data: Object.keys(AUTOCOMPLETE_USERNAMES),
+        insertTpl: '${name}',
     });
 });
 
