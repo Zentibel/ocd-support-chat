@@ -1,3 +1,6 @@
+<div class="preload">
+    <span><img class="narwhal animated infinite tada" src="/narwhal.svg"></span>
+</div>
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Coming Soon</span>
     <nav class="mdl-navigation">
@@ -652,9 +655,10 @@ var firstMessagesLoaded = function() {
     console.log('Initial messages loaded!');
     $('main#content > .mdl-progress').addClass('off');
     setTimeout(function() {
-        $('#chat-log').fadeIn();
+        $('.preload').fadeOut();
+        $('#chat-log').show();
         scrollToBottom();
-    }, 250);
+    }, 350);
     componentHandler.upgradeDom();
     EventBus.removeEventListener('chat:messages-loaded', firstMessagesLoaded);
     scrollLock = false;
