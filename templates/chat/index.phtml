@@ -220,7 +220,11 @@ function renderMessage(event, message) {
 
     if (message.media && message.source =='gliph') {
         for (var j=0; j<message.media.length; j++) {
-            $message.append('<div class="message"><a href="'+ message.media[j].fullsize +'" target="_blank"><img src="' + message.media[j].thumbnail + '"></a></div>');
+            if (message.media[j].thumbnail) {
+                $message.append('<div class="message"><a href="'+ message.media[j].fullsize +'" target="_blank"><img src="' + message.media[j].thumbnail + '"></a></div>');
+            } else {
+                $message.append('<div class="message"><a href="'+ message.media[j].fullsize +'" target="_blank"><img src="' + message.media[j].fullsize + '"></a></div>');
+            }
         }
     }
 
