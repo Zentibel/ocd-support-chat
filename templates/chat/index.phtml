@@ -56,6 +56,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/js/jquery.atwho.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/css/jquery.atwho.min.css">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.4/URI.min.js"></script>
+
 <script src="/emoji-list.js?1"></script>
 
 <script src="/media-uploader.js?1"></script>
@@ -803,6 +805,51 @@ function handleFileDropped(evt) {
   for (var i = 0, f; f = files[i]; i++) {
     processMedia(f);
   }
+
+  if (evt.dataTransfer.getData('text/html')) {
+      var htmlString = evt.dataTransfer.getData('text/html');
+      if (htmlString.indexOf('<img') === 0) {
+
+          var matches = htmlString.match(/(src)=[\'"]?((?:(?!\/>|>|"|\'|\s).)+)/i);
+
+          if (matches.length !== 3) {
+              return;
+          }
+
+          var imgSrc = matches[2];
+
+          if (imgSrc.indexOf('data:') === 0) {
+              console.log('Image from data URI');
+              processMedia(dataUriToBlob(imgSrc));
+              return;
+          }
+
+          if (imgSrc.indexOf('http') === 0) {
+
+            var $spinner = $('<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>');
+            $('div#pending-media').append($spinner);
+            componentHandler.upgradeDom();
+            setTimeout(function() { $spinner.addClass('animate-visible'); }, 50);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/proxy/' + btoa(imgSrc), true);
+            xhr.responseType = 'blob';
+
+            xhr.onload = function(e) {
+              $spinner.remove();
+              if (this.status == 200) {
+                processMedia(this.response);
+              }
+            };
+
+            xhr.send();
+
+          }
+      }
+
+  }
+
+  //console.log('/proxy/' + btoa(evt.dataTransfer.getData('Text')));
 }
 
 function handleDragOver(evt) {
@@ -814,5 +861,30 @@ function handleDragOver(evt) {
 var dropZone = document.body;
 dropZone.addEventListener('dragover', handleDragOver, false);
 dropZone.addEventListener('drop', handleFileDropped, false);
+
+function dataUriToBlob(dataURI) {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  var byteString = atob(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  // write the ArrayBuffer to a blob, and you're done
+  var blob = new Blob([ab], {type: mimeString});
+  return blob;
+
+  // Old code
+  // var bb = new BlobBuilder();
+  // bb.append(ab);
+  // return bb.getBlob(mimeString);
+}
 
 </script>

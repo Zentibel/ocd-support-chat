@@ -57,5 +57,14 @@ return [
                 ],
             ],
         ],
+        [
+            'name' => 'media-proxy-remote',
+            'path' => '/proxy/{mediaUrl:.+}',
+            'middleware' => [
+                Auth\Middleware\AssertIsAuthenticated::class,
+                Common\Middleware\ProxyMedia::class,
+            ],
+            'allowed_methods' => ['GET'],
+        ],
     ],
 ];
