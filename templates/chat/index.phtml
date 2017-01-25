@@ -809,6 +809,11 @@ function handleFileDropped(evt) {
     processMedia(f);
   }
 
+  // evt.dataTransfer.getData('url')
+  // evt.dataTransfer.getData('text/html')
+  // evt.dataTransfer.getData('text/uri-list')
+  // http://stackoverflow.com/questions/11972963/accept-drag-drop-of-image-from-another-browser-window
+
   if (evt.dataTransfer.getData('text/html')) {
       var htmlString = evt.dataTransfer.getData('text/html');
       if (htmlString.indexOf('<img') !== -1) {
