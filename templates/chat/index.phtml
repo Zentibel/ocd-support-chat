@@ -777,4 +777,18 @@ EventBus.addEventListener('chat:message-loaded', function(evt, message){
     });
 });
 
+/**
+ * Paste images from clipboard
+ */
+document.onpaste = function(event){
+  var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+  console.log(JSON.stringify(items)); // will give you the mime types
+  for (index in items) {
+    var item = items[index];
+    if (item.kind === 'file') {
+      processMedia(item.getAsFile());
+    }
+  }
+}
+
 </script>
