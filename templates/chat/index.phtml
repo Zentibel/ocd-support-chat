@@ -688,12 +688,13 @@ var chatsMissed = 0;
 $('link[rel~="icon"]').each(function(_, el){
     $(el).data('favicon', new Favico({
         element: el,
-        animation:'popFade'
+        animation:'popFade',
+        position: 'upleft'
     }));
 });
 
 function updatePageTitle() {
-    if(!focused) {
+    if (!focused) {
         chatsMissed++;
         $('link[rel~="icon"]').each(function(_, el){
             $(el).data('favicon').badge(chatsMissed);
