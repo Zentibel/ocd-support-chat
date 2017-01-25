@@ -791,4 +791,28 @@ document.onpaste = function(event){
   }
 }
 
+/**
+ * Drag and drop images
+ */
+function handleFileDropped(evt) {
+  evt.stopPropagation();
+  evt.preventDefault();
+
+  var files = evt.dataTransfer.files;
+
+  for (var i = 0, f; f = files[i]; i++) {
+    processMedia(f);
+  }
+}
+
+function handleDragOver(evt) {
+  evt.stopPropagation();
+  evt.preventDefault();
+  evt.dataTransfer.dropEffect = 'copy';
+}
+
+var dropZone = document.body;
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileDropped, false);
+
 </script>
