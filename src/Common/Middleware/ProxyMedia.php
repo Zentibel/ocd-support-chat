@@ -10,14 +10,14 @@ class ProxyMedia
     public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next)
     {
         if (!$mediaUrl = $request->getAttribute('mediaUrl', false)) {
-            die('error-1');
+            return $response->withStatus(500, 'Unable to load image.');
         }
         if (!$mediaUrl = base64_decode($mediaUrl)) {
-            die('error-2');
+            return $response->withStatus(500, 'Unable to load image..');
         }
 
         if (!$mediaContent = file_get_contents($mediaUrl)) {
-            die('error-3');
+            return $response->withStatus(500, 'Unable to load image...');
         }
 
         $contentType = false;
@@ -30,7 +30,7 @@ class ProxyMedia
         }
 
         if (!$contentType) {
-            die('error-4');
+            return $response->withStatus(500, 'Unable to load image....');
         }
 
         $body = new Stream('php://temp', 'wb+');

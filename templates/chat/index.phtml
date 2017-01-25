@@ -39,6 +39,11 @@
     <div id="pending-media"></div>
     </form>
 
+    <div id="chat-snackbar" class="mdl-js-snackbar mdl-snackbar">
+      <div class="mdl-snackbar__text"></div>
+      <button class="mdl-snackbar__action" type="button"></button>
+    </div>
+
   </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.2.2/markdown-it.min.js"></script>
@@ -55,8 +60,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Caret.js/0.3.1/jquery.caret.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/js/jquery.atwho.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/css/jquery.atwho.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.4/URI.min.js"></script>
 
 <script src="/emoji-list.js?1"></script>
 
@@ -808,8 +811,8 @@ function handleFileDropped(evt) {
 
   if (evt.dataTransfer.getData('text/html')) {
       var htmlString = evt.dataTransfer.getData('text/html');
-      if (htmlString.indexOf('<img') === 0) {
-
+      if (htmlString.indexOf('<img') !== -1) {
+          htmlString = htmlString.slice(htmlString.indexOf('<img'));
           var matches = htmlString.match(/(src)=[\'"]?((?:(?!\/>|>|"|\'|\s).)+)/i);
 
           if (matches.length !== 3) {
@@ -819,7 +822,6 @@ function handleFileDropped(evt) {
           var imgSrc = matches[2];
 
           if (imgSrc.indexOf('data:') === 0) {
-              console.log('Image from data URI');
               processMedia(dataUriToBlob(imgSrc));
               return;
           }
@@ -839,17 +841,23 @@ function handleFileDropped(evt) {
               $spinner.remove();
               if (this.status == 200) {
                 processMedia(this.response);
+                return;
               }
+              showToast('Error: ' + this.statusText);
             };
 
             xhr.send();
 
+          } else {
+              // <img> tag that we can't handle...
+              showToast('Error: Unsupported image dropped.');
+
           }
+      } else {
+          // No <img> tag in the beginning...
+          showToast('Error: Unsupported content dropped.');
       }
-
   }
-
-  //console.log('/proxy/' + btoa(evt.dataTransfer.getData('Text')));
 }
 
 function handleDragOver(evt) {
@@ -885,6 +893,13 @@ function dataUriToBlob(dataURI) {
   // var bb = new BlobBuilder();
   // bb.append(ab);
   // return bb.getBlob(mimeString);
+}
+
+
+function showToast(text) {
+  document.getElementById('chat-snackbar')
+      .MaterialSnackbar
+      .showSnackbar({message: text, timeout: 3000});
 }
 
 </script>
