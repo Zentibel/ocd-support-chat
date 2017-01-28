@@ -245,7 +245,9 @@ function renderMessage(event, message) {
                 $link.append($img);
                 $message.append($div.append($link));
             } else {
-                $message.append($div.append($img));
+                var $link = $('<a href="/uploads/default/'+ message.media[i].thumbnail +'" target="_blank"></a>');
+                $link.append($img);
+                $message.append($div.append($link));
             }
         }
     }
