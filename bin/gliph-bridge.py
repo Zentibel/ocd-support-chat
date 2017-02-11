@@ -153,8 +153,8 @@ class GliphMessagePoller:
 
     def saveUser(self, gliphUserId):
         redisKey = 'gliph:user:{0}'.format(gliphUserId)
-        if self.redis.exists(redisKey):
-            return # we already have this user, todo: check last update?
+        #if self.redis.exists(redisKey):
+        #    return # we already have this user, todo: check last update?
 
         user = self.gliphSession.search_for_user_by_user_id(gliphUserId)
 
