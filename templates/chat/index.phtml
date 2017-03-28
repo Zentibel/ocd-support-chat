@@ -57,6 +57,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/lib/js/emojione.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/css/emojione.min.css">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/keymaster/1.6.1/keymaster.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Caret.js/0.3.1/jquery.caret.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/js/jquery.atwho.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.2/css/jquery.atwho.min.css">
@@ -280,7 +281,7 @@ function renderMessage(event, message) {
     if (sortval >= $last.find('span.timestamp').data('timestamp')) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
-        EventBus.dispatch('chat:message-appended');
+        EventBus.dispatch('chat:message-appended', false, message);
         notification.play();
         return;
     }
@@ -903,6 +904,32 @@ function dataUriToBlob(dataURI) {
   // return bb.getBlob(mimeString);
 }
 
+
+/**
+ * Text-to-speech
+ */
+if ('speechSynthesis' in window) {
+
+    var ttsEnabled = false;
+
+    key('ctrl+s', function(){
+        ttsEnabled = !ttsEnabled;
+        showToast('TTS ' + ttsEnabled ? 'Enabled' : 'Disabled');
+        return false
+    });
+
+    function speakMessage(event, message) {
+        if (!ttsEnabled) return false;
+
+        window.speechSynthesis.speak(
+            new SpeechSynthesisUtterance(
+                message.senderName + ' said, ' + message.message
+            )
+        );
+    }
+
+    EventBus.addEventListener('chat:message-appended', speakMessage);
+}
 
 function showToast(text) {
   document.getElementById('chat-snackbar')
