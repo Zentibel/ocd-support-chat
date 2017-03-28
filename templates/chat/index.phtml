@@ -912,9 +912,11 @@ if ('speechSynthesis' in window) {
 
     var ttsEnabled = false;
 
-    key('ctrl+s', function(){
+    key('ctrl+m', function(){
+        notice = 'TTS ' + (ttsEnabled ? 'Enabled' : 'Disabled');
         ttsEnabled = !ttsEnabled;
-        showToast('TTS ' + ttsEnabled ? 'Enabled' : 'Disabled');
+        console.log(notice, ttsEnabled);
+        showToast(notice);
         return false
     });
 
