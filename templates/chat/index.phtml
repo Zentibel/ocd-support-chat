@@ -912,7 +912,7 @@ if ('speechSynthesis' in window) {
 
     var ttsEnabled = false;
 
-    key('ctrl+m', function(){
+    key('ctrl+o', function(){
         notice = 'TTS ' + (ttsEnabled ? 'Enabled' : 'Disabled');
         ttsEnabled = !ttsEnabled;
         console.log(notice, ttsEnabled);
