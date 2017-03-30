@@ -921,16 +921,17 @@ if ('speechSynthesis' in window) {
     });
 
     $('div#chat-log').on('click', 'div.chat-message', function() {
-        if (!ttsEnabled) return false;
-        var senderName = $(this).find('.sender').text();
-        var messageText = $(this).find('.message').text();
+        if (ttsEnabled) {
+            var senderName = $(this).find('.sender').text();
+            var messageText = $(this).find('.message').text();
 
-        var spokenWords = senderName + ' said, ' + messageText;
-        console.log('Speaking: ' + spokenWords);
+            var spokenWords = senderName + ' said, ' + messageText;
+            console.log('Speaking: ' + spokenWords);
 
-        window.speechSynthesis.speak(
-            new SpeechSynthesisUtterance(spokenWords)
-        );
+            window.speechSynthesis.speak(
+                new SpeechSynthesisUtterance(spokenWords)
+            );
+        }
     });
 
     function speakMessage(event, message) {
