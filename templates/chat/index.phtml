@@ -138,6 +138,7 @@ socket.on('media-upload-complete', function (mediaId) {
 });
 
 var notification = new Audio('/notification.mp3');
+var notificationsMuted = false;
 var myStorage = localStorage;
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
@@ -282,7 +283,9 @@ function renderMessage(event, message) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
-        notification.play();
+        if (!notificationsMuted) {
+            notification.play();
+        }
         return;
     }
 
@@ -904,6 +907,14 @@ function dataUriToBlob(dataURI) {
   // return bb.getBlob(mimeString);
 }
 
+/**
+ * Activate hot keys in text area
+ */
+key.filter = function(event){
+    return true;
+    //var tagName = (event.target || event.srcElement).tagName;
+    //return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+}
 
 /**
  * Text-to-speech
@@ -947,6 +958,13 @@ if ('speechSynthesis' in window) {
 
     EventBus.addEventListener('chat:message-appended', speakMessage);
 }
+
+key('alt+m', function(){
+    notificationsMuted = !notificationsMuted;
+    notice = 'Notification sounds ' + (notificationsMuted ? 'muted' : 'unmuted');
+    showToast(notice);
+    return false
+});
 
 function showToast(text) {
   document.getElementById('chat-snackbar')
