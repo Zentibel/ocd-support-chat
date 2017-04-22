@@ -67,12 +67,12 @@ div#chat-log img {
     max-width: 95%;
     max-height: 200px;
 }
-span.sender {
+span.sender a {
     margin-left: 10px;
     font-weight: bold;
     position: relative;
     top: 2px;
-    cursor: pointer;
+    text-decoration: none;
 }
 
 span.sender.source-gliph:after {
