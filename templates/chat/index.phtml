@@ -143,9 +143,9 @@ var myStorage = localStorage;
 
 EventBus.addEventListener('chat:message-loaded', renderMessage);
 
-$('div#chat-log').on('click', 'span.sender.source-native', function() {
-    window.location = '/p/' + $(this).text().replace(/:/,'');
-});
+//$('div#chat-log').on('click', 'span.sender.source-native', function() {
+//    window.location = '/p/' + $(this).text().replace(/:/,'');
+//});
 
 moment.updateLocale('en', {
     relativeTime : {
@@ -207,7 +207,7 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'">' + message.senderName + ':</span> '
+        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_blank">' + message.senderName + ':</a></span> '
     );
 
     $message.append($messageRendered);
