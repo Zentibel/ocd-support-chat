@@ -16,7 +16,11 @@ final class RouteParam extends AbstractHelper
 
     public function __invoke($param)
     {
-        $params = $this->resultHelper->getRouteResult()->getMatchedParams();
+        $routeResult = $this->resultHelper->getRouteResult();
+        if (!$routeResult) {
+            return false;
+        }
+        $params = $routeResult->getMatchedParams();
 
         if (!isset($params[$param])) {
             return false;

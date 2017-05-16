@@ -2,6 +2,24 @@
 
 -----------------------------------------------
 
+## Local Installation
+
+* Install PHP 7+, Redis, and Node.js
+* Make sure Redis is running
+* Open a terminal in the project directory
+* `composer install`
+* `cd bin`
+* `npm install socket.io`
+* `npm install redis`
+
+Now you should be able to run it:
+
+* Open two terminals in the project directory
+* In terminal A: `php -S 0.0.0.0:8080 -t public public/index.php`
+* In terminal B: `node ./bin/websocket.js`
+
+-----------------------------------------------
+
 ## Users
 
 ### Hash `user:{userId}`

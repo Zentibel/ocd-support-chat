@@ -67,7 +67,7 @@
 <script src="/media-uploader.js?1"></script>
 <script src="/chat.js?1"></script>
 
-<? if ($_SERVER['HTTP_HOST'] === 'ocdchat.dev'): ?>
+<? if ($_SERVER['HTTP_HOST'] !== 'chat.ocd.community'): ?>
     <script src="/socket.io.min.js"></script>
     <script>
         var socket = io('localhost:9999');
