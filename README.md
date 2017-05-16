@@ -17,6 +17,7 @@ Now you should be able to run it:
 * Open two terminals in the project directory
 * In terminal A: `php -S 0.0.0.0:8080 -t public public/index.php`
 * In terminal B: `node ./bin/websocket.js`
+* Open your browser to http://localhost:8080/
 
 -----------------------------------------------
 
