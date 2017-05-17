@@ -126,7 +126,7 @@ socket.on('disconnect', function(){
 });
 
 socket.on('new-message', function (data) {
-    thisChat.loadMessages(3); // todo implement 'since'
+    thisChat.loadMessages(5); // todo implement 'since'
 });
 
 socket.on('media-upload-progress', function (data) {
@@ -610,14 +610,24 @@ $(document).on('wake', function() {
  */
 
 
+var currentScrollPosition = function() {
+    return $('#content')[0].scrollHeight - $('#content').scrollTop() - $('#content').outerHeight();
+}
+
 var stayAtBottom = function() {
+    if (currentScrollPosition() > 300) {
+        return;
+    }
     if (($('#content')[0].scrollHeight - $('#content').scrollTop()) < 1000) {
         scrollToBottom();
     }
 }
 EventBus.addEventListener('chat:message-media-loaded', stayAtBottom);
 
-var scrollToBottom = function() {
+var scrollToBottom = function(force) {
+    if (force !== true && currentScrollPosition() > 300) {
+        return;
+    }
     updateScroll('content');
 }
 
@@ -672,7 +682,7 @@ var firstMessagesLoaded = function() {
     setTimeout(function() {
         $('.preload').fadeOut();
         $('#chat-log').show();
-        scrollToBottom();
+        scrollToBottom(true);
     }, 350);
     componentHandler.upgradeDom();
     EventBus.removeEventListener('chat:messages-loaded', firstMessagesLoaded);
