@@ -93,9 +93,7 @@
         var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
     <? endif; ?>
 
-<? endif; ?>
-
-<? if ($this->routeParam('username')): ?>
+<? elseif ($this->routeParam('username')): ?>
 
     var ROOM_ID = '<?= $this->privateChat($this->routeParam('username')) ?>';
 
