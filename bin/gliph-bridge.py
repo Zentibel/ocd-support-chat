@@ -98,6 +98,8 @@ class GliphMessagePoller:
                 else:
                     imagesToSend.append({'thumb': thumb, 'full': thumb});
 
+        if sender == 'pb.j':
+            return
         messageText = "{0} says:\n\n{1}".format(sender, message['message'])
         self.gliphSession.send_message_multi(self.gliphConnectionId, text=messageText, image=imagesToSend)
 
