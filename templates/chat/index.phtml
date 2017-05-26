@@ -183,7 +183,7 @@ Modernizr.addTest('emoji', function() {
 });
 
 function renderMessage(event, message) {
-    if (!message || message.senderName == 'ocdbot') {
+    if (!message || message.senderName == 'ocdbot' || message.senderName == 'pb.j') {
         return;
     }
 

@@ -6,6 +6,7 @@ namespace Auth\Listener;
 use Predis\Client;
 use Auth\Event\UserRegistered;
 use Auth\Event\PasswordChanged;
+use Auth\Event\DisplayNameChanged;
 use Chat\Command\ChangeAvatar as AvatarChanged;
 
 class UserProjector
@@ -50,6 +51,15 @@ class UserProjector
         );
 
         return true;
+    }
+
+    public function onDisplayNameChanged(DisplayNameChanged $e)
+    {
+        $this->redis->hSet(
+            'user:' . $e->userId,
+            'displayName',
+            $e->newDisplayName
+        );
     }
 
     public function onPasswordChanged(PasswordChanged $e)

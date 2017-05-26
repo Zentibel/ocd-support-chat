@@ -60,5 +60,9 @@ return [
         Chat\Command\ChangeAvatar::class => [
             Auth\Listener\UserProjector::class,
         ],
+
+        Chat\Command\ChangeDisplayName::class => [
+            Auth\Listener\UserProjector::class,
+        ],
     ],
 ];
