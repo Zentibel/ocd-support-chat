@@ -4,17 +4,17 @@
  */
 return [
     'routes' => [
-        //[
-        //    'name'            => 'auth-register-form',
-        //    'path'            => '/register',
-        //    'middleware'      => Common\Middleware\StaticView::class,
-        //    'allowed_methods' => ['GET'],
-        //    'options' => [
-        //        'defaults' => [
-        //            'view' => 'auth::register',
-        //        ],
-        //    ],
-        //],
+        [
+            'name'            => 'auth-register-form',
+            'path'            => '/register',
+            'middleware'      => Common\Middleware\StaticView::class,
+            'allowed_methods' => ['GET'],
+            'options' => [
+                'defaults' => [
+                    'view' => 'auth::register',
+                ],
+            ],
+        ],
         //[
         //    'name' => 'auth-register',
         //    'path' => '/register',
