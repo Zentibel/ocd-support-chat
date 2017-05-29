@@ -40,7 +40,7 @@ class MessageProjector
             'id'        => $e->messageId,
             'sender'    => $e->userId,
             'roomId'    => $e->roomId,
-            'message'   => $e->message,
+            'message'   => str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)_/¯', $e->message),
             'timestamp' => $now,
         ];
 
