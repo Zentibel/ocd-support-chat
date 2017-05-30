@@ -199,6 +199,11 @@ function renderMessage(event, message) {
     if (!message || message.senderName == 'ocdbot' || message.senderName == 'pb.j' || message.senderName == 'iamjj' || message.senderName == 'layla' ) {
         return;
     }
+    if (message.senderName == 'Temp') {
+        displayName = 'Ivan';
+    } else {
+        displayName = message.senderName;
+    }
 
     if (initialMessagesLoaded === true && message.message.match(/throws?/i) && message.message.match(/frogs?/i)) {
         $('#sheps-frog').removeClass('hidden');
@@ -224,7 +229,7 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_blank">' + message.senderName + ':</a></span> '
+        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_blank">' + displayName + ':</a></span> '
     );
 
     $message.append($messageRendered);
