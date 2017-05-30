@@ -1,6 +1,18 @@
 <div class="preload">
     <span><img class="narwhal animated infinite tada" src="/narwhal.svg"></span>
 </div>
+<style>
+#sheps-frog {
+    position: absolute;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    background-image: url(/frog.png);
+    width: 250px;
+    height: 228px;
+}
+
+</style>
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Coming Soon</span>
     <nav class="mdl-navigation">
@@ -45,6 +57,7 @@
     </div>
 
   </footer>
+<div id="sheps-frog" class="animated infinite bounce rollOut hidden"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.2.2/markdown-it.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
@@ -187,6 +200,12 @@ function renderMessage(event, message) {
         return;
     }
 
+    if (initialMessagesLoaded === true && message.message.toLowerCase() == 'shep throws frogs') {
+        $('#sheps-frog').removeClass('hidden');
+        setTimeout(function() {
+            $('#sheps-frog').addClass('hidden');
+        }, 900);
+    }
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
@@ -674,6 +693,7 @@ var chatLogScrolled = function() {
     }, 500);
 }
 
+var initialMessagesLoaded = false;
 var firstMessagesLoaded = function() {
     console.log('Initial messages loaded!');
     $('main#content > .mdl-progress').addClass('off');
@@ -681,6 +701,7 @@ var firstMessagesLoaded = function() {
         $('.preload').fadeOut();
         $('#chat-log').show();
         scrollToBottom(true);
+        initialMessagesLoaded = true;
     }, 350);
     componentHandler.upgradeDom();
     EventBus.removeEventListener('chat:messages-loaded', firstMessagesLoaded);
