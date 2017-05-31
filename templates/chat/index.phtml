@@ -2,6 +2,15 @@
     <span><img class="narwhal animated infinite tada" src="/narwhal.svg"></span>
 </div>
 <style>
+#rhubarb {
+    position: absolute;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    background-image: url(/rhubarb.png);
+    width: 250px;
+    height: 228px;
+}
 #sheps-frog {
     position: absolute;
     z-index: 9999;
@@ -58,6 +67,7 @@
 
   </footer>
 <div id="sheps-frog" class="animated infinite bounce rollOut hidden"></div>
+<div id="rhubarb" class="animated infinite bounce rollOut hidden"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.2.2/markdown-it.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
@@ -214,6 +224,12 @@ function renderMessage(event, message) {
         return;
     }
 
+    if (initialMessagesLoaded === true && message.message.match(/rhubarb?/i)) {
+        $('#rhubarb').removeClass('hidden');
+        setTimeout(function() {
+            $('#rhubarb').addClass('hidden');
+        }, 900);
+    }
     if (initialMessagesLoaded === true && (message.message.match(/throws?/i) || message.message.match(/threw/i)) && message.message.match(/frogs?/i)) {
         $('#sheps-frog').removeClass('hidden');
         setTimeout(function() {
