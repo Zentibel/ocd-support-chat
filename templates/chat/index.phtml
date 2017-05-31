@@ -212,7 +212,7 @@ function renderMessage(event, message) {
         return;
     }
 
-    if (initialMessagesLoaded === true && message.message.match(/throws?/i) && message.message.match(/frogs?/i)) {
+    if (initialMessagesLoaded === true && (message.message.match(/throws?/i) || message.message.match(/threw/i)) && message.message.match(/frogs?/i)) {
         $('#sheps-frog').removeClass('hidden');
         setTimeout(function() {
             $('#sheps-frog').addClass('hidden');
