@@ -639,17 +639,17 @@ var handleFileSelect = function(evt) {
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-//$(document).on('wake', function() {
-//    console.log('Waking up...');
-//    EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
-//    scrollLock = true;
-//    $('#chat-log').hide().html('');
-//    $('main#content .mdl-progress').removeClass('off');
-//    componentHandler.upgradeDom();
-//    thisChat.reset();
-//    // just reset the message log?
-//    thisChat.loadMessages(20);
-//});
+$(document).on('wake', function() {
+    console.log('Waking up...');
+    EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
+    scrollLock = true;
+    $('#chat-log').hide().html('');
+    $('main#content .mdl-progress').removeClass('off');
+    componentHandler.upgradeDom();
+    thisChat.reset();
+    // just reset the message log?
+    thisChat.loadMessages(20);
+});
 
 
 /**
