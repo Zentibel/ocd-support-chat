@@ -254,7 +254,7 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_blank">' + displayName + ':</a></span> '
+        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + ':</a></span> '
     );
 
     $message.append($messageRendered);
