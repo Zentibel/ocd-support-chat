@@ -248,7 +248,7 @@ function renderMessage(event, message) {
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
     $message.append(
-        '<span class="rounded"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '"><img class="avatar" src="' + message.senderAvatar + '"></a></span>' +
+        '<span class="rounded"<img class="avatar" src="' + message.senderAvatar + '"></span>' +
         '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
