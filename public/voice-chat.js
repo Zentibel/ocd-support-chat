@@ -3,7 +3,7 @@ $(document).ready(function() {
     $('#voice-chat-button').click(function(event) {
         event.preventDefault();
         if (!inVoiceChat) {
-            $('body').append('<iframe id="voice-chat-frame" src="https://simplewebrtc.com/audio.html?ochatd" style="width: 1px; height: 1px;"></iframe>');
+            $('body').append('<iframe id="voice-chat-frame" src="https://instachit.com/ochatd" style="width: 1px; height: 1px;"></iframe>');
             //$('#voice-chat-frame').hide();
             $('#voice-chat-button').text('Leave Voice Chat');
             inVoiceChat = true;
