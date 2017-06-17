@@ -236,22 +236,38 @@ function renderMessage(event, message) {
     var mTimestamp      = moment.unix(message.timestamp);
     var timeDisplay     = mTimestamp.fromNow();
     var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
-    if (Modernizr.emoji) {
-        var $messageRendered = $('<div class="message">'+ md.render(message.message) + '</div>');
+
+    var isVerbing = (message.message.substring(0, 4).toLowerCase() == '/me ');
+
+    if (isVerbing) {
+        message.message = message.message.substring(3, message.message.length);
+        mdRenderedMessage = md.render(message.message);
+        mdRenderedMessage = md.render(message.message).substring(3, mdRenderedMessage.length-5);
+        mdRenderedMessage = '<span style="position:relative;top:2px; font-style: italic;">' + mdRenderedMessage + '</span><div class="message">&nbsp;</div>';
+        if (Modernizr.emoji) {
+            var $messageRendered = $(mdRenderedMessage);
+        } else {
+            var $messageRendered = $(emojione.toImage(mdRenderedMessage));
+        }
     } else {
-        var $messageRendered = $('<div class="message">'+ emojione.toImage(md.render(message.message)) + '</div>');
+        if (Modernizr.emoji) {
+            var $messageRendered = $('<div class="message">'+ md.render(message.message) + '</div>');
+        } else {
+            var $messageRendered = $('<div class="message">'+ emojione.toImage(md.render(message.message)) + '</div>');
+        }
     }
 
     var $message = $('<div class="chat-message" id="'+message.id+'"></div>');
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
+
     $message.append(
         '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
         '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + ':</a></span> '
+        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : ':') + '</a></span> '
     );
 
     $message.append($messageRendered);
