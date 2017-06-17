@@ -20,6 +20,10 @@
     width: 250px;
     height: 228px;
 }
+span.verbing a {
+    font-weight: normal !important;
+    font-style: italic;
+}
 </style>
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Extra Goodies</span>
@@ -267,7 +271,7 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source +'"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : ':') + '</a></span> '
+        '<span class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : ':') + '</a></span> '
     );
 
     $message.append($messageRendered);
