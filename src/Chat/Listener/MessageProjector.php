@@ -35,12 +35,26 @@ class MessageProjector
         $rKey = 'chat:messages:' . $e->roomId;
         $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
+        if (strtolower(substr($e->message, 0, 5)) == '/roll') {
+            if (preg_match('/\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
+                $dieCount = (int) $matches['diecount'];
+            } else {
+                $dieCount = 6;
+            }
+
+            $rollResult = rand(1, $dieCount);
+
+            $message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
+        } else {
+            $message = $e->message;
+        }
+
         $rKey = 'message:' . $e->messageId;
         $data = [
             'id'        => $e->messageId,
             'sender'    => $e->userId,
             'roomId'    => $e->roomId,
-            'message'   => str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $e->message),
+            'message'   => str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message),
             'timestamp' => $now,
         ];
 
