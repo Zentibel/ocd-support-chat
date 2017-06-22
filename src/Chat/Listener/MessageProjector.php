@@ -44,7 +44,10 @@ class MessageProjector
 
             $rollResult = rand(1, $dieCount);
 
-            $message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
+            //$message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
+            $dog = ['Chloe-dog', 'Zap', 'Leela'];
+            $eatenBy = $dog[array_rand($dog)];
+            $message = "{$e->message}\n\n🎲 *The die rolled off the table and was eaten by {$eatenBy}.*";
         } else {
             $message = $e->message;
         }
