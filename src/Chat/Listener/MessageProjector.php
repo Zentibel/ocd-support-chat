@@ -44,10 +44,19 @@ class MessageProjector
 
             $rollResult = rand(1, $dieCount);
 
-            //$message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
-            $dog = ['Chloe-dog', 'Zap', 'Leela'];
-            $eatenBy = $dog[array_rand($dog)];
-            $message = "{$e->message}\n\n🎲 *The die rolled off the table and was eaten by {$eatenBy}.*";
+            $currentTime = time();
+            $lastRoll = $this->redis->hGet('dice', $e->userId);
+            $secondsSinceLastRoll = $currentTime - $lastRoll;
+            if ($secondsSinceLastRoll < 120) {
+                //$dog = ['Chloe-dog', 'Zap', 'Leela'];
+                //$eatenBy = $dog[array_rand($dog)];
+                //$message = "{$e->message}\n\n🎲 *The die rolled off the table and was eaten by {$eatenBy}.*";
+                $remainingWait = 120 - $secondsSinceLastRoll;
+                $message = "{$e->message}\n\n🎲 *You're out of dice! You'll be given another dice in {$remainingWait} seconds.*";
+            } else {
+                $this->redis->hSet('dice', $e->userId, time());
+                $message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
+            }
         } else {
             $message = $e->message;
         }
