@@ -35,7 +35,10 @@ class MessageProjector
         $rKey = 'chat:messages:' . $e->roomId;
         $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
-        if (strtolower(substr($e->message, 0, 5)) == '/roll') {
+        if (strtolower(substr($e->message, 0, 6)) == '/count') {
+            $msgCount = $this->redis->hGet('messageCounts', $e->userId);
+            $message = "{$e->message}\n\n🔢 *You've sent {$msgCount} messages since counting began on Jun 22, 2017.*";
+        } else if (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
             } else {
@@ -60,6 +63,7 @@ class MessageProjector
         } else {
             $message = $e->message;
         }
+        $this->redis->hIncrBy('messageCounts', $e->userId, 1);
 
         $rKey = 'message:' . $e->messageId;
         $data = [
