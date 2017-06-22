@@ -36,8 +36,18 @@ class MessageProjector
         $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
         if (strtolower(substr($e->message, 0, 6)) == '/count') {
-            $msgCount = $this->redis->hGet('messageCounts', $e->userId);
-            $message = "{$e->message}\n\n🔢 *You've sent {$msgCount} messages since counting began on Jun 22, 2017.*";
+            if (preg_match('/\/count (?P<username>[^\s]+)/', $e->message, $matches)) {
+                $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            } else {
+                $userId = $e->userId;
+            }
+            if ($userId) {
+                $username = $this->redis->hGet('user:' . $userId, 'username');
+                $msgCount = $this->redis->hGet('messageCounts', $userId);
+                $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on Jun 22, 2017.*";
+            } else {
+                $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
+            }
         } else if (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
