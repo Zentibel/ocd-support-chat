@@ -52,7 +52,7 @@ class MessageProjector
                 //$eatenBy = $dog[array_rand($dog)];
                 //$message = "{$e->message}\n\n🎲 *The die rolled off the table and was eaten by {$eatenBy}.*";
                 $remainingWait = 120 - $secondsSinceLastRoll;
-                $message = "{$e->message}\n\n🎲 *You're out of dice! You'll be given another dice in {$remainingWait} seconds.*";
+                $message = "{$e->message}\n\n🎲 *You're out of dice! You'll be given another die in {$remainingWait} seconds.*";
             } else {
                 $this->redis->hSet('dice', $e->userId, time());
                 $message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
