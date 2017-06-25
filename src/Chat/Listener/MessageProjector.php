@@ -61,9 +61,6 @@ class MessageProjector
             $lastRoll = $this->redis->hGet('dice', $e->userId);
             $secondsSinceLastRoll = $currentTime - $lastRoll;
             if ($secondsSinceLastRoll < 120) {
-                //$dog = ['Chloe-dog', 'Zap', 'Leela'];
-                //$eatenBy = $dog[array_rand($dog)];
-                //$message = "{$e->message}\n\n🎲 *The die rolled off the table and was eaten by {$eatenBy}.*";
                 $remainingWait = 120 - $secondsSinceLastRoll;
                 $message = "{$e->message}\n\n🎲 *You're out of dice! You'll be given another die in {$remainingWait} seconds.*";
             } else {
@@ -73,7 +70,9 @@ class MessageProjector
         } else {
             $message = $e->message;
         }
-        $this->redis->hIncrBy('messageCounts', $e->userId, 1);
+        if (strpos($e->roomId, '-') !== false) {
+            $this->redis->hIncrBy('messageCounts', $e->userId, 1);
+        }
 
         $rKey = 'message:' . $e->messageId;
         $data = [
