@@ -70,7 +70,7 @@ class MessageProjector
         } else {
             $message = $e->message;
         }
-        if (strpos($e->roomId, ':') !== false) {
+        if (strpos($e->roomId, ':') === false) {
             $this->redis->hIncrBy('messageCounts', $e->userId, 1);
         }
 
