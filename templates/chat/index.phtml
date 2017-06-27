@@ -113,7 +113,9 @@ span.verbing a {
     <? if ($this->routeParam('community') == 'ocdmods'): ?>
         var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
     <? endif; ?>
-
+    <? if ($this->routeParam('community') == 'general'): ?>
+        var ROOM_ID = '85d5bd7f-9374-4553-98de-84f234e3dba1';
+    <? endif; ?>
     <? if ($this->routeParam('community') == 'test'): ?>
         var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
     <? endif; ?>
