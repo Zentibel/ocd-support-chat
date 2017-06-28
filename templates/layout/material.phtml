@@ -10,7 +10,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=M4ozyrdgLp">
     <link rel="icon" type="image/png" href="/favicon-32x32.png?v=M4ozyrdgLp" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-16x16.png?v=M4ozyrdgLp" sizes="16x16">
-    <link rel="manifest" href="/manifest.json?v=M4ozyrdgLp">
+    <? if ($this->routeParam('community') == 'general'): ?>
+        <link rel="manifest" href="/manifest-general.json?v=M4ozyrdgLp">
+    <? else if ($this->routeParam('community') == 'ocd'): ?>
+        <link rel="manifest" href="/manifest-ocd.json?v=M4ozyrdgLp">
+    <? else: ?>
+        <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq">
+    <? endif; ?>
     <link rel="mask-icon" href="/safari-pinned-tab.svg?v=M4ozyrdgLp" color="#5bbad5">
     <link rel="shortcut icon" href="/favicon.ico?v=M4ozyrdgLp">
 
