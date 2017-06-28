@@ -6,6 +6,7 @@ namespace Chat\Listener;
 use Predis\Client;
 use Chat\Command\SendMessage as MessageSent;
 use Auth\Finder\UserFinder;
+use Ramsey\Uuid\Uuid;
 
 class MessageProjector
 {
@@ -30,10 +31,6 @@ class MessageProjector
 
     public function onMessageSent(MessageSent $e)
     {
-        $now = microtime(true);
-
-        $rKey = 'chat:messages:' . $e->roomId;
-        $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
         if (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
@@ -111,14 +108,21 @@ class MessageProjector
             $this->redis->hIncrBy('messageCounts', $e->userId, 1);
         }
 
-        $rKey = 'message:' . $e->messageId;
+        $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
+
+        $now = microtime(true);
+
+        $msgKey = 'message:' . $e->messageId;
         $data = [
             'id'        => $e->messageId,
             'sender'    => $e->userId,
             'roomId'    => $e->roomId,
-            'message'   => str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message),
+            'message'   => $message,
             'timestamp' => $now,
         ];
+
+
+        $chatKey = 'chat:messages:' . $e->roomId;
 
         if (is_array($e->media)) {
             $mediaFiles = array_map(function($media) {
@@ -128,10 +132,24 @@ class MessageProjector
             $data['media'] = implode('#', $mediaFiles);
         }
 
-        $this->redis->hMSet($rKey, $data);
+        if ($e->roomId === 'dd0c62bd-c4f2-4286-affa-256bfcc93955') {
+            $lastMsgKey = $this->redis->zRevRangeByScore($chatKey, '+inf', '-inf', ['limit' => [0, 1]])[0];
+            $lastMsgTimestamp = $this->redis->hGet($lastMsgKey, 'timestamp');
+            $timeSinceLastMsg = $now - $lastMsgTimestamp;
+            if ($timeSinceLastMsg > 300) {
+                $copy = $data;
+                $copy['id'] = Uuid::uuid4()->toString();
+                $copy['message'] = "{$copy['message']}\n\n💬 *This is an automated cross-post of a new message in the [support chat.](/c/ocd) Don't respond to it here.*";
+                $copyKey = "message:{$copy['id']}";
+                $this->redis->hMSet($copyKey, $copy);
+                $this->redis->zAdd('chat:messages:85d5bd7f-9374-4553-98de-84f234e3dba1', $now, $copyKey);
+                $this->redis->publish('new-message', '85d5bd7f-9374-4553-98de-84f234e3dba1');
+            }
+        }
 
+        $this->redis->hMSet($msgKey, $data);
+        $this->redis->zAdd($chatKey, $now, $msgKey);
         $this->redis->publish('new-message', $e->roomId);
-
         //$username = $this->userFinder->findUsernameByUserId($e->userId);
         //$gliphMsg = "{$username} says:\n\n{$e->message}";
 
