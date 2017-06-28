@@ -36,7 +36,7 @@ class MessageProjector
         $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
         if (preg_match('/\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
-            $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } elseif ($userId == $e->userId) {
@@ -48,7 +48,7 @@ class MessageProjector
                 $message = "{$e->message}\n\n📈 *{$username} now has {$kCount} karma.*";
             }
         } elseif (preg_match('/\/(?P<username>[^\s]+)\-\-/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
-            $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } elseif ($userId == $e->userId) {
@@ -61,7 +61,7 @@ class MessageProjector
             }
         } elseif (strtolower(substr($e->message, 0, 6)) == '/karma') {
             if (preg_match('/\/karma (?P<username>[^\s]+)/', $e->message, $matches)) {
-                $userId = $this->redis->hGet('index:usernames', $matches['username']);
+                $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             } else {
                 $userId = $e->userId;
             }
@@ -74,7 +74,7 @@ class MessageProjector
             }
         } elseif (strtolower(substr($e->message, 0, 6)) == '/count') {
             if (preg_match('/\/count (?P<username>[^\s]+)/', $e->message, $matches)) {
-                $userId = $this->redis->hGet('index:usernames', $matches['username']);
+                $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             } else {
                 $userId = $e->userId;
             }
