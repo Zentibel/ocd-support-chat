@@ -35,7 +35,44 @@ class MessageProjector
         $rKey = 'chat:messages:' . $e->roomId;
         $this->redis->zAdd($rKey, $now, 'message:'.$e->messageId);
 
-        if (strtolower(substr($e->message, 0, 6)) == '/count') {
+        if (preg_match('/\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+            $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } elseif ($userId == $e->userId) {
+                $message = "{$e->message}\n\n⛔️ *You can't give yourself karma!!!*";
+            } else {
+                $this->redis->hIncrBy('karmaCounts', $userId, 1);
+                $username = $this->redis->hGet('user:' . $userId, 'username');
+                $kCount = $this->redis->hGet('karmaCounts', $userId);
+                $message = "{$e->message}\n\n📈 *{$username} now has {$kCount} karma.*";
+            }
+        } elseif (preg_match('/\/(?P<username>[^\s]+)\-\-/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+            $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } elseif ($userId == $e->userId) {
+                $message = "{$e->message}\n\n⛔️ *You can't take away your own karma!!!*";
+            } else {
+                $this->redis->hIncrBy('karmaCounts', $userId, -1);
+                $username = $this->redis->hGet('user:' . $userId, 'username');
+                $kCount = $this->redis->hGet('karmaCounts', $userId);
+                $message = "{$e->message}\n\n📉 *{$username} now has {$kCount} karma.*";
+            }
+        } elseif (strtolower(substr($e->message, 0, 6)) == '/karma') {
+            if (preg_match('/\/karma (?P<username>[^\s]+)/', $e->message, $matches)) {
+                $userId = $this->redis->hGet('index:usernames', $matches['username']);
+            } else {
+                $userId = $e->userId;
+            }
+            if ($userId) {
+                $username = $this->redis->hGet('user:' . $userId, 'username');
+                $kCount = $this->redis->hGet('karmaCounts', $userId) ?: '0';
+                $message = "{$e->message}\n\n🔢 *{$username} has {$kCount} karma.*";
+            } else {
+                $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
+            }
+        } elseif (strtolower(substr($e->message, 0, 6)) == '/count') {
             if (preg_match('/\/count (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', $matches['username']);
             } else {
