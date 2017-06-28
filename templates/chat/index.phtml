@@ -1,3 +1,16 @@
+<?php
+if ($this->routeParam('username')) {
+    $this->headTitle($this->routeParam('username'));
+}
+
+if ($this->routeParam('community') == 'general') {
+    $this->headTitle('General');
+}
+
+if ($this->routeParam('community') == 'ocd') {
+    $this->headTitle('Support');
+}
+?>
 <div class="preload">
     <span><img class="narwhal animated infinite tada" src="/narwhal.svg"></span>
 </div>
