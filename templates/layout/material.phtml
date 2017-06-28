@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" href="/favicon-16x16.png?v=M4ozyrdgLp" sizes="16x16">
     <? if ($this->routeParam('community') == 'general'): ?>
         <link rel="manifest" href="/manifest-general.json?v=M4ozyrdgLp">
-    <? else if ($this->routeParam('community') == 'ocd'): ?>
+    <? elseif ($this->routeParam('community') == 'ocd'): ?>
         <link rel="manifest" href="/manifest-ocd.json?v=M4ozyrdgLp">
     <? else: ?>
         <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq">
