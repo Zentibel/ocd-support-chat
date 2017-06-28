@@ -44,10 +44,16 @@
     </div>
 
       <span class="mdl-layout__title">
+        &nbsp;
+
         <? if ($this->routeParam('username')): ?>
-
             <?= $this->routeParam('username') ?>
-
+        <? endif; ?>
+        <? if ($this->routeParam('community') == 'general'): ?>
+            General Chat
+        <? endif; ?>
+        <? if ($this->routeParam('community') == 'ocd'): ?>
+            OCD Support
         <? endif; ?>
       </span>
       <div class="mdl-layout-spacer"></div>
