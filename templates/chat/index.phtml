@@ -37,6 +37,10 @@ span.verbing a {
     font-weight: normal !important;
     font-style: italic;
 }
+
+span.new-user a {
+    color: green;
+}
 </style>
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Extra Goodies</span>
@@ -287,7 +291,7 @@ function renderMessage(event, message) {
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : ':') + '</a></span> '
+        '<span class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : ':') + '</a></span> '
     );
 
     $message.append($messageRendered);

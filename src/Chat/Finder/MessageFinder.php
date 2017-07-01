@@ -54,12 +54,15 @@ class MessageFinder
 
         $sender = $this->redis->hgetall('user:'.$message['sender']);
 
+        $messageCount = $this->redis->hget('messageCounts', $message['sender']);
+
         $senderName = $sender['username'];
 
         $response = [
             'source' => 'native',
             'id' => $message['id'],
             'key' => $messageKey,
+            'newUser' => ($messageCount < 100) ? true : false ,
             'senderName' => $senderName,
             'senderId' => $message['sender'],
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',
@@ -94,6 +97,7 @@ class MessageFinder
             'key' => $messageKey,
             'id' => $message['id'],
             'senderName' => $senderName,
+            'newUser' => false,
             'senderId' => $message['sender'],
             'senderAvatar' => '/gliph-media/' . ($sender['photo:thumbnail'] ?? 'nopic') . '.png',
             'message' => $message['text'],
