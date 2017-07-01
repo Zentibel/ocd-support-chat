@@ -78,7 +78,7 @@ class MessageProjector
             if ($userId) {
                 $username = $this->redis->hGet('user:' . $userId, 'username');
                 $msgCount = $this->redis->hGet('messageCounts', $userId);
-                $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on Jun 22, 2017.*";
+                $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on July 1st, 2017.*";
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
