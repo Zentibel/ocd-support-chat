@@ -56,6 +56,23 @@ class MessageProjector
                 $kCount = $this->redis->hGet('karmaCounts', $userId);
                 $message = "{$e->message}\n\n📉 *{$username} now has {$kCount} karma.*";
             }
+        } elseif (strtolower(substr($e->message, 0, 5)) == '/help') {
+            $help = <<<help
+##### OChatD Command Reference Guide
+
+| **Command** | **Description** |
+| ----------- | --------------- |
+| `/karma` | view your own karma |
+| `/karma {username}` | view someone else's karma |
+| `/{username}++` | give {username} 1 karma |
+| `/{username}--` | reduce {username}'s karma by 1 |
+| `/roll` | roll a 6-sided die |
+| `/roll N` | (N=number) roll an N-sided die |
+| `/count` | see how many messages you have sent |
+| `/count {username}` | see how many messages {username} has sent |
+| `/help` | This. |
+help;
+            $message = "{$e->message}\n\n---\n\n{$help}";
         } elseif (strtolower(substr($e->message, 0, 6)) == '/karma') {
             if (preg_match('/^\/karma (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
@@ -139,7 +156,7 @@ class MessageProjector
             if ($timeSinceLastMsg > 300) {
                 $copy = $data;
                 $copy['id'] = Uuid::uuid4()->toString();
-                $copy['message'] = "{$copy['message']}\n\n💬 *This is an automated cross-post of a new message in the [support chat.](/c/ocd) Don't respond to it here.*";
+                $copy['message'] = "{$copy['message']}\n\n💬 ***This is an automated cross-post of a new message in the [support chat.](/c/ocd) Don't respond to it here.***";
                 $copyKey = "message:{$copy['id']}";
                 $this->redis->hMSet($copyKey, $copy);
                 $this->redis->zAdd('chat:messages:85d5bd7f-9374-4553-98de-84f234e3dba1', $now, $copyKey);
