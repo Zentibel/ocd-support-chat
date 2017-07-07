@@ -89,6 +89,8 @@ span.new-user a {
 <div id="rhubarb" class="animated infinite bounce rollOut hidden"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.2.2/markdown-it.min.js"></script>
+<script src="/markdown-it-sup.min.js"></script>
+<script src="/markdown-it-sub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.10.0/load-image.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
@@ -201,7 +203,7 @@ var md = markdownit({
   linkify: true,
   typographer: true,
   breaks: true,
-});
+}).use(window.markdownitSub).use(window.markdownitSup);
 
 var defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
   return self.renderToken(tokens, idx, options);
