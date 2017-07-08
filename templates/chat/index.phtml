@@ -138,6 +138,9 @@ span.new-user a {
     <? if ($this->routeParam('community') == 'test'): ?>
         var ROOM_ID = 'f68c5b32-ab99-4955-acc8-3f9f887dcf22';
     <? endif; ?>
+    <? if ($this->routeParam('community') == 'truecrime'): ?>
+        var ROOM_ID = '5893d0a8-a45d-42e8-9589-5c4f04c8928e';
+    <? endif; ?>
 
 <? elseif ($this->routeParam('username')): ?>
 
