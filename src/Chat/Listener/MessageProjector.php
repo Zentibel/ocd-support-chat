@@ -197,8 +197,10 @@ help;
             $url = "https://chat.ocd.community/p/{$senderUsername}";
             $messageContent = "New PM from {$senderUsername}";
             $content = ['en' => $messageContent];
+            $headings = ['en' => 'OChatD'];
             $fields = [
                 'app_id' => '71c72165-618c-45c2-bb81-8268524f1806',
+                'headings' => $headings,
                 'contents' => $content,
                 'url' => $url,
             ];
