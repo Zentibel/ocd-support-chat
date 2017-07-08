@@ -145,6 +145,18 @@ span.new-user a {
 
 <? endif; ?>
 
+var OneSignal = window.OneSignal || [];
+OneSignal.push(["init", {
+  appId: "71c72165-618c-45c2-bb81-8268524f1806",
+  autoRegister: true,
+  allowLocalhostAsSecureOrigin: true,
+  notifyButton: {
+    enable: false /* Set to false to hide */
+  }
+}]);
+
+OneSignal.push(["sendTag", "userID", "<?= $this->ident()->id ?>"]);
+
 var thisChat = new Chat(ROOM_ID);
 
 var logoConnected = function() {

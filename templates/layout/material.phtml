@@ -11,11 +11,11 @@
     <link rel="icon" type="image/png" href="/favicon-32x32.png?v=M4ozyrdgLp" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-16x16.png?v=M4ozyrdgLp" sizes="16x16">
     <? if ($this->routeParam('community') == 'general'): ?>
-        <link rel="manifest" href="/manifest-general.json?v=M4ozyrdgLp">
+        <link rel="manifest" href="/manifest-general.json?v=M4ozyrdgLp2">
     <? elseif ($this->routeParam('community') == 'ocd'): ?>
-        <link rel="manifest" href="/manifest-ocd.json?v=M4ozyrdgLp">
+        <link rel="manifest" href="/manifest-ocd.json?v=M4ozyrdgLp2">
     <? else: ?>
-        <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq">
+        <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq2">
     <? endif; ?>
     <link rel="mask-icon" href="/safari-pinned-tab.svg?v=M4ozyrdgLp" color="#5bbad5">
     <link rel="shortcut icon" href="/favicon.ico?v=M4ozyrdgLp">
@@ -28,6 +28,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
     <script defer src="/mdl/material.min.js"></script>
     <script src="/eventbus.min.js"></script>
     <script src="/global.js?3"></script>

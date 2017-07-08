@@ -167,6 +167,13 @@ help;
         $this->redis->hMSet($msgKey, $data);
         $this->redis->zAdd($chatKey, $now, $msgKey);
         $this->redis->publish('new-message', $e->roomId);
+
+        if (strpos($e->roomId, ':') !== false) {
+            $recipientUserId = str_replace($e->userId, '', $e->roomId, $count);
+            $recipientUserId = $count == 2 ? $e->userId : str_replace(':', '', $recipientUserId);
+            $response = $this->sendPushNotification($e->userId, $recipientUserId);
+            var_dump($response);die();
+        }
         //$username = $this->userFinder->findUsernameByUserId($e->userId);
         //$gliphMsg = "{$username} says:\n\n{$e->message}";
 
@@ -183,4 +190,36 @@ help;
 
         return $e->messageId;
     }
+
+    public function sendPushNotification($userIdFrom, $userIdTo = false)
+    {
+            $senderUsername = $this->userFinder->findUsernameByUserId($userIdFrom);
+            $url = "https://chat.ocd.community/p/{$senderUsername}";
+            $messageContent = "New PM from {$senderUsername}";
+            $content = ['en' => $messageContent];
+            $fields = [
+                'app_id' => '71c72165-618c-45c2-bb81-8268524f1806',
+                'contents' => $content,
+                'url' => $url,
+            ];
+
+            if ($userIdTo) {
+                $fields['filters'] = [['field' => 'tag', 'key' => 'userID', 'relation' => '=', 'value' => $userIdTo]];
+            }
+
+            $fields = json_encode($fields);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+                                                       'Authorization: Basic YTJmODRjZTEtOGI3MC00NWMxLWI1ZDEtMDlmMDhmNjk1YmQz'));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+            return $response;
+        }
 }
