@@ -197,12 +197,14 @@ help;
             $url = "https://chat.ocd.community/p/{$senderUsername}";
             $messageContent = "New PM from {$senderUsername}";
             $content = ['en' => $messageContent];
-            $headings = ['en' => 'OChatD'];
+            $headings = ['en' => "OChatD — {$senderUsername}"];
             $fields = [
                 'app_id' => '71c72165-618c-45c2-bb81-8268524f1806',
                 'headings' => $headings,
                 'contents' => $content,
                 'url' => $url,
+                'android_group' => $userIdFrom,
+                'android_group_message' => "$[notif_count] new PMs from {$senderUsername}",
             ];
 
             if ($userIdTo) {
