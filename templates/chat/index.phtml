@@ -15,6 +15,24 @@ if ($this->routeParam('community') == 'ocd') {
     <span><img class="narwhal animated infinite tada" src="/narwhal.svg"></span>
 </div>
 <style>
+div.message.media a[href$=".gif"] {
+    position: relative;
+}
+div.message.media a[href$=".gif"]:after {
+   content: 'GIF';
+  display: block;
+  position: absolute;
+  bottom: 30px;
+  right: 0px;
+  width: 32px;
+  height: 15px;
+  margin-bottom: -50%;
+  margin-right: 5px;
+  border: 3px #ff4081 solid;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
 #rhubarb {
     position: absolute;
     z-index: 9999;
