@@ -128,6 +128,9 @@ help;
         $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
 
         $now = microtime(true);
+        if ($e->userId == '3a1edd40-7250-4da3-a33d-f41a0eda73b2') {
+            $message = '*This account is trying to send a message but has been banned.';
+        }
 
         $msgKey = 'message:' . $e->messageId;
         $data = [
