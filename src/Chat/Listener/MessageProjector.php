@@ -115,7 +115,7 @@ help;
             $currentTime = time();
             $lastRoll = $this->redis->hGet('dice', $e->userId);
             $secondsSinceLastRoll = $currentTime - $lastRoll;
-            if ($secondsSinceLastRoll < 120 && $e->userId == '6d03e32d-1537-4348-8448-cd2066c20c27') {
+            if ($secondsSinceLastRoll < 120 && $e->userId != '6d03e32d-1537-4348-8448-cd2066c20c27') {
                 $remainingWait = 120 - $secondsSinceLastRoll;
                 $message = "{$e->message}\n\n🎲 *You're out of dice! You'll be given another die in {$remainingWait} seconds.*";
             } else {
