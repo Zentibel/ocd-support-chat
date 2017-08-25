@@ -176,6 +176,8 @@ this.secure=null!=r.secure?r.secure:e.location&&"https:"===location.protocol,r.h
 
 <? endif; ?>
 
+console.log('User ID: <?= $this->ident()->id ?>');
+
 var OneSignal = window.OneSignal || [];
 OneSignal.push(["init", {
   appId: "71c72165-618c-45c2-bb81-8268524f1806",
@@ -611,8 +613,14 @@ var messageBox = $('#compose-message');
 var deviceType = new MobileDetect(window.navigator.userAgent);
 
 $(document).keypress(function (e) {
-    if(e.keyCode == 13 && !deviceType.mobile()) {
-        if(messageBox.is(":focus") && !e.shiftKey) {
+
+<? if ($this->ident()->id == '5d80cdd8-ab80-4bc3-80d2-114dcb44538d'): ?>
+    if (e.keyCode == 13) {
+<? else: ?>
+    if (e.keyCode == 13 && !deviceType.mobile()) {
+<? endif; ?>
+
+        if (messageBox.is(":focus") && !e.shiftKey) {
             e.preventDefault(); // prevent another \n from being entered
             chatForm.submit();
         }
