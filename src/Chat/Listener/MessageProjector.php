@@ -69,7 +69,6 @@ class MessageProjector
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
-| `/count {username}` | see how many messages {username} has sent |
 | `/help` | This. |
 help;
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -93,9 +92,13 @@ help;
                 $userId = $e->userId;
             }
             if ($userId) {
-                $username = $this->redis->hGet('user:' . $userId, 'username');
-                $msgCount = $this->redis->hGet('messageCounts', $userId);
-                $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on July 1st, 2017.*";
+                if ($userId === $e->userId) {
+                    $username = $this->redis->hGet('user:' . $userId, 'username');
+                    $msgCount = $this->redis->hGet('messageCounts', $userId);
+                    $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on July 1st, 2017.*";
+                } else {
+                    $message = "{$e->message}\n\n🔢 *You can only check your own message count.*";
+                }
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
