@@ -85,7 +85,7 @@ help;
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
-        } elseif (strtolower(substr($e->message, 0, 6)) == '/count') {
+        } else if (strtolower(substr($e->message, 0, 6)) == '/count') {
             if (preg_match('/^\/count (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             } else {
@@ -102,6 +102,9 @@ help;
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
+        } else if (strtolower(substr($e->message, 0, 8)) == '/jfckatz') {
+            $msgCount = $this->redis->hGet('jfcCounts', 'f555daac-5720-4af6-bc8d-c6562a45c9b4');
+            $message = "{$e->message}\n\n🔢 *ersatzkatz has said 'jfc' {$msgCount} times since September 13th, 2017 at 18:30 UTC.*";
         } else if (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
@@ -130,6 +133,9 @@ help;
         }
         if (strpos($e->roomId, ':') === false) {
             $this->redis->hIncrBy('messageCounts', $e->userId, 1);
+            if ($e->userId == 'f555daac-5720-4af6-bc8d-c6562a45c9b4' && preg_match('/jfc/i', $e->message, $matches)) {
+                $this->redis->hIncrBy('jfcCounts', $e->userId, 1);
+            }
         }
 
         $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
