@@ -283,3 +283,19 @@ form#compose .mdl-button.send {
     text-align: center;
     display: table;
 }
+
+/**
+ * Night Mode
+ */
+body.nightmode,
+body.nightmode .footer-light,
+body.nightmode textarea
+{
+    background-color: #000;
+    color: #FFF;
+}
+body.nightmode .mdl-button,
+body.nightmode span.sender a
+{
+    color: #FFF;
+}
