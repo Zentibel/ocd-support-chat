@@ -227,20 +227,20 @@ help;
         $leaders = <<<msg
 ##### OChatD Karma Leaderboard
 
-| **Karma** | **User** |
-| ----------- | --------------- |
+| **Rank** | **Karma** | **User** |
+| --- | ----------- | --------------- |
 msg;
         $i=0;
         foreach ($kCounts as $uid => $karma) {
             if (!$uid) continue;
-            if (++$i == 9) break;
+            if (++$i == 10) break;
             $username = $this->redis->hGet('user:' . $uid, 'username');
-            $leaders .= "\n| {$karma} | {$username} |";
+            $leaders .= "\n| {$i}. | {$karma} | {$username} |";
         }
         end($kCounts);
         $uid = key($kCounts);
         $username = $this->redis->hGet('user:' . $uid, 'username');
-        $leaders .= "\n| {$kCounts[$uid]} | {$username} |";
+        $leaders .= "\n| Last: | {$kCounts[$uid]} | {$username} |";
         return $leaders;
     }
 
