@@ -299,3 +299,6 @@ body.nightmode span.sender a
 {
     color: #FFF;
 }
+body.nightmode blockquote {
+    background-color: #222;
+}
