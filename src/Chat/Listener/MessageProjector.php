@@ -104,7 +104,7 @@ help;
             }
         } else if (strtolower(substr($e->message, 0, 8)) == '/jfckatz') {
             $msgCount = $this->redis->hGet('jfcCounts', 'f555daac-5720-4af6-bc8d-c6562a45c9b4') ?: '0';
-            $message = "{$e->message}\n\n🔢 *ersatzkatz has said 'jfc' {$msgCount} times since September 13th, 2017 at 18:30 UTC.*";
+            $message = "{$e->message}\n\n🔢 *ersatzkatz has said \"jfc\" {$msgCount} times since September 13th, 2017 at 18:30 UTC.*";
         } else if (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
