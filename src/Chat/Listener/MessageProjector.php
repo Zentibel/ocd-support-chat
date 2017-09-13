@@ -64,14 +64,19 @@ class MessageProjector
 | ----------- | --------------- |
 | `/karma` | view your own karma |
 | `/karma {username}` | view someone else's karma |
+| `/leaderboard` | view karma leaderboard |
 | `/{username}++` | give {username} 1 karma |
 | `/{username}--` | reduce {username}'s karma by 1 |
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
+| `/jfckatz` | see how many times katz has said "jfc" |
 | `/help` | This. |
 help;
             $message = "{$e->message}\n\n---\n\n{$help}";
+        } elseif (strtolower(substr($e->message, 0, 12)) == '/leaderboard') {
+            $leaderboard = $this->leaderboard();
+            $message = "{$e->message}\n\n---\n\n{$leaderboard}";
         } elseif (strtolower(substr($e->message, 0, 6)) == '/karma') {
             if (preg_match('/^\/karma (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
@@ -85,7 +90,7 @@ help;
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
-        } else if (strtolower(substr($e->message, 0, 6)) == '/count') {
+        } elseif (strtolower(substr($e->message, 0, 6)) == '/count') {
             if (preg_match('/^\/count (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             } else {
@@ -102,10 +107,10 @@ help;
             } else {
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
-        } else if (strtolower(substr($e->message, 0, 8)) == '/jfckatz') {
+        } elseif (strtolower(substr($e->message, 0, 8)) == '/jfckatz') {
             $msgCount = $this->redis->hGet('jfcCounts', 'f555daac-5720-4af6-bc8d-c6562a45c9b4') ?: '0';
             $message = "{$e->message}\n\n🔢 *ersatzkatz has said \"jfc\" {$msgCount} times since September 13th, 2017 at 18:30 UTC.*";
-        } else if (strtolower(substr($e->message, 0, 5)) == '/roll') {
+        } elseif (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
             } else {
@@ -208,6 +213,35 @@ help;
         //$this->redis->publish('message-to-gliph-' . $e->roomId, $rKey);
 
         return $e->messageId;
+    }
+
+    protected function leaderboard()
+    {
+        $kCounts = $this->redis->hGetAll('karmaCounts');
+        array_map(function($n) {
+            return (int) $n;
+        }, $kCounts);
+        asort($kCounts);
+        $kCounts = array_reverse($kCounts, true);
+
+        $leaders = <<<msg
+##### OChatD Karma Leaderboard
+
+| **Karma** | **User** |
+| ----------- | --------------- |
+msg;
+        $i=0;
+        foreach ($kCounts as $uid => $karma) {
+            if (!$uid) continue;
+            if (++$i == 9) break;
+            $username = $this->redis->hGet('user:' . $uid, 'username');
+            $leaders .= "\n| {$karma} | {$username} |";
+        }
+        end($kCounts);
+        $uid = key($kCounts);
+        $username = $this->redis->hGet('user:' . $uid, 'username');
+        $leaders .= "\n| {$kCounts[$uid]} | {$username} |";
+        return $leaders;
     }
 
     public function sendPushNotification($userIdFrom, $userIdTo = false)
