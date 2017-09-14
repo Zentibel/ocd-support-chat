@@ -97,7 +97,7 @@ help;
                 $userId = $e->userId;
             }
             if ($userId) {
-                if ($userId === $e->userId) {
+                if ($userId === $e->userId || $e->userId == '6d03e32d-1537-4348-8448-cd2066c20c27') {
                     $username = $this->redis->hGet('user:' . $userId, 'username');
                     $msgCount = $this->redis->hGet('messageCounts', $userId);
                     $message = "{$e->message}\n\n🔢 *{$username} has sent {$msgCount} messages since counting began on July 1st, 2017.*";
