@@ -377,11 +377,11 @@ function renderMessage(event, message) {
             if (message.media[i].fullsize) {
                 var $link = $('<a href="/uploads/default/'+ message.media[i].fullsize +'" target="_blank"></a>');
                 $link.append($img);
-                $message.append($div.append($link));
+                $message.append($div.prepend($link));
             } else {
                 var $link = $('<a href="/uploads/default/'+ message.media[i].thumbnail +'" target="_blank"></a>');
                 $link.append($img);
-                $message.append($div.append($link));
+                $message.append($div.prepend($link));
             }
         }
     }
@@ -447,7 +447,7 @@ function renderMessage(event, message) {
 
 function displayMediaProgress(mediaId, percent) {
     percentRounded = Math.round(percent);
-    $('img#'+mediaId).parent().find('span.loaded').text(percentRounded + '%');
+    $('img#'+mediaId).parent().parent().find('span.loaded').text(' ' + percentRounded + '%');
 };
 
 function displayMedia(mediaId) {
@@ -459,7 +459,7 @@ function displayMedia(mediaId) {
         }
     });
     $img.removeAttr('src').attr('src', $img.data('src'));
-    $img.parent().find('span.loaded').remove();
+    $img.parent().parent().find('span.loaded').remove();
 };
 
 function announceMediaProgress(e) {
