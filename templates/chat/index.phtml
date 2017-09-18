@@ -419,7 +419,7 @@ function renderMessage(event, message) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
-        if (!notificationsMuted) {
+        if (!notificationsMuted && initialMessagesLoaded === true) {
             notification.play();
         }
         return;
