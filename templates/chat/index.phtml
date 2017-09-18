@@ -275,6 +275,10 @@ Modernizr.addTest('emoji', function() {
 });
 
 function renderMessage(event, message) {
+    if ($('#' + message.id).length > 0) {
+        console.log('duplicate');
+        return;
+    }
     if (!message || message.senderName == 'ocdbot' || message.senderName == 'pb.j' || message.senderName == 'iamjj' || message.senderName == 'layla' ) {
         return;
     }
@@ -421,6 +425,8 @@ function renderMessage(event, message) {
         return;
     }
 
+    alert('If you see this, tell shep something is wrong.');
+    return;
     // Binary search to find correct position for the message.
     var count = 0;
     var $messages = $('.chat-message');

@@ -17,7 +17,7 @@ class MessageFinder
         $messageKeys = $this->redis->zrevrangebyscore('chat:messages:'.$roomId, $max, '-inf', 'LIMIT', 0, $limit);
 
         $messages = [];
-        foreach ($messageKeys as $messageKey) {
+        foreach (array_reverse($messageKeys) as $messageKey) {
             if (strpos($messageKey, 'gliph') !== false) {
                 $message = $this->processGliphMessage($messageKey);
             } else {
