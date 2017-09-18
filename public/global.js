@@ -129,3 +129,21 @@ $.fn.selectRange = function(start, end) {
         }
     });
 };
+
+function toggleNightMode() {
+    $('body').toggleClass('nightmode');
+    if ($('body').hasClass('nightmode')) {
+        console.log('night mode enabled');
+        Cookies.set('nightmode', 'on');
+    } else {
+        console.log('night mode disabled');
+        Cookies.remove('nightmode');
+    }
+}
+
+setTimeout(function() {
+    console.log('nightmode', Cookies.get('nightmode'));
+    if (Cookies.get('nightmode')) {
+        toggleNightMode();
+    }
+}, 500);
