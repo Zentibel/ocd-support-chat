@@ -729,6 +729,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 
 $(document).on('wake', function() {
     console.log('Waking up...');
+    initialMessagesLoaded = false;
     EventBus.addEventListener('chat:messages-loaded', firstMessagesLoaded);
     scrollLock = true;
     $('#chat-log').hide().html('');
@@ -847,7 +848,7 @@ $('link[rel~="icon"]').each(function(_, el){
 });
 
 function updatePageTitle() {
-    if (!focused) {
+    if (!focused && initialMessagesLoaded) {
         chatsMissed++;
         $('link[rel~="icon"]').each(function(_, el){
             $(el).data('favicon').badge(chatsMissed);
