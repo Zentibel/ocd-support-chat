@@ -302,3 +302,6 @@ body.nightmode span.sender a
 body.nightmode blockquote {
     background-color: #222;
 }
+body.nightmode div#pending-media {
+    background-color: #000;
+}
