@@ -227,6 +227,7 @@ socket.on('media-upload-complete', function (mediaId) {
     displayMedia(mediaId);
 });
 
+var laugh = new Audio('/laugh.mp3');
 var notification = new Audio('/notification.mp3');
 var notificationsMuted = false;
 var myStorage = localStorage;
@@ -296,7 +297,9 @@ function renderMessage(event, message) {
         location.reload();
         return;
     }
-
+    if (initialMessagesLoaded === true && message.message.match(/^\/laugh/i) && !notificationsMuted) {
+        laugh.play();
+    }
     if (initialMessagesLoaded === true && message.message.match(/rhubarb?/i)) {
         $('#rhubarb').removeClass('hidden');
         setTimeout(function() {
