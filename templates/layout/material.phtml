@@ -106,6 +106,9 @@
 
   <?= $this->content ?>
 </div>
-
+<?php if (isset($_GET['debug'])): ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/1.2.6/eruda.min.js"></script>
+    <script>eruda.init();</script>
+<?php endif; ?>
 </body>
 </html>
