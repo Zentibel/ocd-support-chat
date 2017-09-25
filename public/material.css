@@ -309,3 +309,14 @@ body.nightmode div#pending-media {
 body.nightmode span.new-user a {
     color: green !important;
 }
+body.nightmode .mdl-shadow--8dp {
+    box-shadow: 0 8px 10px 1px rgba(255,255,255,.14), 0 3px 14px 2px rgba(255,255,255,.12), 0 5px 5px -3px rgba(255,255,255,.2) !important;
+}
+
+/**
+ * Debug
+ */
+.eruda-container .eruda-entry-btn {
+    opacity: 0.6 !important;
+    margin-top: -55px;
+}
