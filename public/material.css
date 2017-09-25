@@ -171,6 +171,7 @@ a.yt-thumbnail-link i {
     text-align: center;
     font-size: 100px;
     margin: 50px auto;
+    opacity: 0.8;
 }
 
 div.message.media {
@@ -304,4 +305,7 @@ body.nightmode blockquote {
 }
 body.nightmode div#pending-media {
     background-color: #000;
+}
+body.nightmode span.new-user a {
+    color: green !important;
 }
