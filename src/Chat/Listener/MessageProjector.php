@@ -108,8 +108,12 @@ help;
                 $message = "{$e->message}\n\n🔢 *{$matches['username']} is not a valid username.*";
             }
         } elseif (strtolower(substr($e->message, 0, 8)) == '/jfckatz') {
+            $start = 1505241000;
+            $now = time();
+            $days = ($now - $start) / 86400;
             $msgCount = $this->redis->hGet('jfcCounts', 'f555daac-5720-4af6-bc8d-c6562a45c9b4') ?: '0';
-            $message = "{$e->message}\n\n🔢 *ersatzkatz has said \"jfc\" {$msgCount} times since September 13th, 2017 at 18:30 UTC.*";
+            $average = round($msgCount / $days);
+            $message = "{$e->message}\n\n🔢 *ersatzkatz has said \"jfc\" {$msgCount} times since September 13th, 2017 at 18:30 UTC (Average: {$average} jfc's per day).*";
         } elseif (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
