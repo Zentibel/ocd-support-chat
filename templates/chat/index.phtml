@@ -68,6 +68,7 @@ span.new-user a {
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'general']) ?>">General Chat</a>
       <a class="mdl-navigation__link" href="#" id="voice-chat-button">Join Voice Chat</a>
       <a class="mdl-navigation__link" href="/is-shep-alive" target="_blank">Is Shep Alive?</a>
+      <a class="mdl-navigation__link" href="#" id="reassurance"><img width="18" src="https://cdn.jsdelivr.net/emojione/assets/png/1f3b1.png?v=2.2.7"> Reassurance</a>
     </nav>
   </div>
 
@@ -244,6 +245,33 @@ moment.updateLocale('en', {
     }
 });
 
+var reassurances = [
+    'It is certain.',
+    'It is decidedly so.',
+    'Without a doubt.',
+    'Yes definitely.',
+    'You may rely on it.',
+    'As I see it, yes.',
+    'Most likely.',
+    'Outlook good.',
+    'Yes.',
+    'Signs point to yes.',
+    'Reply hazy try again.',
+    'Ask again later.',
+    'Better not tell you now.',
+    'Concentrate and ask again.',
+    'Don\'t count on it.',
+    'My reply is no.',
+    'My sources say no.',
+    'Outlook not so good.',
+    'Very doubtful.',
+    'Yes, it\'s clean. Try again later.',
+    'There\'s a >1% chance that you have it.',
+    'No, you\'re not a bad person!',
+    'They still love you.',
+    'That\'s NEVER going to happen.',
+    'You\'re the only one who thinks that.',
+];
 
 var md = markdownit({
   html: false,
@@ -520,6 +548,12 @@ function sendMessage(mediaFiles, callback) {
 }
 
 $(document).ready(function() {
+
+    $('#reassurance').click(function(event) {
+        event.preventDefault();
+        var thisReassurance = reassurances[Math.floor(Math.random()*reassurances.length)];
+        alert(thisReassurance);
+    });
 
     thisChat.loadMessages(20);
 
