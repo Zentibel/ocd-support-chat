@@ -39,10 +39,11 @@ class MessageProjector
             } elseif ($userId == $e->userId) {
                 $message = "{$e->message}\n\n⛔️ *You can't give yourself karma!!!*";
             } else {
-                $this->redis->hIncrBy('karmaCounts', $userId, 1);
-                $username = $this->redis->hGet('user:' . $userId, 'username');
-                $kCount = $this->redis->hGet('karmaCounts', $userId);
-                $message = "{$e->message}\n\n📈 *{$username} now has {$kCount} karma.*";
+                //$this->redis->hIncrBy('karmaCounts', $userId, 1);
+                //$username = $this->redis->hGet('user:' . $userId, 'username');
+                //$kCount = $this->redis->hGet('karmaCounts', $userId);
+                //$message = "{$e->message}\n\n📈 *{$username} now has {$kCount} karma.*";
+                $message = "\n\n🙃 *What even is karma?* 🙃";
             }
         } elseif (preg_match('/^\/(?P<username>[^\s]+)\-\-/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
@@ -51,10 +52,11 @@ class MessageProjector
             } elseif ($userId == $e->userId) {
                 $message = "{$e->message}\n\n⛔️ *You can't take away your own karma!!!*";
             } else {
-                $this->redis->hIncrBy('karmaCounts', $userId, -1);
-                $username = $this->redis->hGet('user:' . $userId, 'username');
-                $kCount = $this->redis->hGet('karmaCounts', $userId);
-                $message = "{$e->message}\n\n📉 *{$username} now has {$kCount} karma.*";
+                //$this->redis->hIncrBy('karmaCounts', $userId, -1);
+                //$username = $this->redis->hGet('user:' . $userId, 'username');
+                //$kCount = $this->redis->hGet('karmaCounts', $userId);
+                //$message = "{$e->message}\n\n📉 *{$username} now has {$kCount} karma.*";
+                $message = "\n\n🙃 *What even is karma?* 🙃";
             }
         } elseif (strtolower(substr($e->message, 0, 5)) == '/help') {
             $help = <<<help
