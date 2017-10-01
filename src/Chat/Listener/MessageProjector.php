@@ -43,7 +43,7 @@ class MessageProjector
                 //$username = $this->redis->hGet('user:' . $userId, 'username');
                 //$kCount = $this->redis->hGet('karmaCounts', $userId);
                 //$message = "{$e->message}\n\n📈 *{$username} now has {$kCount} karma.*";
-                $message = "\n\n🙃 *What even is karma?* 🙃";
+                $message = "{$e->message}\n\n🙃 *What even is karma?* 🙃";
             }
         } elseif (preg_match('/^\/(?P<username>[^\s]+)\-\-/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
@@ -56,7 +56,7 @@ class MessageProjector
                 //$username = $this->redis->hGet('user:' . $userId, 'username');
                 //$kCount = $this->redis->hGet('karmaCounts', $userId);
                 //$message = "{$e->message}\n\n📉 *{$username} now has {$kCount} karma.*";
-                $message = "\n\n🙃 *What even is karma?* 🙃";
+                $message = "{$e->message}\n\n🙃 *What even is karma?* 🙃";
             }
         } elseif (strtolower(substr($e->message, 0, 5)) == '/help') {
             $help = <<<help
