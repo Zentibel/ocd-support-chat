@@ -72,8 +72,10 @@ class MessageProjector
 | `/count` | see how many messages you have sent |
 | `/jfckatz` | see how many times katz has said "jfc" |
 | `/help` | This. |
-| `` | `` |
-| **Shortcut** | |
+
+
+| **Shortcuts** | |
+| ------------- | |
 | `alt+m` | Mute / unmute notification sounds. |
 | `alt+v` | Toggle text-to-speech (beta) |
 | `alt+u` | Increase notification volume by 10% |
