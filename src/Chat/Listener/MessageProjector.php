@@ -73,6 +73,7 @@ class MessageProjector
 | `/jfckatz` | see how many times katz has said "jfc" |
 | `/help` | This. |
 
+
 | **Shortcut** | **Description** |
 | ------------- | --------------- |
 | `alt+m` | Mute / unmute notification sounds. |
