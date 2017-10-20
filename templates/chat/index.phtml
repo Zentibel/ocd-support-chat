@@ -788,7 +788,7 @@ var currentScrollPosition = function() {
 }
 
 var stayAtBottom = function() {
-    if (currentScrollPosition() > 500) {
+    if (currentScrollPosition() > 900) {
         return;
     }
     if (($('#content')[0].scrollHeight - $('#content').scrollTop()) < 1000) {
@@ -798,7 +798,7 @@ var stayAtBottom = function() {
 EventBus.addEventListener('chat:message-media-loaded', stayAtBottom);
 
 var scrollToBottom = function(force) {
-    if (force !== true && currentScrollPosition() > 500) {
+    if (force !== true && currentScrollPosition() > 900) {
         return;
     }
     updateScroll('content');
