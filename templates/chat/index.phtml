@@ -1110,6 +1110,22 @@ key.filter = function(event){
 }
 
 /**
+ * Notification volume...
+ */
+key('alt+d', function(){
+    notification.volume = notification.volume - 0.1;
+    notice = 'Notification volume: ' + (notification.volume * 100) + '%';
+    showToast(notice);
+    return false
+});
+key('alt+u', function(){
+    notification.volume = notification.volume + 0.1;
+    notice = 'Notification volume: ' + (notification.volume * 100) + '%';
+    showToast(notice);
+    return false
+});
+
+/**
  * Text-to-speech
  */
 if ('speechSynthesis' in window) {
