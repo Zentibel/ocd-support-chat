@@ -65,13 +65,19 @@ class MessageProjector
 | `/karma` | view your own karma |
 | `/karma {username}` | view someone else's karma |
 | `/leaderboard` | view karma leaderboard |
-| `/{username}++` | give {username} 1 karma |
-| `/{username}--` | reduce {username}'s karma by 1 |
+| `/username++` | give Username 1 karma |
+| `/username--` | reduce Username's karma by 1 |
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
 | `/jfckatz` | see how many times katz has said "jfc" |
 | `/help` | This. |
+| `` | `` |
+| **Shortcut** | |
+| `alt+m` | Mute / unmute notification sounds. |
+| `alt+v` | Toggle text-to-speech (beta) |
+| `alt+u` | Increase notification volume by 10% |
+| `alt+d` | Decrease notification volume by 10% |
 help;
             $message = "{$e->message}\n\n---\n\n{$help}";
         } elseif (strtolower(substr($e->message, 0, 12)) == '/leaderboard') {
