@@ -58,12 +58,12 @@ class MessageProjector
             }
         } elseif (strtolower(substr($e->message, 0, 5)) == '/help') {
             $help = <<<help
-##### OChatD Command Reference Guide
+##### OChatD Reference Guide
 
 | **Command** | **Description** |
 | ----------- | --------------- |
 | `/karma` | view your own karma |
-| `/karma {username}` | view someone else's karma |
+| `/karma username` | view Username's karma |
 | `/leaderboard` | view karma leaderboard |
 | `/username++` | give Username 1 karma |
 | `/username--` | reduce Username's karma by 1 |
@@ -73,8 +73,8 @@ class MessageProjector
 | `/jfckatz` | see how many times katz has said "jfc" |
 | `/help` | This. |
 
-| **Shortcuts** |     |
-| ------------- | --- |
+| **Shortcut** | **Description** |
+| ------------- | --------------- |
 | `alt+m` | Mute / unmute notification sounds. |
 | `alt+v` | Toggle text-to-speech (beta) |
 | `alt+u` | Increase notification volume by 10% |

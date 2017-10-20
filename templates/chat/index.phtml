@@ -1113,13 +1113,13 @@ key.filter = function(event){
  * Notification volume...
  */
 key('alt+d', function(){
-    notification.volume = notification.volume - 0.1;
+    notification.volume = Math.round(notification.volume - 0.1);
     notice = 'Notification volume: ' + (notification.volume * 100) + '%';
     showToast(notice);
     return false
 });
 key('alt+u', function(){
-    notification.volume = notification.volume + 0.1;
+    notification.volume = Math.round(notification.volume + 0.1);
     notice = 'Notification volume: ' + (notification.volume * 100) + '%';
     showToast(notice);
     return false
