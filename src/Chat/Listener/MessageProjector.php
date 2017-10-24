@@ -130,11 +130,11 @@ help;
                 $dieCount = 6;
             }
 
-            if ($e->userId == '6d03e32d-1537-4348-8448-cd2066c20c27') {
-                $rollResult = 27;
-            } else {
+            //if ($e->userId == '6d03e32d-1537-4348-8448-cd2066c20c27') {
+            //    $rollResult = 27;
+            //} else {
                 $rollResult = rand(1, $dieCount);
-            }
+            //}
 
             $currentTime = time();
             $lastRoll = $this->redis->hGet('dice', $e->userId);
