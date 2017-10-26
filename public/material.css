@@ -288,17 +288,31 @@ form#compose .mdl-button.send {
 /**
  * Night Mode
  */
+
+/* Top Bar */
+body.nightmode .mdl-layout__header {
+    background-color: #000;
+    color: #fff;
+}
+
+body.nightmode a {
+    color: #cc9966;
+}
+body.nightmode span.timestamp {
+    color: #f2f0ec;
+}
+
 body.nightmode,
 body.nightmode .footer-light,
 body.nightmode textarea
 {
-    background-color: #000;
-    color: #FFF;
+    background-color: #2d2d2d;
+    color: #d3d0c8;
 }
 body.nightmode .mdl-button,
 body.nightmode span.sender a
 {
-    color: #FFF;
+    color: #d3d0c8;
 }
 body.nightmode blockquote {
     background-color: #222;
