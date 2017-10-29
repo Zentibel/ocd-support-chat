@@ -173,7 +173,12 @@ help;
                         'banned',
                         1
                     );
-                    $message = "{$e->message}\n\n🚫 *{$matches['username']} has been banned.*";
+                    $ips = $this->redis->sMembers("ips:{$userId}");
+                    foreach ($ips as $ip) {
+                        $this->redis->sAdd('banned-ips', $ip);
+                    }
+                    $ipCount = count($ips);
+                    $message = "{$e->message}\n\n🚫 *{$matches['username']} has been banned. {$ipCount} IP(s) banned.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already banned.*";
                 }
@@ -189,7 +194,12 @@ help;
                         'user:' . $userId,
                         'banned'
                     );
-                    $message = "{$e->message}\n\n👌 *{$matches['username']} has been unbanned.*";
+                    $ips = $this->redis->sMembers("ips:{$userId}");
+                    foreach ($ips as $ip) {
+                        $this->redis->sRem('banned-ips', $ip);
+                    }
+                    $ipCount = count($ips);
+                    $message = "{$e->message}\n\n👌 *{$matches['username']} has been unbanned. {$ipCount} IP(s) unbanned.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not banned.*";
                 }
@@ -254,6 +264,7 @@ help;
             'roomId'    => $e->roomId,
             'message'   => $message,
             'timestamp' => $now,
+            'ip'        => $_SERVER['REMOTE_ADDR'],
         ];
 
 

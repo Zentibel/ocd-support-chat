@@ -57,8 +57,19 @@ class MessageFinder
             return false; // TODO how/why does this happen? development quirk?
         }
 
+        if (!isset($message['ip'])) {
+            $message['ip'] = 'unknown';
+        }
+
         $sender = $this->redis->hgetall('user:'.$message['sender']);
         $receiver = $this->redis->hGetAll('user:' . $this->authService->getIdentity()->id);
+        if (!isset($sender['mod']) && $this->redis->sIsMember('banned-ips', $message['ip'])) {
+            $sender['banned'] = 1;
+        }
+
+        if (!isset($receiver['mod']) && $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR'])) {
+            $receiver['banned'] = 1;
+        }
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
 
