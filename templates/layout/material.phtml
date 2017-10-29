@@ -14,6 +14,10 @@
         <link rel="manifest" href="/manifest-general.json?v=M4ozyrdgLp2">
     <? elseif ($this->routeParam('community') == 'ocd'): ?>
         <link rel="manifest" href="/manifest-ocd.json?v=M4ozyrdgLp2">
+    <? elseif ($this->routeParam('community') == 'tech'): ?>
+        <link rel="manifest" href="/manifest-tech.json?v=M4ozyrdgLp2">
+    <? elseif ($this->routeParam('community') == 'ocdmods'): ?>
+        <link rel="manifest" href="/manifest-ocdmods.json?v=M4ozyrdgLp2">
     <? else: ?>
         <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq2">
     <? endif; ?>
@@ -62,6 +66,12 @@
         <? endif; ?>
         <? if ($this->routeParam('community') == 'ocd'): ?>
             OCD Support
+        <? endif; ?>
+        <? if ($this->routeParam('community') == 'tech'): ?>
+            Tech Chat
+        <? endif; ?>
+        <? if ($this->routeParam('community') == 'ocdmods'): ?>
+            Moderators
         <? endif; ?>
       </span>
       <div class="mdl-layout-spacer"></div>

@@ -2,14 +2,17 @@
 namespace Chat\Finder;
 
 use Predis\Client;
+use Auth\AuthService;
 
 class MessageFinder
 {
     private $redis;
+    private $authService;
 
-    public function __construct(Client $redis)
+    public function __construct(Client $redis, AuthService $authService)
     {
         $this->redis = $redis;
+        $this->authService = $authService;
     }
 
     public function chatMessages($roomId, $limit = 50, $max = '+inf')
@@ -55,16 +58,22 @@ class MessageFinder
         }
 
         $sender = $this->redis->hgetall('user:'.$message['sender']);
+        $receiver = $this->redis->hGetAll('user:' . $this->authService->getIdentity()->id);
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
 
         $senderName = $sender['username'];
 
+        //if sender and receiver banned: false
+        //if not sender and not receiver: false
+        //if sender and not receiver: true
+        //if receiver and not sender: true
         $response = [
             'source' => 'native',
             'id' => $message['id'],
             'key' => $messageKey,
             'newUser' => ($messageCount < 100) ? true : false ,
+            'banned' => (!isset($sender['banned']) && isset($receiver['banned']) || isset($sender['banned']) && !isset($receiver['banned'])),
             'senderName' => $senderName,
             'senderId' => $message['sender'],
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',
