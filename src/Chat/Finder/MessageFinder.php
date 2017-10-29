@@ -17,19 +17,25 @@ class MessageFinder
 
     public function chatMessages($roomId, $limit = 50, $max = '+inf')
     {
-        $messageKeys = $this->redis->zrevrangebyscore('chat:messages:'.$roomId, $max, '-inf', 'LIMIT', 0, $limit);
-        if ($max === '+inf') {
-            $messageKeys = array_reverse($messageKeys);
-        }
-        $messages = [];
-        foreach ($messageKeys as $messageKey) {
-            if (strpos($messageKey, 'gliph') !== false) {
-                $message = $this->processGliphMessage($messageKey);
-            } else {
-                $message = $this->processMessage($messageKey);
+        $limitInc = $limit;
+        do {
+            $messageKeys = $this->redis->zrevrangebyscore('chat:messages:'.$roomId, $max, '-inf', 'LIMIT', 0, $limitInc);
+            if ($max === '+inf') {
+                $messageKeys = array_reverse($messageKeys);
             }
-            $messages[] = $message;
-        }
+            $messages = [];
+            foreach ($messageKeys as $messageKey) {
+                if (strpos($messageKey, 'gliph') !== false) {
+                    $message = $this->processGliphMessage($messageKey);
+                } else {
+                    $message = $this->processMessage($messageKey);
+                }
+                if ($message) {
+                    $messages[] = $message;
+                }
+            }
+            $limitInc += 50;
+        } while (count($messages) < $limit && $limitInc <= 500);
         return $messages;
     }
 
@@ -69,6 +75,10 @@ class MessageFinder
 
         if (!isset($receiver['mod']) && $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR'])) {
             $receiver['banned'] = 1;
+        }
+
+        if (isset($receiver['banned']) && !isset($sender['banned'])) {
+            return false;
         }
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
