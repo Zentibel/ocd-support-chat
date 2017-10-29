@@ -83,6 +83,19 @@ class MessageProjector
 | `alt+u` | Increase notification volume by 10% |
 | `alt+d` | Decrease notification volume by 10% |
 help;
+            if ($e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825') {
+                $help .= <<<help
+
+##### 
+
+**Mod Commands**
+
+* `/ban username`
+* `/unban username`
+* `/mod username`
+* `/unmod username`
+help;
+            }
             $message = "{$e->message}\n\n---\n\n{$help}";
         } elseif (strtolower(substr($e->message, 0, 12)) == '/leaderboard') {
             $leaderboard = $this->leaderboard();
