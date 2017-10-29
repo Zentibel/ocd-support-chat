@@ -32,6 +32,7 @@ class MessageProjector
     public function onMessageSent(MessageSent $e)
     {
         $sender = $this->userFinder->findByUserId($e->userId);
+        $this->redis->sAdd("ips:{$e->userId}", $_SERVER['REMOTE_ADDR']);
 
         if (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
