@@ -77,7 +77,9 @@ class MessageFinder
             $receiver['banned'] = 1;
         }
 
-        if (isset($receiver['banned']) && !isset($sender['banned'])) {
+        $forceShow = strpos($message['roomId'], ':') !== false && isset($sender['mod']);
+
+        if (isset($receiver['banned']) && !isset($sender['banned']) && !$forceShow) {
             return false;
         }
 
@@ -94,7 +96,7 @@ class MessageFinder
             'id' => $message['id'],
             'key' => $messageKey,
             'newUser' => ($messageCount < 100) ? true : false ,
-            'banned' => (!isset($sender['banned']) && isset($receiver['banned']) || isset($sender['banned']) && !isset($receiver['banned'])),
+            'banned' => (!isset($sender['banned']) && isset($receiver['banned']) && !$forceShow) || (isset($sender['banned']) && !isset($receiver['banned'])),
             'senderName' => $senderName,
             'senderId' => $message['sender'],
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',

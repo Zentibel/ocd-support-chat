@@ -322,6 +322,7 @@ help;
                 $this->redis->hMSet($copyKey, $copy);
                 $this->redis->zAdd('chat:messages:'.$modPmRoomId, $now, $copyKey);
                 $this->redis->publish('new-message', $modPmRoomId);
+                $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
             }
         }
 
