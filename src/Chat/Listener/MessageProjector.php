@@ -316,7 +316,7 @@ help;
                 $copy['message'] = "{$copy['message']}\n\n***— {$modAlias}***";
 
                 $data['sender'] = $copy['sender'];
-                $data['message'] = $copy['message'];
+                $data['message'] = "/msg {$matches['username']} ".$copy['message'];
 
                 $copyKey = "message:{$copy['id']}";
                 $this->redis->hMSet($copyKey, $copy);
