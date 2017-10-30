@@ -95,6 +95,8 @@ help;
 * `/unban username`
 * `/mod username`
 * `/unmod username`
+* `/alias some-psuedonym`
+* `/msg username A mod message to username`
 help;
             }
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -237,6 +239,13 @@ help;
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a mod.*";
                 }
             }
+        } elseif (preg_match('/^\/alias (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+                $this->redis->hSet(
+                    'user:' . $sender->id,
+                    'modAlias',
+                    $matches['username']
+                );
+                $message = "{$e->message}\n\n🛡 *You will now be known as {$matches['username']} when responding as a mod.*";
         } else {
             $message = $e->message;
         }
@@ -278,6 +287,44 @@ help;
             $data['media'] = implode('#', $mediaFiles);
         }
 
+        if (strpos($e->roomId, 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769') !== false && strpos($e->roomId, ':') !== false) {
+                $copy = $data;
+                $copy['id'] = Uuid::uuid4()->toString();
+                $copy['message'] = "{$copy['message']}\n\n💬 ***This user will only see replies that begin with `/msg username`***";
+                $copyKey = "message:{$copy['id']}";
+                $this->redis->hMSet($copyKey, $copy);
+                $this->redis->zAdd('chat:messages:e6ddc009-a7c0-4bf9-8637-8a3da4d65825', $now, $copyKey);
+                $this->redis->publish('new-message', 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825');
+        }
+
+        if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                $targetUser = $this->userFinder->findByUserId($userId);
+                $modPmRoomId = $this->pmChatKey($targetUser->id, 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769');
+                $modAlias = $this->redis->hGet(
+                    'user:' . $e->userId,
+                    'modAlias'
+                ) ?: 'Anonymous Moderator';
+                $copy = $data;
+                $copy['id'] = Uuid::uuid4()->toString();
+                $copy['sender'] = 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769';
+                $copy['roomId'] = $modPmRoomId;
+                $copy['message'] = trim(str_replace("/msg {$matches['username']}", '', $copy['message']));
+                $copy['message'] = "{$copy['message']}\n\n***— {$modAlias}***";
+
+                $data['sender'] = $copy['sender'];
+                $data['message'] = $copy['message'];
+
+                $copyKey = "message:{$copy['id']}";
+                $this->redis->hMSet($copyKey, $copy);
+                $this->redis->zAdd('chat:messages:'.$modPmRoomId, $now, $copyKey);
+                $this->redis->publish('new-message', $modPmRoomId);
+            }
+        }
+
         if ($e->roomId === 'dd0c62bd-c4f2-4286-affa-256bfcc93955') {
             $lastMsgKey = $this->redis->zRevRangeByScore($chatKey, '+inf', '-inf', ['limit' => [0, 1]])[0];
             $lastMsgTimestamp = $this->redis->hGet($lastMsgKey, 'timestamp');
@@ -301,7 +348,6 @@ help;
             $recipientUserId = str_replace($e->userId, '', $e->roomId, $count);
             $recipientUserId = $count == 2 ? $e->userId : str_replace(':', '', $recipientUserId);
             $response = $this->sendPushNotification($e->userId, $recipientUserId);
-            var_dump($response);die();
         }
         //$username = $this->userFinder->findUsernameByUserId($e->userId);
         //$gliphMsg = "{$username} says:\n\n{$e->message}";
@@ -320,6 +366,14 @@ help;
         return $e->messageId;
     }
 
+    protected function pmChatKey($id1, $id2)
+    {
+        if ($id1 > $id2) {
+            return "{$id1}:{$id2}";
+        }
+
+        return "{$id2}:{$id1}";
+    }
     protected function leaderboard()
     {
         $kCounts = $this->redis->hGetAll('karmaCounts');

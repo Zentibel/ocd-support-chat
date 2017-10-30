@@ -68,7 +68,7 @@ span.new-user a {
     color: green;
 }
 
-<? if($this->ident()->mod): ?>
+<? if(isset($this->ident()->mod)): ?>
 .banned-user span.sender a,
 body.nightmode .banned-user span.sender a{
     color: red !important;
@@ -88,6 +88,8 @@ body.nightmode .banned-user span.sender a{
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'tech']) ?>">Tech Chat</a>
       <? if(isset($this->ident()->mod)): ?>
           <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocdmods']) ?>">Moderator Chat</a>
+      <? else: ?>
+          <a class="mdl-navigation__link" href="<?= $this->url('private-chat', ['username' => 'Moderators']) ?>">Talk to Mods</a>
       <? endif; ?>
       <a class="mdl-navigation__link" href="#" id="voice-chat-button">Join Voice Chat</a>
       <a class="mdl-navigation__link" href="/is-shep-alive" target="_blank">Is Shep Alive?</a>
