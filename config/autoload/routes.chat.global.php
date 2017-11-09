@@ -61,6 +61,7 @@ return [
             'path' => '/messages/{roomId:[^/]+}',
             'middleware' => [
                 Auth\Middleware\AssertIsAuthenticated::class,
+                Common\Middleware\ProxyCheck::class,
                 Common\Middleware\CqrsPayloadFromRouteParams::class,
                 Common\Middleware\CqrsPayloadFromQuery::class,
                 Common\Middleware\DispatchCqrsRequest::class,

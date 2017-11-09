@@ -68,7 +68,14 @@ span.new-user a {
     color: green;
 }
 
-<? if(isset($this->ident()->mod)): ?>
+<? if($this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
+.sent-via-proxy span.sender a:after,
+body.nightmode .sent-via-proxy span.sender a:after
+{
+    font-size: 90%;
+    content: ' (via proxy/tor)';
+
+}
 .banned-user span.sender a,
 body.nightmode .banned-user span.sender a{
     color: red !important;
@@ -86,7 +93,7 @@ body.nightmode .banned-user span.sender a{
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">Support Chat</a>
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'general']) ?>">General Chat</a>
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'tech']) ?>">Tech Chat</a>
-      <? if(isset($this->ident()->mod)): ?>
+      <? if($this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
           <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocdmods']) ?>">Moderator Chat</a>
       <? else: ?>
           <a class="mdl-navigation__link" href="<?= $this->url('private-chat', ['username' => 'Moderators']) ?>">Talk to Mods</a>
@@ -183,7 +190,7 @@ this.secure=null!=r.secure?r.secure:e.location&&"https:"===location.protocol,r.h
 
     var ROOM_ID = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
 
-    <? if ($this->routeParam('community') == 'ocdmods' && $this->ident()->mod): ?>
+    <? if ($this->routeParam('community') == 'ocdmods' && $this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
         var ROOM_ID = 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825';
     <? endif; ?>
     <? if ($this->routeParam('community') == 'general'): ?>
@@ -392,7 +399,7 @@ function renderMessage(event, message) {
         }
     }
 
-    var $message = $('<div class="chat-message'+ (message.banned ? ' banned-user' : '') + '" id="'+message.id+'"></div>');
+    var $message = $('<div class="chat-message'+ (message.banned ? ' banned-user' : '') + (message.proxy ? ' sent-via-proxy' : '') +'" id="'+message.id+'"></div>');
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
 
@@ -539,6 +546,7 @@ EventBus.addEventListener('chat:media-upload-complete', announceMediaReady);
 EventBus.addEventListener('chat:media-upload-progress', announceMediaProgress);
 
 setInterval(function(){
+    //return false;
     if (!focused) {
         return false;
     }
@@ -547,7 +555,7 @@ setInterval(function(){
         $(this).text(mTimestamp.fromNow());
         console.log('timestamp update');
     });
-}, 10000);
+}, 20000);
 
 function updateScroll(el) {
     var element = document.getElementById(el);

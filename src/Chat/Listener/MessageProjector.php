@@ -163,20 +163,25 @@ help;
                 $this->redis->hSet('dice', $e->userId, time());
                 $message = "{$e->message}\n\n🎲 *Rolled a **{$rollResult}**.*";
             }
-        } elseif (preg_match('/^\/ban (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        } elseif (preg_match('/^\/ban (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
                 $targetUser = $this->userFinder->findByUserId($userId);
-                if (!isset($targetUser->banned)) {
-                    $this->redis->hSet(
-                        'user:' . $userId,
-                        'banned',
-                        1
-                    );
+                if (!$this->redis->sIsMember('banned-users', $userId)) {
+                    //$this->redis->hSet(
+                    //    'user:' . $userId,
+                    //    'banned',
+                    //    1
+                    //);
+                    $this->redis->sAdd('banned-users', $userId);
                     $ips = $this->redis->sMembers("ips:{$userId}");
-                    foreach ($ips as $ip) {
+                    foreach ($ips as $i => $ip) {
+                        if ($ip == '127.0.0.1') {
+                            unset($ips[$i]);
+                            continue;
+                        }
                         $this->redis->sAdd('banned-ips', $ip);
                     }
                     $ipCount = count($ips);
@@ -185,61 +190,61 @@ help;
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already banned.*";
                 }
             }
-        } elseif (preg_match('/^\/unban (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        } elseif (preg_match('/^\/unban (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
-                $targetUser = $this->userFinder->findByUserId($userId);
-                if (isset($targetUser->banned)) {
-                    $this->redis->hDel(
-                        'user:' . $userId,
-                        'banned'
-                    );
+                if ($this->redis->sIsMember('banned-users', $userId)) {
+                    //$this->redis->hDel(
+                    //    'user:' . $userId,
+                    //    'banned'
+                    //);
+                    $this->redis->sRem('banned-users', $userId);
                     $ips = $this->redis->sMembers("ips:{$userId}");
                     foreach ($ips as $ip) {
                         $this->redis->sRem('banned-ips', $ip);
                     }
-                    $ipCount = count($ips);
+                    $ipCount = count($ips); // not accurate... not all logged IPs may be banned
                     $message = "{$e->message}\n\n👌 *{$matches['username']} has been unbanned. {$ipCount} IP(s) unbanned.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not banned.*";
                 }
             }
-        } elseif (preg_match('/^\/mod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        } elseif (preg_match('/^\/mod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
-                $targetUser = $this->userFinder->findByUserId($userId);
-                if (!isset($targetUser->mod)) {
-                    $this->redis->hSet(
-                        'user:' . $userId,
-                        'mod',
-                        1
-                    );
+                if (!$this->redis->sIsMember('mod-users', $userId)) {
+                    $this->redis->sAdd('mod-users', $userId);
+                    //$this->redis->hSet(
+                    //    'user:' . $userId,
+                    //    'mod',
+                    //    1
+                    //);
                     $message = "{$e->message}\n\n👮 *{$matches['username']} has been modded.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already a mod.*";
                 }
             }
-        } elseif (preg_match('/^\/unmod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        } elseif (preg_match('/^\/unmod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
-                $targetUser = $this->userFinder->findByUserId($userId);
-                if (isset($targetUser->mod)) {
-                    $this->redis->hDel(
-                        'user:' . $userId,
-                        'mod'
-                    );
+                if ($this->redis->sIsMember('mod-users', $userId)) {
+                    $this->redis->sRem('mod-users', $userId);
+                    //$this->redis->hDel(
+                    //    'user:' . $userId,
+                    //    'mod'
+                    //);
                     $message = "{$e->message}\n\n👋 *{$matches['username']} is no longer a mod.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a mod.*";
                 }
             }
-        } elseif (preg_match('/^\/alias (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        } elseif (preg_match('/^\/alias (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
                 $this->redis->hSet(
                     'user:' . $sender->id,
                     'modAlias',
@@ -297,7 +302,7 @@ help;
                 $this->redis->publish('new-message', 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825');
         }
 
-        if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && isset($sender->mod)) {
+        if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
@@ -316,6 +321,7 @@ help;
                 $copy['message'] = "{$copy['message']}\n\n***— {$modAlias}***";
 
                 $data['sender'] = $copy['sender'];
+                // TODO show who really sent it
                 $data['message'] = "/msg {$matches['username']} ".$copy['message'];
 
                 $copyKey = "message:{$copy['id']}";

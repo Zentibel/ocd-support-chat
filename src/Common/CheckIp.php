@@ -5,6 +5,7 @@ class CheckIp
 {
     public static function isAnon()
     {
+        if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1') return false;
         return self::isTorExitPoint() || self::isProxy();
     }
 
@@ -31,7 +32,8 @@ class CheckIp
         }
     }
 
-    public static function isTorExitPoint() {
+    public static function isTorExitPoint()
+    {
         if (gethostbyname(self::reverseIpOctets($_SERVER['REMOTE_ADDR']).".".$_SERVER['SERVER_PORT'].".".self::reverseIpOctets($_SERVER['SERVER_ADDR']).".ip-port.exitlist.torproject.org")=="127.0.0.2") {
             return true;
         } else {
@@ -39,7 +41,8 @@ class CheckIp
         }
     }
 
-    public static function reverseIpOctets($inputIp) {
+    public static function reverseIpOctets($inputIp)
+    {
         $ipoc = explode('.', $inputIp);
         return "{$ipoc[3]}.{$ipoc[2]}.{$ipoc[1]}.{$ipoc[0]}";
     }

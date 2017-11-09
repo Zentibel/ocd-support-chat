@@ -20,9 +20,6 @@ class MessageFinder
         $limitInc = $limit;
         do {
             $messageKeys = $this->redis->zrevrangebyscore('chat:messages:'.$roomId, $max, '-inf', 'LIMIT', 0, $limitInc);
-            if ($max === '+inf') {
-                $messageKeys = array_reverse($messageKeys);
-            }
             $messages = [];
             foreach ($messageKeys as $messageKey) {
                 if (strpos($messageKey, 'gliph') !== false) {
@@ -31,11 +28,16 @@ class MessageFinder
                     $message = $this->processMessage($messageKey);
                 }
                 if ($message) {
+                    $message['limit'] = $limitInc;
                     $messages[] = $message;
+                    if (count($messages) >= $limit) break;
                 }
             }
             $limitInc += 50;
         } while (count($messages) < $limit && $limitInc <= 500);
+        if ($max === '+inf') {
+            $messages = array_reverse($messages);
+        }
         return $messages;
     }
 
@@ -69,34 +71,60 @@ class MessageFinder
 
         $sender = $this->redis->hgetall('user:'.$message['sender']);
         $receiver = $this->redis->hGetAll('user:' . $this->authService->getIdentity()->id);
-        if (!isset($sender['mod']) && $this->redis->sIsMember('banned-ips', $message['ip'])) {
-            $sender['banned'] = 1;
-        }
 
-        if (!isset($receiver['mod']) && $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR'])) {
-            $receiver['banned'] = 1;
-        }
+        $senderIsMod = $this->redis->sIsMember('mod-users', $message['sender']);
+        $receiverIsMod = $this->redis->sIsMember('mod-users', $this->authService->getIdentity()->id);
 
-        $forceShow = strpos($message['roomId'], ':') !== false && isset($sender['mod']);
+        $senderIsBanned = $this->redis->sIsMember('banned-users', $message['sender']);
+        $receiverIsBanned = $this->redis->sIsMember('banned-users', $this->authService->getIdentity()->id);
 
-        if (isset($receiver['banned']) && !isset($sender['banned']) && !$forceShow) {
+        $senderIpIsBanned = $this->redis->sIsMember('banned-ips', $message['ip']);
+        $receiverIpIsBanned = $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR']);
+
+        $senderIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $message['ip']);
+        $receiverIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $_SERVER['REMOTE_ADDR']);
+        $messageShouldBeHidden = (!$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy)
+                                && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
+        //$messageShouldBeHidden = !$receiverIsBanned && !$receiverIpIsBanned && ($senderIsBanned || $senderIpIsBanned);
+        //$messageShouldBeHiddenProxy = !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
+        //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
+
+        if ($messageShouldBeHidden && !$receiverIsMod) {
+            //return array('hide' => $messageShouldBeHidden, 'proxy' => $senderIsProxy, 'message' => $message['message']);
             return false;
+            //$messageShouldBeHidden = false;
         }
+
+        //if (!$senderIsMod && $this->redis->sIsMember('banned-ips', $message['ip'])) {
+        //    $sender['banned'] = 1;
+        //}
+
+        //if (!isset($receiver['mod']) && $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR'])) {
+        //    $receiver['banned'] = 1;
+        //}
+
+        //$forceShow = strpos($message['roomId'], ':') !== false && isset($sender['mod']);
+
+        //if (isset($receiver['banned']) && !isset($sender['banned']) && !$forceShow) {
+        //    return false;
+        //}
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
 
         $senderName = $sender['username'];
 
-        //if sender and receiver banned: false
-        //if not sender and not receiver: false
-        //if sender and not receiver: true
-        //if receiver and not sender: true
         $response = [
             'source' => 'native',
             'id' => $message['id'],
             'key' => $messageKey,
             'newUser' => ($messageCount < 100) ? true : false ,
-            'banned' => (!isset($sender['banned']) && isset($receiver['banned']) && !$forceShow) || (isset($sender['banned']) && !isset($receiver['banned'])),
+            // if sender and receiver banned: false
+            // if not sender and not receiver: false
+            // if sender and not receiver: true
+            // if receiver and not sender: true
+            // 'banned' => (!isset($sender['banned']) && isset($receiver['banned']) && !$forceShow) || (isset($sender['banned']) && !isset($receiver['banned'])),
+            'banned' => $messageShouldBeHidden,
+            'proxy' => $receiverIsMod && $senderIpIsProxy,
             'senderName' => $senderName,
             'senderId' => $message['sender'],
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',
