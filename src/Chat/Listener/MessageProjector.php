@@ -73,6 +73,7 @@ class MessageProjector
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
 | `/jfckatz` | see how many times katz has said "jfc" |
+| `/ooftamags` | see how many times mmpls7 has said "oofta" |
 | `/help` | This. |
 
 ##### 
@@ -140,6 +141,13 @@ help;
             $msgCount = $this->redis->hGet('jfcCounts', 'f555daac-5720-4af6-bc8d-c6562a45c9b4') ?: '0';
             $average = round($msgCount / $days);
             $message = "{$e->message}\n\n🔢 *ersatzkatz has said \"jfc\" {$msgCount} times since September 13th, 2017 at 18:30 UTC (Average: {$average} jfc's per day).*";
+        } elseif (strtolower(substr($e->message, 0, 10)) == '/ooftamags') {
+            $start = 1510251563;
+            $now = time();
+            $days = ($now - $start) / 86400;
+            $msgCount = $this->redis->hGet('ooftaCounts', '1ee59eef-2900-4da3-929b-da75c257b51a') ?: '0';
+            $average = round($msgCount / $days);
+            $message = "{$e->message}\n\n🔢 *mmpls7 has said \"oofta\" {$msgCount} times since November 9th, 2017 at 18:30 UTC (Average: {$average} oofta's per day).*";
         } elseif (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
@@ -258,6 +266,12 @@ help;
             $this->redis->hIncrBy('messageCounts', $e->userId, 1);
             if ($e->userId == 'f555daac-5720-4af6-bc8d-c6562a45c9b4' && preg_match('/jfc/i', $e->message, $matches)) {
                 $this->redis->hIncrBy('jfcCounts', $e->userId, 1);
+            }
+        }
+        if (strpos($e->roomId, ':') === false) {
+            $this->redis->hIncrBy('messageCounts', $e->userId, 1);
+            if ($e->userId == '1ee59eef-2900-4da3-929b-da75c257b51a' && preg_match('/oofta/i', $e->message, $matches)) {
+                $this->redis->hIncrBy('ooftaCounts', $e->userId, 1);
             }
         }
 
