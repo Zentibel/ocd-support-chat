@@ -148,7 +148,7 @@ help;
             if ($days < 1) $days = 1;
             $msgCount = $this->redis->hGet('ooftaCounts', '1ee59eef-2900-4da3-929b-da75c257b51a') ?: '0';
             $average = round($msgCount / $days);
-            $message = "{$e->message}\n\n🔢 *mmpls7 has said \"oofta\" {$msgCount} times since November 9th, 2017 at 18:30 UTC (Average: {$average} oofta's per day... {$msgCount} oofta's over {$days} days?).*";
+            $message = "{$e->message}\n\n🔢 *mmpls7 has said \"oofta\" {$msgCount} times since November 9th, 2017 at 18:30 UTC (Average: {$average} oofta's per day).*";
         } elseif (strtolower(substr($e->message, 0, 5)) == '/roll') {
             if (preg_match('/^\/roll (?P<diecount>\d+)/', $e->message, $matches)) {
                 $dieCount = (int) $matches['diecount'];
