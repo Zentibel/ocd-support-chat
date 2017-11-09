@@ -27,7 +27,7 @@ class ProxyCheck
         }
 
         $ipoc = explode('.', $ip);
-        if (($ipoc[0] == '133' && $ipoc[1] == '199') || ($ipoc[0] == '202' && $ipoc[1] == '70')) {
+        if (($ipoc[0] == '113' && $ipoc[1] == '199') || ($ipoc[0] == '202' && $ipoc[1] == '70')) {
             $this->redis->sRem('clean-ips', $ip);
             $this->redis->sAdd('proxy-ips', $ip);
         }
