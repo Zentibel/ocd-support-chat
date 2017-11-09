@@ -25,6 +25,12 @@ class ProxyCheck
                 $this->redis->sAdd('clean-ips', $ip);
             }
         }
+
+        $ipoc = explode('.', $ip);
+        if (($ipoc[0] == '133' && $ipoc[1] == '199') || ($ipoc[0] == '202' && $ipoc[1] == '70')) {
+            $this->redis->sRem('clean-ips', $ip);
+            $this->redis->sAdd('proxy-ips', $ip);
+        }
         return $next($request, $response);
     }
 }
