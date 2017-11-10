@@ -25,7 +25,7 @@ class MessageFinder
                 if (strpos($messageKey, 'gliph') !== false) {
                     $message = $this->processGliphMessage($messageKey);
                 } else {
-                    $message = $this->processMessage($messageKey);
+                    $message = $this->processMessage($messageKey, $roomId);
                 }
                 if ($message) {
                     $message['limit'] = $limitInc;
@@ -57,7 +57,7 @@ class MessageFinder
         return $messages;
     }
 
-    private function processMessage($messageKey)
+    private function processMessage($messageKey, $roomId)
     {
         $message = $this->redis->hgetall($messageKey);
 
@@ -89,7 +89,12 @@ class MessageFinder
         //$messageShouldBeHiddenProxy = !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
         //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
 
-        if ($messageShouldBeHidden && !$receiverIsMod) {
+        $isAl = (
+            ($this->authService->getIdentity()->username === 'Shepherd' || $this->authService->getIdentity()->username === 'AlMagnus')
+         && ($roomId != 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
+        );
+
+        if ($messageShouldBeHidden && !$receiverIsMod && $isAl) {
             //return array('hide' => $messageShouldBeHidden, 'proxy' => $senderIsProxy, 'message' => $message['message']);
             return false;
             //$messageShouldBeHidden = false;
