@@ -319,7 +319,7 @@ help;
 
         if (preg_match('/^\/banned/', $e->message, $matches)) {
             $data['message'] = trim(str_replace('/banned ', '', $data['message']));
-            $this->redis->sAdd('banned-messages', $data['id');
+            $this->redis->sAdd('banned-messages', $data['id']);
         }
 
         if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
