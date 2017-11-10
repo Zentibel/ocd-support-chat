@@ -90,7 +90,7 @@ class MessageFinder
         //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
 
         $isAl = (
-            ($this->authService->getIdentity()->username === 'Shepherd' || $this->authService->getIdentity()->username === 'AlMagnus')
+            ($this->authService->getIdentity()->username === 'AlMagnus')
          && ($roomId !== 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
         );
 
