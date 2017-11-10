@@ -121,7 +121,12 @@ body.nightmode .banned-user span.sender a{
           <i class="material-icons">attach_file</i>
         </div>
 
-        <textarea id="compose-message" placeholder="Send message as <?= $this->ident()->username; ?>..." autocomplete="off" autofocus="true" spellcheck="true"></textarea>
+<?php $usernames = array('Shepherd', 'glinda', 'Guadalupe'); ?>
+        <? if (in_array($this->ident()->username, $usernames)): ?>
+            <textarea id="compose-message" placeholder="Send message as <?= $this->ident()->username; ?>..." autocomplete="off" autofocus="true" spellcheck="true"></textarea>
+        <? else: ?>
+            <textarea id="compose-message" placeholder="Message" autocomplete="off" autofocus="true" spellcheck="true"></textarea>
+
 
         <button class="send mdl-button mdl-js-button mdl-js-ripple-effect">
           <i class="material-icons">send</i>
