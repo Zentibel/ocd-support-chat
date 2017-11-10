@@ -91,10 +91,10 @@ class MessageFinder
 
         $isAl = (
             ($this->authService->getIdentity()->username === 'Shepherd' || $this->authService->getIdentity()->username === 'AlMagnus')
-         && ($roomId != 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
+         && ($roomId !== 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
         );
 
-        if ($messageShouldBeHidden && !$receiverIsMod && $isAl) {
+        if ($messageShouldBeHidden && (!$receiverIsMod || $isAl)) {
             //return array('hide' => $messageShouldBeHidden, 'proxy' => $senderIsProxy, 'message' => $message['message']);
             return false;
             //$messageShouldBeHidden = false;
