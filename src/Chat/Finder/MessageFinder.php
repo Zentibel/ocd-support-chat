@@ -83,8 +83,9 @@ class MessageFinder
 
         $senderIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $message['ip']);
         $receiverIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $_SERVER['REMOTE_ADDR']);
+        $messageIsBanned = (bool) $this->redis->sIsMember('banned-messages', $message['id']);
         $messageShouldBeHidden = (!$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy)
-                                && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
+                                && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy || $messageIsBanned);
         //$messageShouldBeHidden = !$receiverIsBanned && !$receiverIpIsBanned && ($senderIsBanned || $senderIpIsBanned);
         //$messageShouldBeHiddenProxy = !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
         //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
