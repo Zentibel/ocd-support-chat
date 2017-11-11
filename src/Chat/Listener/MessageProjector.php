@@ -318,7 +318,7 @@ help;
         }
 
         if (preg_match('/^\/banned/', $e->message, $matches)) {
-            $data['message'] = trim(str_replace('/banned ', '', $data['message']));
+            $data['message'] = trim(str_replace('/banned', '', $data['message']));
             $this->redis->sAdd('banned-messages', $data['id']);
         }
 
