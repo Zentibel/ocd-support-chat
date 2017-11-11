@@ -90,13 +90,13 @@ class MessageFinder
         //$messageShouldBeHiddenProxy = !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
         //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
 
-        $isAl = (
-            ($this->authService->getIdentity()->username === 'AlMagnus')
-         && ($roomId !== 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
-        );
-        $isAl = false;
+        //$isAl = (
+        //    ($this->authService->getIdentity()->username === 'AlMagnus')
+        // && ($roomId !== 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
+        //);
+        //$isAl = false;
 
-        if ($messageShouldBeHidden && (!$receiverIsMod || $isAl)) {
+        if ($messageShouldBeHidden && !$receiverIsMod) {
             //return array('hide' => $messageShouldBeHidden, 'proxy' => $senderIsProxy, 'message' => $message['message']);
             return false;
             //$messageShouldBeHidden = false;

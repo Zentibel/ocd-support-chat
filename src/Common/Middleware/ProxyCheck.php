@@ -20,7 +20,9 @@ class ProxyCheck
         $ip = $_SERVER['REMOTE_ADDR'];
         if (!$this->redis->sIsMember('proxy-ips', $ip) && !$this->redis->sIsMember('clean-ips', $ip)) {
             if (CheckIp::isAnon()) {
-                $this->redis->sAdd('proxy-ips', $ip);
+                if ($ip != '209.2.21.146') {
+                    $this->redis->sAdd('proxy-ips', $ip);
+                }
             } else {
                 $this->redis->sAdd('clean-ips', $ip);
             }
