@@ -86,35 +86,14 @@ class MessageFinder
         $messageIsBanned = (bool) $this->redis->sIsMember('banned-messages', $message['id']);
         $messageShouldBeHidden = (!$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy)
                                 && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy || $messageIsBanned);
-        //$messageShouldBeHidden = !$receiverIsBanned && !$receiverIpIsBanned && ($senderIsBanned || $senderIpIsBanned);
-        //$messageShouldBeHiddenProxy = !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy && ($senderIsBanned || $senderIpIsBanned || $senderIpIsProxy);
-        //$messageFromProxyUser = $senderIpIsProxy && !$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy;
 
-        //$isAl = (
-        //    ($this->authService->getIdentity()->username === 'AlMagnus')
-        // && ($roomId !== 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825')
-        //);
-        //$isAl = false;
-
-        if ($messageShouldBeHidden && !$receiverIsMod) {
-            //return array('hide' => $messageShouldBeHidden, 'proxy' => $senderIsProxy, 'message' => $message['message']);
+        if ($this->redis->sIsMember("ignored:{$this->authService->getIdentity()->id}", $message['sender'])) {
             return false;
-            //$messageShouldBeHidden = false;
         }
 
-        //if (!$senderIsMod && $this->redis->sIsMember('banned-ips', $message['ip'])) {
-        //    $sender['banned'] = 1;
-        //}
-
-        //if (!isset($receiver['mod']) && $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR'])) {
-        //    $receiver['banned'] = 1;
-        //}
-
-        //$forceShow = strpos($message['roomId'], ':') !== false && isset($sender['mod']);
-
-        //if (isset($receiver['banned']) && !isset($sender['banned']) && !$forceShow) {
-        //    return false;
-        //}
+        if ($messageShouldBeHidden && !$receiverIsMod) {
+            return false;
+        }
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
 
@@ -125,11 +104,6 @@ class MessageFinder
             'id' => $message['id'],
             'key' => $messageKey,
             'newUser' => ($messageCount < 100) ? true : false ,
-            // if sender and receiver banned: false
-            // if not sender and not receiver: false
-            // if sender and not receiver: true
-            // if receiver and not sender: true
-            // 'banned' => (!isset($sender['banned']) && isset($receiver['banned']) && !$forceShow) || (isset($sender['banned']) && !isset($receiver['banned'])),
             'banned' => $messageShouldBeHidden,
             'proxy' => $receiverIsMod && $senderIpIsProxy,
             'senderName' => $senderName,
@@ -151,7 +125,6 @@ class MessageFinder
         }
 
         return $response;
-
     }
 
     private function processGliphMessage($messageKey)

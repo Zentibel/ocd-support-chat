@@ -67,14 +67,20 @@ class MessageProjector
 | `/karma` | view your own karma |
 | `/karma username` | view Username's karma |
 | `/leaderboard` | view karma leaderboard |
-| `/username++` | give Username 1 karma |
-| `/username--` | reduce Username's karma by 1 |
+| `/username++` | give Username 1 karma ^[1]^ |
+| `/username--` | reduce Username's karma by 1 ^[1]^ |
+| `/ignored` | see list of users you have ignored ^[2]^ |
+| `/ignore username` | ignore/block Username ^[2]^ |
+| `/unignore username` | ignore/block Username ^[2]^ |
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
 | `/jfckatz` | see how many times katz has said "jfc" |
 | `/ooftamags` | see how many times mmpls7 has said "oofta" |
 | `/help` | This. |
+
+^[1] Command not available in private messages.^
+^[2] Command only available in private message to yourself.^
 
 ##### 
 
@@ -179,11 +185,6 @@ help;
             } else {
                 $targetUser = $this->userFinder->findByUserId($userId);
                 if (!$this->redis->sIsMember('banned-users', $userId)) {
-                    //$this->redis->hSet(
-                    //    'user:' . $userId,
-                    //    'banned',
-                    //    1
-                    //);
                     $this->redis->sAdd('banned-users', $userId);
                     $ips = $this->redis->sMembers("ips:{$userId}");
                     foreach ($ips as $i => $ip) {
@@ -205,10 +206,6 @@ help;
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
                 if ($this->redis->sIsMember('banned-users', $userId)) {
-                    //$this->redis->hDel(
-                    //    'user:' . $userId,
-                    //    'banned'
-                    //);
                     $this->redis->sRem('banned-users', $userId);
                     $ips = $this->redis->sMembers("ips:{$userId}");
                     foreach ($ips as $ip) {
@@ -253,6 +250,42 @@ help;
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a mod.*";
                 }
             }
+        } elseif (preg_match('/^\/ignore (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if (!$this->redis->sIsMember("ignored:{$e->userId}", $userId)) {
+                    $this->redis->sAdd("ignored:{$e->userId}", $userId);
+                    $message = "{$e->message}\n\n🚫 *{$matches['username']} has been ignored.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already ignored.*";
+                }
+            }
+        } elseif (preg_match('/^\/unignore (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if ($this->redis->sIsMember("ignored:{$e->userId}", $userId)) {
+                    $this->redis->sRem("ignored:{$e->userId}", $userId);
+                    $message = "{$e->message}\n\n👌 *{$matches['username']} is no longer ignored.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not ignored.*";
+                }
+            }
+        } elseif (strtolower(substr($e->message, 0, 8)) == '/ignored' && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $ignored = $this->redis->sMembers("ignored:{$e->userId}");
+            if (count($ignored) > 0) {
+                $ignoredList = "🚫 **You have the following user(s) ignored:**\n\n";
+                foreach ($ignored as $userId) {
+                    $userName = $this->redis->hGet("user:{$userId}", 'username');
+                    $ignoredList .= "1. {$userName}\n";
+                }
+            } else {
+                $ignoredList = "🚫 *You do not have anyone ignored yet. Use '/ignore someUser' to ignore someone.*\n\n";
+            }
+            $message = "{$e->message}\n\n{$ignoredList}";
         } elseif (preg_match('/^\/alias (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
                 $this->redis->hSet(
                     'user:' . $sender->id,
