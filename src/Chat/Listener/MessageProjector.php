@@ -260,7 +260,9 @@ help;
             }
         } elseif (preg_match('/^\/ignore (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === "{$e->userId}:{$e->userId}") {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
-            if(!$userId) {
+            if ($userId == $e->userId) {
+                $message = "{$e->message}\n\n⛔️ *If it were that easy to ignore yourself, you wouldn't have OCD!*";
+            } elseif (!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
                 if (!$this->redis->sIsMember("ignored:{$e->userId}", $userId)) {
