@@ -90,6 +90,14 @@ class MessageProjector
 | `alt+v` | Toggle text-to-speech (beta) |
 | `alt+u` | Increase notification volume by 10% |
 | `alt+d` | Decrease notification volume by 10% |
+
+##### 
+
+**Other**
+
+* Message formatting uses the same syntax as [reddit comments](https://www.reddit.com/wiki/commenting).
+* Tag your selfies with "#selfie" when sharing with the chat to have them cross-posted to our [selfie wall](/c/selfies)!
+
 help;
             if ($e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825') {
                 $help .= <<<help
