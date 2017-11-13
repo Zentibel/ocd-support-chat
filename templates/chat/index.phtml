@@ -18,6 +18,10 @@ if ($this->routeParam('community') == 'tech') {
 if ($this->routeParam('community') == 'ocd') {
     $this->headTitle('Support');
 }
+
+if ($this->routeParam('community') == 'selfies') {
+    $this->headTitle('Selfies');
+}
 ?>
 <div class="preload">
     <span><img class="narwhal animated infinite tada" src="/narwhal.png"></span>
@@ -93,6 +97,7 @@ body.nightmode .banned-user span.sender a{
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">Support Chat</a>
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'general']) ?>">General Chat</a>
       <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'tech']) ?>">Tech Chat</a>
+      <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'selfies']) ?>">Selfie Wall</a>
       <? if($this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
           <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocdmods']) ?>">Moderator Chat</a>
       <? else: ?>
@@ -210,6 +215,9 @@ this.secure=null!=r.secure?r.secure:e.location&&"https:"===location.protocol,r.h
     <? endif; ?>
     <? if ($this->routeParam('community') == 'tech'): ?>
         var ROOM_ID = '0ccc390c-093c-4a33-b289-b683ec8786c5';
+    <? endif; ?>
+    <? if ($this->routeParam('community') == 'selfies'): ?>
+        var ROOM_ID = '0910e17f-c70b-4578-a7e1-33dbb10889cf';
     <? endif; ?>
 
 <? elseif ($this->routeParam('username')): ?>

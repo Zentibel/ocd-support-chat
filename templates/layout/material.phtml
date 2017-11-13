@@ -18,6 +18,8 @@
         <link rel="manifest" href="/manifest-tech.json?v=M4ozyrdgLp2">
     <? elseif ($this->routeParam('community') == 'ocdmods'): ?>
         <link rel="manifest" href="/manifest-ocdmods.json?v=M4ozyrdgLp2">
+    <? elseif ($this->routeParam('community') == 'selfies'): ?>
+        <link rel="manifest" href="/manifest-selfies.json?v=M4ozyrdgLp2">
     <? else: ?>
         <link rel="manifest" href="/manifest.json?v=M4ozyrdgLq2">
     <? endif; ?>
@@ -72,6 +74,9 @@
         <? endif; ?>
         <? if ($this->routeParam('community') == 'ocdmods'): ?>
             Moderators
+        <? endif; ?>
+        <? if ($this->routeParam('community') == 'selfies'): ?>
+            OChatD Selfie Wall
         <? endif; ?>
       </span>
       <div class="mdl-layout-spacer"></div>

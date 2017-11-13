@@ -322,6 +322,19 @@ help;
             $this->redis->sAdd('banned-messages', $data['id']);
         }
 
+        if (preg_match('/\#selfie/i', $e->message, $matches) && strpos($e->roomId, ':') === false) {
+            $selfieWallRoom = '0910e17f-c70b-4578-a7e1-33dbb10889cf';
+            $copy = $data;
+            $copy['id'] = Uuid::uuid4()->toString();
+            $copy['roomId'] = $selfieWallRoom; // ??? needed?
+            $copyKey = "message:{$copy['id']}";
+            $this->redis->hMSet($copyKey, $copy);
+            $this->redis->zAdd('chat:messages:'.$selfieWallRoom, $now, $copyKey);
+            $this->redis->publish('new-message', $selfieWallRoom);
+            // todo offer selfie notifications?
+            // $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
+        }
+
         if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
