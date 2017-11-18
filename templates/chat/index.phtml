@@ -279,6 +279,7 @@ socket.on('media-upload-complete', function (mediaId) {
 
 var laugh = new Audio('/laugh.mp3');
 var notification = new Audio('/notification.mp3');
+notification.volume = 0.8;
 var notificationsMuted = false;
 var myStorage = localStorage;
 
@@ -325,7 +326,7 @@ var reassurances = [
 var md = markdownit({
   html: false,
   linkify: true,
-  typographer: true,
+  typographer: false,
   breaks: true,
 }).use(window.markdownitSub).use(window.markdownitSup);
 
