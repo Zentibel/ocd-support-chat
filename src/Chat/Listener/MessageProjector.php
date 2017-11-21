@@ -108,10 +108,13 @@ help;
 
 * `/ban username`
 * `/unban username`
+* `/allowproxy username`
+* `/disallowproxy username`
 * `/mod username`
 * `/unmod username`
 * `/alias some-psuedonym`
 * `/msg username A mod message to username`
+* `/banned A message to be sent as if banned`
 help;
             }
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -223,6 +226,30 @@ help;
                     $message = "{$e->message}\n\n👌 *{$matches['username']} has been unbanned. {$ipCount} IP(s) unbanned.*";
                 } else {
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not banned.*";
+                }
+            }
+        } elseif (preg_match('/^\/allowproxy (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if (!$this->redis->sIsMember('whitelist-users', $userId)) {
+                    $this->redis->sAdd('whitelist-users', $userId);
+                    $message = "{$e->message}\n\n👮 *{$matches['username']} can now use proxies.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already authorized to use proxies.*";
+                }
+            }
+        } elseif (preg_match('/^\/disallowproxy (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if ($this->redis->sIsMember('whitelist-users', $userId)) {
+                    $this->redis->sRem('whitelist-users', $userId);
+                    $message = "{$e->message}\n\n👋 *{$matches['username']} is no longer allowed to use proxies.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not authorized to use proxies.*";
                 }
             }
         } elseif (preg_match('/^\/mod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {

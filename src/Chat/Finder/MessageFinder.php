@@ -72,6 +72,8 @@ class MessageFinder
         $sender = $this->redis->hgetall('user:'.$message['sender']);
         $receiver = $this->redis->hGetAll('user:' . $this->authService->getIdentity()->id);
 
+        $senderIsWhitelisted = $this->redis->sIsMember('whitelist-users', $message['sender']);
+
         $senderIsMod = $this->redis->sIsMember('mod-users', $message['sender']);
         $receiverIsMod = $this->redis->sIsMember('mod-users', $this->authService->getIdentity()->id);
 
@@ -81,7 +83,7 @@ class MessageFinder
         $senderIpIsBanned = $this->redis->sIsMember('banned-ips', $message['ip']);
         $receiverIpIsBanned = $this->redis->sIsMember('banned-ips', $_SERVER['REMOTE_ADDR']);
 
-        $senderIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $message['ip']);
+        $senderIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $message['ip']) && !$senderIsWhitelisted;
         $receiverIpIsProxy = (bool) $this->redis->sIsMember('proxy-ips', $_SERVER['REMOTE_ADDR']);
         $messageIsBanned = (bool) $this->redis->sIsMember('banned-messages', $message['id']);
         $messageShouldBeHidden = (!$receiverIsBanned && !$receiverIpIsBanned && !$receiverIpIsProxy)
