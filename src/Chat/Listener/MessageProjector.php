@@ -411,6 +411,7 @@ help;
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
                 $targetUser = $this->userFinder->findByUserId($userId);
+                $modUser = $this->userFinder->findByUserId($e->userId);
                 $modPmRoomId = $this->pmChatKey($targetUser->id, 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769');
                 $modAlias = $this->redis->hGet(
                     'user:' . $e->userId,
@@ -425,7 +426,7 @@ help;
 
                 $data['sender'] = $copy['sender'];
                 // TODO show who really sent it
-                $data['message'] = "/msg {$matches['username']} ".$copy['message'];
+                $data['message'] = "/msg {$matches['username']} {$copy['message']} ({$modUser->username})";
 
                 $copyKey = "message:{$copy['id']}";
                 $this->redis->hMSet($copyKey, $copy);
