@@ -96,5 +96,21 @@ return [
             ],
 
         ],
+        [
+            'name' => 'about',
+            'path' => '/about',
+            'middleware' => [
+                Auth\Middleware\AssertIsAuthenticated::class,
+                Common\Middleware\StaticView::class,
+
+            ],
+            'allowed_methods' => ['GET'],
+            'options' => [
+                'defaults' => [
+                    'view' => 'page::about',
+                ],
+            ],
+
+        ],
     ],
 ];

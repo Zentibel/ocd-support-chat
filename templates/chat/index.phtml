@@ -90,24 +90,6 @@ body.nightmode .banned-user span.sender a{
 }
 <? endif; ?>
 </style>
-  <div class="mdl-layout__drawer">
-    <img src="/logo.png" style="display: block; margin: 0px auto; max-width: 100%;" alt="Logo by Carbie" title="Logo by Carbie">
-    <!--<span class="mdl-layout-title">Extra Goodies</span>-->
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocd']) ?>">Support Chat</a>
-      <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'general']) ?>">General Chat</a>
-      <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'tech']) ?>">Tech Chat</a>
-      <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'selfies']) ?>">Selfie Wall</a>
-      <? if($this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
-          <a class="mdl-navigation__link" href="<?= $this->url('community-chat', ['community' => 'ocdmods']) ?>">Moderator Chat</a>
-      <? else: ?>
-          <a class="mdl-navigation__link" href="<?= $this->url('private-chat', ['username' => 'Moderators']) ?>">Talk to Mods</a>
-      <? endif; ?>
-      <a class="mdl-navigation__link" href="#" id="voice-chat-button">Join Voice Chat</a>
-      <a class="mdl-navigation__link" href="/is-shep-alive" target="_blank">Is Shep Alive?</a>
-      <a class="mdl-navigation__link" href="#" id="reassurance"><img width="18" src="https://cdn.jsdelivr.net/emojione/assets/png/1f3b1.png?v=2.2.7"> Reassurance</a>
-    </nav>
-  </div>
 
   <main id="content" class="mdl-layout__content stretch">
     <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
@@ -278,6 +260,7 @@ socket.on('media-upload-complete', function (mediaId) {
 });
 
 var laugh = new Audio('/laugh.mp3');
+var wompwomp = new Audio('/wompwomp.mp3');
 var notification = new Audio('/notification.mp3');
 notification.volume = 0.8;
 var notificationsMuted = false;
@@ -377,6 +360,9 @@ function renderMessage(event, message) {
     }
     if (initialMessagesLoaded === true && message.message.match(/^\/laugh/i) && !notificationsMuted) {
         laugh.play();
+    }
+    if (initialMessagesLoaded === true && message.message.match(/^\/wompwomp/i) && !notificationsMuted) {
+        wompwomp.play();
     }
     if (initialMessagesLoaded === true && message.message.match(/rhubarb?/i)) {
         $('#rhubarb').removeClass('hidden');
