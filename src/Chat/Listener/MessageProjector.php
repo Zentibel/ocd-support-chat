@@ -106,6 +106,7 @@ help;
 
 **Mod Commands**
 
+* `/autobanproxies on/off`
 * `/ban username`
 * `/unban username`
 * `/allowproxy username`
@@ -115,6 +116,8 @@ help;
 * `/alias some-psuedonym`
 * `/msg username A mod message to username`
 * `/banned A message to be sent as if banned`
+* `/announce-support An anonymous mod message to the support room`
+* `/announce-general An anonymous mod message to the general room`
 help;
             }
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -416,7 +419,7 @@ help;
                 $modAlias = $this->redis->hGet(
                     'user:' . $e->userId,
                     'modAlias'
-                ) ?: 'Anonymous Moderator';
+                ) ?: 'Anonymous-Moderator';
                 $copy = $data;
                 $copy['id'] = Uuid::uuid4()->toString();
                 $copy['sender'] = 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769';
@@ -433,6 +436,45 @@ help;
                 $this->redis->zAdd('chat:messages:'.$modPmRoomId, $now, $copyKey);
                 $this->redis->publish('new-message', $modPmRoomId);
                 $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
+            }
+        }
+
+
+
+        if (preg_match('/^\/announce-(?P<room>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+            if ($matches['room'] == 'support') {
+                $announceRoomId = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
+            } else if ($matches['room'] == 'general') {
+                $announceRoomId = '85d5bd7f-9374-4553-98de-84f234e3dba1';
+            } else {
+                $announceRoomId = false;
+            }
+
+            if (!$announceRoomId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['room']} is not a valid room.*";
+            } else {
+                $targetUser = $this->userFinder->findByUserId($userId);
+                $modUser = $this->userFinder->findByUserId($e->userId);
+                $modAlias = $this->redis->hGet(
+                    'user:' . $e->userId,
+                    'modAlias'
+                ) ?: 'Anonymous-Moderator';
+                $copy = $data;
+                $copy['id'] = Uuid::uuid4()->toString();
+                $copy['sender'] = 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769';
+                $copy['roomId'] = $announceRoomId;
+                $copy['message'] = trim(str_replace("/announce-{$matches['room']}", '', $copy['message']));
+                //$copy['message'] = "{$copy['message']}\n\n***— {$modAlias}***";
+
+                $data['sender'] = $copy['sender'];
+                // TODO show who really sent it
+                $data['message'] = "/announce-{$matches['room']} {$copy['message']}\n\n*(Sent by {$modUser->username})*";
+
+                $copyKey = "message:{$copy['id']}";
+                $this->redis->hMSet($copyKey, $copy);
+                $this->redis->zAdd('chat:messages:'.$announceRoomId, $now, $copyKey);
+                $this->redis->publish('new-message', $announceRoomId);
+                //$this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
             }
         }
 
