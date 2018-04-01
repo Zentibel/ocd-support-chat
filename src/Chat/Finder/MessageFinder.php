@@ -94,6 +94,10 @@ class MessageFinder
             return false;
         }
 
+        if ($this->redis->sIsMember("blocked:{$message['sender']}", $this->authService->getIdentity()->id)) {
+            return false;
+        }
+
         if ($messageShouldBeHidden && !$receiverIsMod) {
             return false;
         }

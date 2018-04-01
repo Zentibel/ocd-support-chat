@@ -70,8 +70,11 @@ class MessageProjector
 | `/username++` | give Username 1 karma ^[1]^ |
 | `/username--` | reduce Username's karma by 1 ^[1]^ |
 | `/ignored` | see list of users you have ignored ^[2]^ |
-| `/ignore username` | ignore/block Username ^[2]^ |
-| `/unignore username` | ignore/block Username ^[2]^ |
+| `/ignore username` | ignore messages from Username ^[2]^ |
+| `/unignore username` | stop ignoring messages from Username ^[2]^ |
+| `/blocked` | see list of users you have blocked ^[2]^ |
+| `/block username` | hide your messages from Username ^[2]^ |
+| `/unblock username` | stop hiding your messages from Username ^[2]^ |
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
@@ -326,6 +329,44 @@ help;
                 $ignoredList = "🚫 *You do not have anyone ignored yet. Use '/ignore someUser' to ignore someone.*\n\n";
             }
             $message = "{$e->message}\n\n{$ignoredList}";
+        } elseif (preg_match('/^\/block (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if ($userId == $e->userId) {
+                $message = "{$e->message}\n\n⛔️ *If it were that easy to ignore yourself, you wouldn't have OCD!*";
+            } elseif (!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if (!$this->redis->sIsMember("blocked:{$e->userId}", $userId)) {
+                    $this->redis->sAdd("blocked:{$e->userId}", $userId);
+                    $message = "{$e->message}\n\n🚫 *{$matches['username']} has been blocked.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is already blocked.*";
+                }
+            }
+        } elseif (preg_match('/^\/unblock (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } else {
+                if ($this->redis->sIsMember("blocked:{$e->userId}", $userId)) {
+                    $this->redis->sRem("blocked:{$e->userId}", $userId);
+                    $message = "{$e->message}\n\n👌 *{$matches['username']} is no longer blocked.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not blocked.*";
+                }
+            }
+        } elseif (strtolower(substr($e->message, 0, 8)) == '/blocked' && $e->roomId === "{$e->userId}:{$e->userId}") {
+            $blocked = $this->redis->sMembers("blocked:{$e->userId}");
+            if (count($blocked) > 0) {
+                $blockedList = "🚫 **You have the following user(s) blocked:**\n\n";
+                foreach ($blocked as $userId) {
+                    $userName = $this->redis->hGet("user:{$userId}", 'username');
+                    $blockedList .= "1. {$userName}\n";
+                }
+            } else {
+                $blockedList = "🚫 *You do not have anyone blocked yet. Use '/block someUser' to block someone.*\n\n";
+            }
+            $message = "{$e->message}\n\n{$blockedList}";
         } elseif (preg_match('/^\/alias (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
                 $this->redis->hSet(
                     'user:' . $sender->id,
@@ -395,18 +436,18 @@ help;
             $this->redis->sAdd('banned-messages', $data['id']);
         }
 
-        if (preg_match('/\#selfie/i', $e->message, $matches) && strpos($e->roomId, ':') === false) {
-            $selfieWallRoom = '0910e17f-c70b-4578-a7e1-33dbb10889cf';
-            $copy = $data;
-            $copy['id'] = Uuid::uuid4()->toString();
-            $copy['roomId'] = $selfieWallRoom; // ??? needed?
-            $copyKey = "message:{$copy['id']}";
-            $this->redis->hMSet($copyKey, $copy);
-            $this->redis->zAdd('chat:messages:'.$selfieWallRoom, $now, $copyKey);
-            $this->redis->publish('new-message', $selfieWallRoom);
-            // todo offer selfie notifications?
-            // $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
-        }
+        //if (preg_match('/\#selfie/i', $e->message, $matches) && strpos($e->roomId, ':') === false) {
+        //    $selfieWallRoom = '0910e17f-c70b-4578-a7e1-33dbb10889cf';
+        //    $copy = $data;
+        //    $copy['id'] = Uuid::uuid4()->toString();
+        //    $copy['roomId'] = $selfieWallRoom; // ??? needed?
+        //    $copyKey = "message:{$copy['id']}";
+        //    $this->redis->hMSet($copyKey, $copy);
+        //    $this->redis->zAdd('chat:messages:'.$selfieWallRoom, $now, $copyKey);
+        //    $this->redis->publish('new-message', $selfieWallRoom);
+        //    // todo offer selfie notifications?
+        //    // $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
+        //}
 
         if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
