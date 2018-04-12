@@ -80,6 +80,14 @@ body.nightmode .sent-via-proxy span.sender a:after
     content: ' (via proxy/tor)';
 
 }
+
+.eu-user span.sender a:before,
+body.nightmode .eu-user span.sender a:before
+{
+    font-size: 90%;
+    content: '[🇪🇺] ';
+
+}
 .banned-user span.sender a,
 body.nightmode .banned-user span.sender a{
     color: red !important;
@@ -400,7 +408,11 @@ function renderMessage(event, message) {
         }
     }
 
-    var $message = $('<div class="chat-message'+ (message.banned ? ' banned-user' : '') + (message.proxy ? ' sent-via-proxy' : '') +'" id="'+message.id+'"></div>');
+    var $message = $('<div class="chat-message'
+        + (message.banned ? ' banned-user' : '')
+        + (message.proxy ? ' sent-via-proxy' : '')
+        + (message.eu ? ' eu-user' : '')
+        + '" id="'+message.id+'"></div>');
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
 

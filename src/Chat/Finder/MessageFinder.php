@@ -118,6 +118,8 @@ class MessageFinder
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',
             'message' => $message['message'],
             'timestamp' => $message['timestamp'],
+            //'eu' => (geoip_continent_code_by_name('84.233.227.3') == 'EU') && $receiverIsMod,
+            'eu' => (geoip_continent_code_by_name($message['ip']) == 'EU') && $receiverIsMod,
         ];
 
         if (isset($message['media']) && $message['media']) {
