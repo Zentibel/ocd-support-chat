@@ -523,7 +523,10 @@ help;
             $lastMsgTimestamp = $this->redis->hGet($lastMsgKey, 'timestamp');
             $timeSinceLastMsg = $now - $lastMsgTimestamp;
             if ($timeSinceLastMsg > 300) {
-                $copy = $data;
+                // yuckkk
+                if (!isset($announceRoomId)) {
+                    $copy = $data;
+                }
                 $copy['id'] = Uuid::uuid4()->toString();
                 $copy['message'] = "{$copy['message']}\n\n💬 ***This is an automated cross-post of a new message in the [support chat.](/c/ocd) Don't respond to it here.***";
                 $copyKey = "message:{$copy['id']}";
