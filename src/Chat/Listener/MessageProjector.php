@@ -518,7 +518,7 @@ help;
             }
         }
 
-        if ($e->roomId === 'dd0c62bd-c4f2-4286-affa-256bfcc93955') {
+        if ($e->roomId === 'dd0c62bd-c4f2-4286-affa-256bfcc93955' || (isset($announceRoomId) && $announceRoomId === 'dd0c62bd-c4f2-4286-affa-256bfcc93955')) {
             $lastMsgKey = $this->redis->zRevRangeByScore($chatKey, '+inf', '-inf', ['limit' => [0, 1]])[0];
             $lastMsgTimestamp = $this->redis->hGet($lastMsgKey, 'timestamp');
             $timeSinceLastMsg = $now - $lastMsgTimestamp;
