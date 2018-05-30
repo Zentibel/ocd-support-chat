@@ -34,6 +34,18 @@ class MessageProjector
         $sender = $this->userFinder->findByUserId($e->userId);
         $this->redis->sAdd("ips:{$e->userId}", $_SERVER['REMOTE_ADDR']);
 
+        if (preg_match('/^\/hug (?P<username>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+            $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
+            if(!$userId) {
+                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+            } elseif ($userId == $e->userId) {
+                $message = "{$e->message}\n\n⛔️ *You can't give yourself a hug!!!*";
+            } else {
+                $this->redis->hIncrBy('hugCounts', $userId, 1);
+                $username = $this->redis->hGet('user:' . $userId, 'username');
+                $kCount = $this->redis->hGet('hugCounts', $userId);
+                $message = "{$e->message}\n\n📈 *{$username} has been hugged {$kCount} time(s).*";
+            }
         if (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
@@ -523,7 +535,7 @@ help;
             $lastMsgTimestamp = $this->redis->hGet($lastMsgKey, 'timestamp');
             $timeSinceLastMsg = $now - $lastMsgTimestamp;
             if ($timeSinceLastMsg > 300) {
-                // yuckkk
+                // yuckk
                 if (!isset($announceRoomId)) {
                     $copy = $data;
                 }
