@@ -46,7 +46,7 @@ class MessageProjector
                 $kCount = $this->redis->hGet('hugCounts', $userId);
                 $message = "{$e->message}\n\n📈 *{$username} has been hugged {$kCount} time(s).*";
             }
-        if (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+        } elseif (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
