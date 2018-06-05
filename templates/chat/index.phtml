@@ -589,8 +589,8 @@ function sendMessage(mediaFiles, callback) {
          myStorage.setItem('compose:'+ROOM_ID, $('#compose-message').val());
          myStorage.setItem('compose:selectionStart:'+ROOM_ID, 0);
          myStorage.setItem('compose:selectionEnd:'+ROOM_ID, 0);
-         $('button#send-button').removeAttr('disabled');
-         $('button#send-button').html('Send &raquo;');
+         $('button#send').removeAttr('disabled');
+         $('button#send').html('Send &raquo;');
          $('#pending-media').html('');
          autosize.update($('#compose-message'));
          $('#compose-message').focus();
@@ -662,7 +662,7 @@ $('form#compose').submit(function(event) {
     }
 
     $('#compose-message').attr('disabled','disabled');
-    $('#send-button').attr('disabled','disabled');
+    $('button#send').attr('disabled','disabled');
 
     // TODO overlay div over pending media?
     var messageMedia = [];
