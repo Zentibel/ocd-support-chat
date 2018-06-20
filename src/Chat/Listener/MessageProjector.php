@@ -31,6 +31,12 @@ class MessageProjector
 
     public function onMessageSent(MessageSent $e)
     {
+        // Special code for bunny54
+        // if the message body is blank and has no attachments/media...
+        if (!trim($e->message) && !is_array($e->media)) {
+            return $e->messageId; // just ignore it
+        }
+
         $sender = $this->userFinder->findByUserId($e->userId);
         $this->redis->sAdd("ips:{$e->userId}", $_SERVER['REMOTE_ADDR']);
 
