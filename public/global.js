@@ -130,20 +130,41 @@ $.fn.selectRange = function(start, end) {
     });
 };
 
+// night mode
 function toggleNightMode() {
     $('body').toggleClass('nightmode');
     if ($('body').hasClass('nightmode')) {
-        console.log('night mode enabled');
         Cookies.set('nightmode', 'on');
     } else {
-        console.log('night mode disabled');
         Cookies.remove('nightmode');
     }
 }
 
 setTimeout(function() {
-    console.log('nightmode', Cookies.get('nightmode'));
     if (Cookies.get('nightmode')) {
         toggleNightMode();
+    }
+}, 500);
+
+
+function toggleMute() {
+    $('#mute-button').toggleClass('muted');
+    if ($('#mute-button').hasClass('muted')) {
+        $('#mute-button').text('Unmute Sounds');
+        Cookies.set('muted', 'on');
+        window.notificationsMuted = true;
+    } else {
+        window.notificationsMuted = false;
+        $('#mute-button').text('Mute Sounds');
+        Cookies.remove('muted');
+    }
+    notice = 'Notification sounds ' + (window.notificationsMuted ? 'muted' : 'unmuted');
+    showToast(notice);
+    return window.notificationsMuted;
+}
+
+setTimeout(function() {
+    if (Cookies.get('mute')) {
+        toggleMute();
     }
 }, 500);

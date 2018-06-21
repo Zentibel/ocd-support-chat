@@ -38,7 +38,7 @@
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
     <script defer src="/mdl/material.min.js"></script>
     <script src="/eventbus.min.js"></script>
-    <script src="/global.js?4"></script>
+    <script src="/global.js?5"></script>
     <script src="/media-manager.js?1"></script>
     <script src="/voice-chat.js?5"></script>
 </head>
@@ -98,6 +98,7 @@
                 -->
                 <a class="mdl-menu__item" href="#" onclick="window.location.reload();return false;">Reload/Refresh</a>
                 <a class="mdl-menu__item" href="#" onclick="toggleNightMode();return false;">Toggle Night Mode</a>
+                <a class="mdl-menu__item" href="#" onclick="toggleMute();return false;" id="mute-button">Mute Sounds</a>
                 <a class="mdl-menu__item" href="<?= $this->url('avatar-form') ?>">Change Avatar</a>
                 <a class="mdl-menu__item" href="<?= $this->url('auth-change-password-form') ?>">Change Password</a>
                 <a class="mdl-menu__item mdl-menu__item--full-bleed-divider" href="<?= $this->url('auth-logout') ?>">Logout</a>
