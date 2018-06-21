@@ -318,7 +318,7 @@ body.nightmode blockquote {
     background-color: #222;
 }
 body.nightmode div#pending-media {
-    background-color: #000;
+    background-color: #2d2d2d;
 }
 body.nightmode span.new-user a {
     color: green !important;
