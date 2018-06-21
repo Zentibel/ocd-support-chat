@@ -134,7 +134,7 @@ $.fn.selectRange = function(start, end) {
 function toggleNightMode() {
     $('body').toggleClass('nightmode');
     if ($('body').hasClass('nightmode')) {
-        Cookies.set('nightmode', 'on');
+        Cookies.set('nightmode', 'on', {expires: 1000});
     } else {
         Cookies.remove('nightmode');
     }
@@ -144,14 +144,14 @@ setTimeout(function() {
     if (Cookies.get('nightmode')) {
         toggleNightMode();
     }
-}, 500);
+}, 800);
 
 
 function toggleMute() {
     $('#mute-button').toggleClass('muted');
     if ($('#mute-button').hasClass('muted')) {
         $('#mute-button').text('Unmute Sounds');
-        Cookies.set('muted', 'on');
+        Cookies.set('muted', 'on', {expires: 1000});
         window.notificationsMuted = true;
     } else {
         window.notificationsMuted = false;
@@ -164,7 +164,7 @@ function toggleMute() {
 }
 
 setTimeout(function() {
-    if (Cookies.get('mute')) {
+    if (Cookies.get('muted')) {
         toggleMute();
     }
-}, 500);
+}, 800);
