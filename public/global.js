@@ -147,7 +147,7 @@ setTimeout(function() {
 }, 800);
 
 
-function toggleMute() {
+function toggleMute(hideToast) {
     $('#mute-button').toggleClass('muted');
     if ($('#mute-button').hasClass('muted')) {
         $('#mute-button').text('Unmute Sounds');
@@ -158,13 +158,15 @@ function toggleMute() {
         $('#mute-button').text('Mute Sounds');
         Cookies.remove('muted');
     }
-    notice = 'Notification sounds ' + (window.notificationsMuted ? 'muted' : 'unmuted');
-    showToast(notice);
+    if (!hideToast) {
+        notice = 'Notification sounds ' + (window.notificationsMuted ? 'muted' : 'unmuted');
+        showToast(notice);
+    }
     return window.notificationsMuted;
 }
 
 setTimeout(function() {
     if (Cookies.get('muted')) {
-        toggleMute();
+        toggleMute(true);
     }
 }, 800);

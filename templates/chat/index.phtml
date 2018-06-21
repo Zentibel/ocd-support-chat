@@ -1222,11 +1222,7 @@ if ('speechSynthesis' in window) {
 }
 
 key('alt+m', function(){
-    return toggleMute();
-    //notificationsMuted = !notificationsMuted;
-    //notice = 'Notification sounds ' + (notificationsMuted ? 'muted' : 'unmuted');
-    //showToast(notice);
-    //return false
+    return toggleMute(false);
 });
 
 function showToast(text) {
