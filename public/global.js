@@ -132,20 +132,13 @@ $.fn.selectRange = function(start, end) {
 
 // night mode
 function toggleNightMode() {
-    $('body').toggleClass('nightmode');
-    if ($('body').hasClass('nightmode')) {
+    $('html').toggleClass('nightmode');
+    if ($('html').hasClass('nightmode')) {
         Cookies.set('nightmode', 'on', {expires: 1000});
     } else {
         Cookies.remove('nightmode');
     }
 }
-
-setTimeout(function() {
-    if (Cookies.get('nightmode')) {
-        toggleNightMode();
-    }
-}, 50);
-
 
 function toggleMute(hideToast) {
     $('#mute-button').toggleClass('muted');
@@ -165,8 +158,8 @@ function toggleMute(hideToast) {
     return window.notificationsMuted;
 }
 
-setTimeout(function() {
-    if (Cookies.get('muted')) {
-        toggleMute(true);
-    }
-}, 500);
+//setTimeout(function() {
+//    if (Cookies.get('muted')) {
+//        toggleMute(true);
+//    }
+//}, 500);

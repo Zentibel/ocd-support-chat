@@ -288,45 +288,45 @@ form#compose .mdl-button.send {
 /**
  * Night Mode
  */
-body.nightmode .preload {
+.nightmode .preload {
     background-color: #2d2d2d;
 }
 
 /* Top Bar */
-body.nightmode .mdl-layout__header {
+.nightmode .mdl-layout__header {
     background-color: #222;
     color: #fff;
 }
 
-body.nightmode a {
+.nightmode a {
     color: #cc9966;
 }
-body.nightmode span.timestamp {
+.nightmode span.timestamp {
     color: #f2f0ec;
 }
 
-body.nightmode,
-body.nightmode .footer-light,
-body.nightmode textarea
+.nightmode,
+.nightmode .footer-light,
+.nightmode textarea
 {
     background-color: #2d2d2d;
     color: #d3d0c8;
 }
-body.nightmode .mdl-button,
-body.nightmode span.sender a
+.nightmode .mdl-button,
+.nightmode span.sender a
 {
     color: #d3d0c8;
 }
-body.nightmode blockquote {
+.nightmode blockquote {
     background-color: #222;
 }
-body.nightmode div#pending-media {
+.nightmode div#pending-media {
     background-color: #2d2d2d;
 }
-body.nightmode span.new-user a {
+.nightmode span.new-user a {
     color: green !important;
 }
-body.nightmode .mdl-shadow--8dp {
+.nightmode .mdl-shadow--8dp {
     box-shadow: 0 8px 10px 1px rgba(255,255,255,.14), 0 3px 14px 2px rgba(255,255,255,.12), 0 5px 5px -3px rgba(255,255,255,.2) !important;
 }
 
