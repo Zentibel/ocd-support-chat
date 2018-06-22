@@ -442,6 +442,11 @@ function renderMessage(event, message) {
         return url.match(p);
     }
 
+    function isVocarooLink(url) {
+        var p = /^https:\/\/vocaroo.com\/i\/(.+)$/;
+        return url.match(p);
+    }
+
     function ytVidId(url) {
       var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
       return (url.match(p)) ? RegExp.$1 : false;
@@ -463,6 +468,14 @@ function renderMessage(event, message) {
         if (isAllihoopaLink($(link).attr('href'))) {
             var $div = $('<div class="message media"></div>');
             var $vid = $('<iframe src="' + $(link).attr('href') + '?embed" style="height:100px; width:300px" scrolling="no" frameborder="0"></iframe>');
+            $message.append($div.append($vid));
+        }
+
+        var vocaroo = isVocarooLink($(link).attr('href'));
+        if (vocaroo) {
+            console.log(vocaroo);
+            var $div = $('<div class="message media"></div>');
+            var $vid = $('<video style="height: 50px; width: 300px;" controls src="https://vocaroo.com/media_command.php?media=' + vocaroo[1] + '&command=download_mp3">Embedded video failed</video>');
             $message.append($div.append($vid));
         }
     });
