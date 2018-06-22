@@ -144,7 +144,7 @@ setTimeout(function() {
     if (Cookies.get('nightmode')) {
         toggleNightMode();
     }
-}, 800);
+}, 50);
 
 
 function toggleMute(hideToast) {
@@ -169,4 +169,4 @@ setTimeout(function() {
     if (Cookies.get('muted')) {
         toggleMute(true);
     }
-}, 800);
+}, 500);

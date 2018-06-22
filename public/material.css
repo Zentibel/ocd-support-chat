@@ -288,6 +288,9 @@ form#compose .mdl-button.send {
 /**
  * Night Mode
  */
+body.nightmode .preload {
+    background-color: #2d2d2d;
+}
 
 /* Top Bar */
 body.nightmode .mdl-layout__header {
