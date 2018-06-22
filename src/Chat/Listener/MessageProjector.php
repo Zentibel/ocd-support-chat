@@ -391,11 +391,9 @@ help;
                     $matches['username']
                 );
                 $message = "{$e->message}\n\n🛡 *You will now be known as {$matches['username']} when responding as a mod.*";
-        } elseif (preg_match('/(?P<url>https:\/\/nofile\.io\/f\/[^\s]+)/', $e->message, $matches)) {
-            $cdnUrl = $this->getNoFileUrl($matches['url']);
-            //$message = "{$e->message}\n\n{$cdnUrl}";
-            $message = str_replace($matches['url'], "[{$matches['url']}]({$cdnUrl})", $e->message);
-
+        //} elseif (preg_match('/(?P<url>https:\/\/nofile\.io\/f\/[^\s]+)/', $e->message, $matches)) {
+        //    $cdnUrl = $this->getNoFileUrl($matches['url']);
+        //    $message = str_replace($matches['url'], "[{$matches['url']}]({$cdnUrl})", $e->message);
         } else {
             $message = $e->message;
         }
