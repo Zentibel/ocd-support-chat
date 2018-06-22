@@ -158,8 +158,8 @@ function toggleMute(hideToast) {
     return window.notificationsMuted;
 }
 
-//setTimeout(function() {
-//    if (Cookies.get('muted')) {
-//        toggleMute(true);
-//    }
-//}, 500);
+setTimeout(function() {
+    if (Cookies.get('muted')) {
+        toggleMute(true);
+    }
+}, 500);
