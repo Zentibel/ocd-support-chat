@@ -427,6 +427,11 @@ function renderMessage(event, message) {
 
     $message.append($messageRendered);
 
+    function isMp4Link(url) {
+        var p = /^https:\/\/.+\.mp4$/;
+        return url.match(p);
+    }
+
     function ytVidId(url) {
       var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
       return (url.match(p)) ? RegExp.$1 : false;
@@ -437,6 +442,12 @@ function renderMessage(event, message) {
             var $div = $('<div class="message media"></div>');
             var $img = $('<a class="yt-thumbnail-link" href="' + $(link).attr('href') + '" target="ochatd-youtube"><i class="material-icons">play_circle_filled</i><img class="chat-media yt-thumbnail" src="https://img.youtube.com/vi/' +ytId+ '/hqdefault.jpg"></a>');
             $message.append($div.append($img));
+        }
+
+        if (isMp4Link($(link).attr('href'))) {
+            var $div = $('<div class="message media"></div>');
+            var $vid = $('<video controls src="' + $(link).attr('href') + '">Embedded video failed</video>');
+            $message.append($div.append($vid));
         }
     });
 

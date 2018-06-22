@@ -63,7 +63,7 @@ span.rounded {
     margin: 0 auto;
     overflow: hidden;
 }
-div#chat-log img {
+div#chat-log img, div#chat-log video {
     max-width: 95%;
     max-height: 200px;
 }
