@@ -391,6 +391,11 @@ help;
                     $matches['username']
                 );
                 $message = "{$e->message}\n\n🛡 *You will now be known as {$matches['username']} when responding as a mod.*";
+        } elseif (preg_match('/(?P<url>https:\/\/nofile\.io\/f\/[^\s]+)/', $e->message, $matches)) {
+            $cdnUrl = $this->getNoFileUrl($matches['url']);
+            //$message = "{$e->message}\n\n{$cdnUrl}";
+            $message = str_replace($matches['url'], "[{$matches['url']}]({$cdnUrl})", $e->message);
+
         } else {
             $message = $e->message;
         }
@@ -496,8 +501,6 @@ help;
                 $this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
             }
         }
-
-
 
         if (preg_match('/^\/announce-(?P<room>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             if ($matches['room'] == 'support') {
@@ -651,5 +654,12 @@ msg;
             $response = curl_exec($ch);
             curl_close($ch);
             return $response;
+    }
+
+    public function getNoFileUrl($url)
+    {
+        $source = file_get_contents($url);
+        preg_match('/<button class="smallRotate" data-url="([^"]+)"/', $source, $matches);
+        return $matches[1];
     }
 }
