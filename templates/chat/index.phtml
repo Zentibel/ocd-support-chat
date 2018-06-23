@@ -539,7 +539,7 @@ function renderMessage(event, message) {
         return;
     }
 
-    if (prependMessage) { 
+    if (prependMessage) {
         $message.insertBefore($first);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-prepended');
@@ -547,11 +547,14 @@ function renderMessage(event, message) {
 
     }
 
+    var isSelfMessage = (message.senderId === '<?= $this->ident()->id; ?>');
+
     if (isLatestMessage) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
-        if (!notificationsMuted && initialMessagesLoaded === true && !message.banned) {
+        if (!notificationsMuted && initialMessagesLoaded === true && !message.banned && !lastMessageSameUser && !isSelfMessage) {
+            console.log('playing sound');
             notification.play();
         }
         return;
