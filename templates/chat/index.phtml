@@ -554,7 +554,6 @@ function renderMessage(event, message) {
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
         if (!notificationsMuted && initialMessagesLoaded === true && !message.banned && !lastMessageSameUser && !isSelfMessage) {
-            console.log('playing sound');
             notification.play();
         }
         return;
