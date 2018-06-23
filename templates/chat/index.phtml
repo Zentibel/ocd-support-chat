@@ -384,9 +384,18 @@ function renderMessage(event, message) {
             $('#sheps-frog').addClass('hidden');
         }, 900);
     }
-    var mTimestamp      = moment.unix(message.timestamp);
-    var timeDisplay     = mTimestamp.fromNow();
-    var timeDisplayAlt  = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
+
+    var sortval = parseFloat(message.timestamp);
+    var $first  = $('.chat-message').first();
+    var $last   = $('.chat-message').last();
+
+    var isFirstMessage  = ($first.length === 0);
+    var prependMessage  = (sortval <= $first.find('span.timestamp').data('timestamp'));
+    var isLatestMessage = (sortval >= $last.find('span.timestamp').data('timestamp'))
+
+    var mTimestamp     = moment.unix(message.timestamp);
+    var timeDisplay    = mTimestamp.fromNow();
+    var timeDisplayAlt = mTimestamp.format('YYYY-MM-DD HH:mm:ss');
 
     var isVerbing = (message.message.substring(0, 4).toLowerCase() == '/me ');
 
@@ -416,7 +425,7 @@ function renderMessage(event, message) {
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
 
-    var lastMessageSameUser = ($('.chat-message').last().find('span.sender a').text() == message.senderName);
+    var lastMessageSameUser = ($last.find('span.sender a').text() == message.senderName) && isLatestMessage;
 
     if (!lastMessageSameUser) {
         $message.addClass('first-in-group');
@@ -517,23 +526,20 @@ function renderMessage(event, message) {
         }
     }
 
-    var sortval = parseFloat(message.timestamp);
-    var $first = $('.chat-message').first();
-
     $message.imagesLoaded().progress(function(instance, image) {
         if (image.isLoaded) {
             EventBus.dispatch('chat:message-media-loaded', $message, image);
         }
     });
 
-    if ($first.length === 0) {
+    if (isFirstMessage) {
         $('#chat-log').append($message);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:first-message-rendered');
         return;
     }
 
-    if (sortval <= $first.find('span.timestamp').data('timestamp')) {
+    if (prependMessage) { 
         $message.insertBefore($first);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-prepended');
@@ -541,8 +547,7 @@ function renderMessage(event, message) {
 
     }
 
-    var $last = $('.chat-message').last();
-    if (sortval >= $last.find('span.timestamp').data('timestamp')) {
+    if (isLatestMessage) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
