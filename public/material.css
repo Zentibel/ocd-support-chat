@@ -87,7 +87,8 @@ div.message a {
 }
 
 div.message p {
-    margin-bottom: 3px;
+    margin-bottom: 8px;
+    line-height: 20px;
 }
 
 div.message {
