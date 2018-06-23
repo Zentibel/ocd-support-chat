@@ -416,13 +416,17 @@ function renderMessage(event, message) {
 
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
 
+    var avatar = '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>';
+    var username = '<span class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> ';
+    var lastMessageSameUser = ($('.chat-message').last().find('span.sender a').text() == message.senderName);
+
     $message.append(
-        '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>' +
+        (lastMessageSameUser ? '' : avatar) +
         '<span class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' +
             timeDisplayAlt +
         '</div>' +
-        '<span class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> '
+        (lastMessageSameUser ? '' : username)
     );
 
     $message.append($messageRendered);
