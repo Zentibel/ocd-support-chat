@@ -86,6 +86,10 @@ div.message a {
     word-break: break-all;
 }
 
+div.message p {
+    margin-bottom: 3px;
+}
+
 div.message {
     margin-left: 50px;
 }
