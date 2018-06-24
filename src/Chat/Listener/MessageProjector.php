@@ -138,6 +138,8 @@ help;
 * `/banned A message to be sent as if banned`
 * `/announce-support An anonymous mod message to the support room`
 * `/announce-general An anonymous mod message to the general room`
+* `/clear-support Clear the support chat`
+* `/clear-general Clear the general chat`
 help;
             }
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -413,12 +415,6 @@ help;
         $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
 
         $now = microtime(true);
-        $bannedUserIds = array(
-            '3a1edd40-7250-4da3-a33d-f41a0eda73b2',
-        );
-        if (in_array($e->userId, $bannedUserIds)) {
-            $message = '⛔ *This account is trying to send a message but has been banned.*';
-        }
 
         $msgKey = 'message:' . $e->messageId;
         $data = [
@@ -472,7 +468,7 @@ help;
         if (preg_match('/^\/msg (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
-                $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
+                $data['message'] = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
             } else {
                 $targetUser = $this->userFinder->findByUserId($userId);
                 $modUser = $this->userFinder->findByUserId($e->userId);
@@ -510,7 +506,7 @@ help;
             }
 
             if (!$announceRoomId) {
-                $message = "{$e->message}\n\n⛔️ *{$matches['room']} is not a valid room.*";
+                $data['message'] = "{$e->message}\n\n⛔️ *{$matches['room']} is not a valid room.*";
             } else {
                 $targetUser = $this->userFinder->findByUserId($userId);
                 $modUser = $this->userFinder->findByUserId($e->userId);
@@ -534,6 +530,40 @@ help;
                 $this->redis->zAdd('chat:messages:'.$announceRoomId, $now, $copyKey);
                 $this->redis->publish('new-message', $announceRoomId);
                 //$this->sendPushNotification('b3dd9e79-de3b-4d55-8c94-b9b5df5d7769', $targetUser->id);
+            }
+        }
+
+
+        // clear chat
+        if (preg_match('/^\/clear-(?P<room>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+            if ($matches['room'] == 'support') {
+                $clearRoomId = 'dd0c62bd-c4f2-4286-affa-256bfcc93955';
+            } else if ($matches['room'] == 'general') {
+                $clearRoomId = '85d5bd7f-9374-4553-98de-84f234e3dba1';
+            } else {
+                $clearRoomId = false;
+            }
+
+            if (!$clearRoomId) {
+                $data['message'] = "{$e->message}\n\n⛔️ *{$matches['room']} is not a valid room.*";
+            } else {
+                $this->redis->del("chat:messages:{$clearRoomId}");
+
+                $copy = $data;
+                $copy['id'] = Uuid::uuid4()->toString();
+                $copy['sender'] = '6d03e32d-1537-4348-8448-cd2066c20c27';
+                $copy['sender'] = '459f6fd7-d030-487a-8ef9-66c03ba84453'; // dev
+                $copy['roomId'] = $clearRoomId;
+                $copy['message'] = '/reload';
+
+                //$data['message'] = "/announce-{$matches['room']} {$copy['message']}\n\n*(Sent by {$modUser->username})*";
+
+                $copyKey = "message:{$copy['id']}";
+                $this->redis->hMSet($copyKey, $copy);
+                $this->redis->zAdd('chat:messages:'.$clearRoomId, $now, $copyKey);
+                $this->redis->publish('new-message', $clearRoomId);
+
+                //$this->redis->del("chat:messages:{$clearRoomId}");
             }
         }
 

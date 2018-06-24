@@ -359,10 +359,10 @@ function renderMessage(event, message) {
     } else {
         displayName = message.senderName;
     }
-    if (initialMessagesLoaded !== true && message.senderName == 'Shepherd' && message.message == '/reload') {
+    if (initialMessagesLoaded !== true && message.senderName.toLowerCase() == 'shepherd' && message.message == '/reload') {
         return;
     }
-    if (initialMessagesLoaded === true && message.senderName == 'Shepherd' && message.message == '/reload') {
+    if (initialMessagesLoaded === true && message.senderName.toLowerCase() == 'shepherd' && message.message == '/reload') {
         location.reload();
         return;
     }
@@ -426,6 +426,11 @@ function renderMessage(event, message) {
     tsId = 'ts-' + message.timestamp.replace(/\./,'');
 
     var lastMessageSameUser = ($last.find('span.sender a').text() == message.senderName) && isLatestMessage;
+
+    // Don't group cross-posts
+    if (message.message.match(/cross-post of a new message/) || $last.find('div.message').text().match(/cross-post of a new message/)) {
+        var lastMessageSameUser = false;
+    }
 
     if (!lastMessageSameUser) {
         $message.addClass('first-in-group');
