@@ -87,7 +87,7 @@ var lastTime = Date.now();
 
 setInterval(function() {
   var currentTime = Date.now();
-  if (currentTime > (lastTime + TIMEOUT + 1000)) {
+  if (currentTime > (lastTime + TIMEOUT + 2500)) {
     $(document).wake();
   }
   lastTime = currentTime;
