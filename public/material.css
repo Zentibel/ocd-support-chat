@@ -341,7 +341,26 @@ form#compose .mdl-button.send {
 .nightmode .mdl-shadow--8dp {
     box-shadow: 0 8px 10px 1px rgba(255,255,255,.14), 0 3px 14px 2px rgba(255,255,255,.12), 0 5px 5px -3px rgba(255,255,255,.2) !important;
 }
+.nightmode ul.mdl-menu a.mdl-menu__item,
+.nightmode div.mdl-layout__drawer a.mdl-navigation__link
+{
+    color: #FFF !important;
+}
 
+.nightmode ul.mdl-menu,
+.nightmode div.mdl-layout__drawer
+{
+    background-color: #111 !important;
+}
+.nightmode div.mdl-layout__drawer {
+    border-right: 0px !important;
+}
+
+.nightmode ul.mdl-menu a.mdl-menu__item:hover,
+.nightmode div.mdl-layout__drawer a.mdl-navigation__link:hover
+{
+    background-color: #111 !important;
+}
 /**
  * Debug
  */
