@@ -552,7 +552,7 @@ help;
                 $copy = $data;
                 $copy['id'] = Uuid::uuid4()->toString();
                 $copy['sender'] = '6d03e32d-1537-4348-8448-cd2066c20c27';
-                $copy['sender'] = '459f6fd7-d030-487a-8ef9-66c03ba84453'; // dev
+                //$copy['sender'] = '459f6fd7-d030-487a-8ef9-66c03ba84453'; // dev
                 $copy['roomId'] = $clearRoomId;
                 $copy['message'] = '/reload';
 
