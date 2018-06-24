@@ -431,6 +431,9 @@ function renderMessage(event, message) {
     if (message.message.match(/cross-post of a new message/) || $last.find('div.message').text().match(/cross-post of a new message/)) {
         var lastMessageSameUser = false;
     }
+    <? if ($this->routeParam('community') == 'ocdmods' && $this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
+    var lastMessageSameUser = false;
+    <? endif; ?>
 
     if (!lastMessageSameUser) {
         $message.addClass('first-in-group');
