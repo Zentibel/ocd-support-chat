@@ -441,12 +441,12 @@ function renderMessage(event, message) {
 
     var avatar = '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>';
     var username = '<span ' + (lastMessageSameUser && !isVerbing ? 'style="display:none;" ' : '') + 'class="sender source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> ';
-    var timestamp = '<span style="position:relative;top:11px;' + (lastMessageSameUser ? 'display:none; ' : '') + '" class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
+    var timestamp = '<span style="position:relative;top:11px;" class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' + timeDisplayAlt + '</div>';
 
     $message.append(
         (lastMessageSameUser ? '' : avatar) +
-        timestamp +
+        (lastMessageSameUser || isVerbing ? '' : timestamp) +
         username
     );
 
