@@ -446,7 +446,7 @@ function renderMessage(event, message) {
 
     $message.append(
         (lastMessageSameUser ? '' : avatar) +
-        timestamp +
+        (isVerbing ? '' : timestamp) +
         username
     );
 
