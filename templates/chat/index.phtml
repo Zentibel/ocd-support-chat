@@ -626,7 +626,7 @@ setInterval(function(){
     if (!focused) {
         return false;
     }
-    $('span.timestamp').each(function() {
+    $('span.timestamp:visible').each(function() {
         mTimestamp = moment.unix($(this).data('timestamp'));
         $(this).text(mTimestamp.fromNow());
         console.log('timestamp update');
