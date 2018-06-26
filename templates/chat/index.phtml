@@ -441,6 +441,12 @@ function renderMessage(event, message) {
         $message.addClass('first-in-group');
     }
 
+    if (lastMessageSameUser) {
+        var $lastTimestamp = $('.chat-message.first-in-group').last().find('span.timestamp');
+        $lastTimestamp.attr('id', tsId);
+        $lastTimestamp.attr('data-timestamp', message.timestamp);
+    }
+
     var avatar = '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>';
     var username = '<span ' + (lastMessageSameUser && !isVerbing ? 'style="display:none;" ' : '') + 'class="sender ' + (message.mod ? 'mod ' : '') + 'source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> ';
     var timestamp = '<span style="position:relative;top:11px;' + (lastMessageSameUser || isVerbing ? 'display:none; ' : '') + '" class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
