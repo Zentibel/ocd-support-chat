@@ -77,6 +77,7 @@ class MessageFinder
 
         $senderIsMod = $this->redis->sIsMember('mod-users', $message['sender']);
         $receiverIsMod = $this->redis->sIsMember('mod-users', $this->authService->getIdentity()->id);
+        $senderIsPublicMod = $this->redis->sIsMember('public-mods', $message['sender']);
 
         $senderIsBanned = $this->redis->sIsMember('banned-users', $message['sender']);
         $receiverIsBanned = $this->redis->sIsMember('banned-users', $this->authService->getIdentity()->id);
@@ -104,6 +105,9 @@ class MessageFinder
 
         $messageCount = $this->redis->hget('messageCounts', $message['sender']);
 
+        if (!isset($sender['username'])) {
+            return false;
+        }
         $senderName = $sender['username'];
 
         $response = [
@@ -118,6 +122,7 @@ class MessageFinder
             'senderAvatar' => $sender['avatar'] ?? '/no-avatar.png',
             'message' => $message['message'],
             'timestamp' => $message['timestamp'],
+            'mod' => $senderIsPublicMod,
             //'eu' => (geoip_continent_code_by_name('84.233.227.3') == 'EU') && $receiverIsMod,
             'eu' => (geoip_continent_code_by_name($message['ip']) == 'EU') && $receiverIsMod,
         ];
