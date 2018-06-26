@@ -140,6 +140,8 @@ help;
 * `/announce-general An anonymous mod message to the general room`
 * `/clear-support Clear the support chat`
 * `/clear-general Clear the general chat`
+* `/be-public` Add a mod icon to your username`
+* `/be-anon` Remove the mod icon from your username`
 help;
             }
             $message = "{$e->message}\n\n---\n\n{$help}";
@@ -277,6 +279,20 @@ help;
                     $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not authorized to use proxies.*";
                 }
             }
+        } elseif (preg_match('/^\/be-public/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+            if (!$this->redis->sIsMember('public-mods', $e->userId)) {
+                $this->redis->sAdd('public-mods', $e->userId);
+                $message = "{$e->message}\n\n👮 *You are now a public mod.*";
+            } else {
+                $message = "{$e->message}\n\n⛔️*You are already a public mod.*";
+            }
+        } elseif (preg_match('/^\/be-anon/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
+                if ($this->redis->sIsMember('public-mods', $e->userId)) {
+                    $this->redis->sRem('public-mods', $e->userId);
+                    $message = "{$e->message}\n\n👋 *You are anonymous again.*";
+                } else {
+                    $message = "{$e->message}\n\n⛔️ *You are not a public mod.*";
+                }
         } elseif (preg_match('/^\/mod (?P<username>[^\s]+)/', $e->message, $matches) && $e->roomId === 'e6ddc009-a7c0-4bf9-8637-8a3da4d65825' && $this->redis->sIsMember('mod-users', $e->userId)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
