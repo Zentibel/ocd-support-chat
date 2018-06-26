@@ -445,6 +445,7 @@ function renderMessage(event, message) {
         var $lastTimestamp = $('.chat-message.first-in-group').last().find('span.timestamp');
         $lastTimestamp.attr('id', tsId);
         $lastTimestamp.attr('data-timestamp', message.timestamp);
+        $lastTimestamp.data('timestamp', message.timestamp);
     }
 
     var avatar = '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>';
@@ -639,7 +640,7 @@ setInterval(function(){
         $(this).text(mTimestamp.fromNow());
         console.log('timestamp update');
     });
-}, 20000);
+}, 10000);
 
 function updateScroll(el) {
     var element = document.getElementById(el);
