@@ -74,7 +74,7 @@ span.new-user a {
 
 span.sender.mod:after,
 body.nightmode span.sender.mod:after {
-    content: ' 👮';
+    content: ' (M)';
 }
 <? if($this->redis()->sIsMember('mod-users', $this->ident()->id)): ?>
 .sent-via-proxy span.sender a:after,
