@@ -630,16 +630,20 @@ function announceMediaReady(e) {
 EventBus.addEventListener('chat:media-upload-complete', announceMediaReady);
 EventBus.addEventListener('chat:media-upload-progress', announceMediaProgress);
 
-setInterval(function(){
-    //return false;
-    if (!focused) {
-        return false;
-    }
+function updateTimestamps() {
     $('span.timestamp:visible').each(function() {
         mTimestamp = moment.unix($(this).data('timestamp'));
         $(this).text(mTimestamp.fromNow());
         console.log('timestamp update');
     });
+};
+
+setInterval(function(){
+    //return false;
+    if (!focused) {
+        return false;
+    }
+    updateTimestamps();
 }, 10000);
 
 function updateScroll(el) {
@@ -1044,7 +1048,7 @@ $(document).ready(function() {
         setTimeout(function() {
             document.title = baseTitle;
         }, 100);
-
+        updateTimestamps();
         chatsMissed = 0;
     });
 
