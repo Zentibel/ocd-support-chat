@@ -420,9 +420,6 @@ help;
             if ($e->userId == 'f555daac-5720-4af6-bc8d-c6562a45c9b4' && preg_match('/jfc/i', $e->message, $matches)) {
                 $this->redis->hIncrBy('jfcCounts', $e->userId, 1);
             }
-        }
-        if (strpos($e->roomId, ':') === false) {
-            $this->redis->hIncrBy('messageCounts', $e->userId, 1);
             if ($e->userId == '1ee59eef-2900-4da3-929b-da75c257b51a' && preg_match('/oofta/i', $e->message, $matches)) {
                 $this->redis->hIncrBy('ooftaCounts', $e->userId, 1);
             }
