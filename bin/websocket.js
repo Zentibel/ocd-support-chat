@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const uuidv4 = require('uuid/v4');
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app);
 var redis = require("redis");
@@ -10,18 +11,37 @@ var pub = redis.createClient();
 app.listen(9999);
 
 sub.subscribe('new-message');
-//redisClient.publish('message-to-gliph', "Shepherd: testing");
 sub.on('message', function (channel, chatId) {
-    console.log('New message: ' + chatId);
-
+    console.log('Room ID: ' + chatId);
     io.to(chatId).emit('new-message');
+    if (chatId == 'dd0c62bd-c4f2-4286-affa-256bfcc93955') {
+        redisClient.zrange(['chat:messages:' + chatId, '-1', '-1'], function(err, msgId) {
+            console.log('Message ID: ' + msgId[0]);
+            redisClient.hgetall(msgId[0], function(err, msg) {
+                redisClient.hget('messageCounts', msg['sender'], function(err, count) {
+                    if (count > 1) {
+                        return;
+                    }
 
-    //messages = redisClient.zrangebyscore([message, '-inf', '+inf'], function(err, resp) {
-    //    console.log(message);
-    //    console.log(err);
-    //    console.log(resp);
-    //    socket.emit('news', { channel: resp });
-    //});
+                    setTimeout(function() {
+                        var msgId = uuidv4();
+                        var now = new Date().getTime() / 1000;
+                        var data = {
+                            id: msgId,
+                            sender: 'b3dd9e79-de3b-4d55-8c94-b9b5df5d7769',
+                            roomId: 'dd0c62bd-c4f2-4286-affa-256bfcc93955',
+                            message: "Hello! Welcome to the “OChatD” main support room!\n\nThis chat is a very friendly, active, world-wide community and there is *usually* someone around to respond, so if you don’t hear back immediately, stick around – someone will be here soon to answer your questions.\n\nIn the meantime, please check out the [Welcome Page](/about) for some basic chat rules and advice.\n\nFor any off-topic discussion unrelated to OCD support, we invite you to join us in the [general chat](/general)!",
+                            timestamp: now,
+                            ip: '127.0.0.1',
+                        };
+                        redisClient.hmset('message:'+msgId, data);
+                        redisClient.zadd('chat:messages:dd0c62bd-c4f2-4286-affa-256bfcc93955', now, 'message:'+msgId);
+                        redisClient.publish('new-message', 'dd0c62bd-c4f2-4286-affa-256bfcc93955');
+                    }, 2000);
+                });
+            })
+        });
+    }
 });
 
 function handler (req, res) {

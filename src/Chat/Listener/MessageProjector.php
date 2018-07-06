@@ -96,8 +96,6 @@ class MessageProjector
 | `/roll` | roll a 6-sided die |
 | `/roll N` | (N=number) roll an N-sided die |
 | `/count` | see how many messages you have sent |
-| `/jfckatz` | see how many times katz has said "jfc" |
-| `/ooftamags` | see how many times mmpls7 has said "oofta" |
 | `/help` | This. |
 
 ^[1] Command not available in private messages.^
@@ -417,12 +415,6 @@ help;
         }
         if (strpos($e->roomId, ':') === false) {
             $this->redis->hIncrBy('messageCounts', $e->userId, 1);
-            if ($e->userId == 'f555daac-5720-4af6-bc8d-c6562a45c9b4' && preg_match('/jfc/i', $e->message, $matches)) {
-                $this->redis->hIncrBy('jfcCounts', $e->userId, 1);
-            }
-            if ($e->userId == '1ee59eef-2900-4da3-929b-da75c257b51a' && preg_match('/oofta/i', $e->message, $matches)) {
-                $this->redis->hIncrBy('ooftaCounts', $e->userId, 1);
-            }
         }
 
         $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
