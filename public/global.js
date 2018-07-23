@@ -76,7 +76,6 @@ $(window).resize(function() {
 
 });
 
-
 /**
  * Detect browser suspensions...
  */
@@ -95,9 +94,9 @@ setInterval(function() {
 
 $.fn.wake = function(callback) {
   if (typeof callback === 'function') {
-    return $(this).on('wake', callback);
+    //return $(this).on('wake', callback);
   } else {
-    return $(this).trigger('wake');
+    //return $(this).trigger('wake');
   }
 };
 
