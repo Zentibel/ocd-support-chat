@@ -418,6 +418,7 @@ help;
         }
 
         $message = str_replace('¯\_(ツ)_/¯', '¯\\\_(ツ)\_/¯', $message);
+        $message = preg_replace('/(sorry)/i', '~~${1}~~', $message);
 
         $now = microtime(true);
 
