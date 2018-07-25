@@ -19,8 +19,8 @@ if ($this->routeParam('community') == 'ocd') {
     $this->headTitle('Support');
 }
 
-if ($this->routeParam('community') == 'selfies') {
-    $this->headTitle('Selfies');
+if ($this->routeParam('community') == 'photos') {
+    $this->headTitle('Photo Wall');
 }
 ?>
 <div class="preload">
@@ -208,7 +208,7 @@ this.secure=null!=r.secure?r.secure:e.location&&"https:"===location.protocol,r.h
     <? if ($this->routeParam('community') == 'tech'): ?>
         var ROOM_ID = '0ccc390c-093c-4a33-b289-b683ec8786c5';
     <? endif; ?>
-    <? if ($this->routeParam('community') == 'selfies'): ?>
+    <? if ($this->routeParam('community') == 'photos'): ?>
         var ROOM_ID = '0910e17f-c70b-4578-a7e1-33dbb10889cf';
     <? endif; ?>
 
