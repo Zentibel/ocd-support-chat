@@ -63,6 +63,15 @@ div.message.media a[href$=".gif"]:after {
     width: 250px;
     height: 228px;
 }
+#lego-back {
+    position: absolute;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    background-image: url(/back.png);
+    width: 250px;
+    height: 228px;
+}
 span.verbing a {
     font-weight: normal !important;
     font-style: italic;
@@ -143,6 +152,7 @@ body.nightmode .banned-user span.sender a{
   </footer>
 <div id="sheps-frog" class="animated infinite bounce rollOut hidden"></div>
 <div id="rhubarb" class="animated infinite bounce rollOut hidden"></div>
+<div id="lego-back" class="animated infinite bounce rollOut hidden"></div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.3.6/mobile-detect.min.js"></script>
@@ -378,6 +388,12 @@ function renderMessage(event, message) {
         $('#rhubarb').removeClass('hidden');
         setTimeout(function() {
             $('#rhubarb').addClass('hidden');
+        }, 900);
+    }
+    if (initialMessagesLoaded === true && message.message.match(/got your back/i)) {
+        $('#lego-back').removeClass('hidden');
+        setTimeout(function() {
+            $('#lego-back').addClass('hidden');
         }, 900);
     }
     if (initialMessagesLoaded === true && (message.message.match(/throws?/i) || message.message.match(/threw/i)) && message.message.match(/frogs?/i)) {
