@@ -72,6 +72,24 @@ div.message.media a[href$=".gif"]:after {
     width: 250px;
     height: 228px;
 }
+#peach {
+    position: absolute;
+    z-index: 99999;
+    top: 0px;
+    left: 0px;
+    background-image: url(/peach.png?1);
+    width: 250px;
+    height: 228px;
+}
+#heydre {
+    position: absolute;
+    z-index: 99999;
+    top: 0px;
+    left: 0px;
+    background-image: url(/heydre.png?1);
+    width: 250px;
+    height: 228px;
+}
 span.verbing a {
     font-weight: normal !important;
     font-style: italic;
@@ -150,6 +168,8 @@ body.nightmode .banned-user span.sender a{
     </div>
 
   </footer>
+<div id="peach" class="animated infinite bounce rollOut hidden"></div>
+<div id="heydre" class="animated infinite bounce rollOut hidden"></div>
 <div id="lego-back" class="animated infinite bounce rollOut hidden"></div>
 <div id="sheps-frog" class="animated infinite bounce rollOut hidden"></div>
 <div id="rhubarb" class="animated infinite bounce rollOut hidden"></div>
@@ -400,6 +420,19 @@ function renderMessage(event, message) {
         $('#sheps-frog').removeClass('hidden');
         setTimeout(function() {
             $('#sheps-frog').addClass('hidden');
+        }, 900);
+    }
+    if (initialMessagesLoaded === true && (message.message.match(/throws?/i) || message.message.match(/threw/i)) && message.message.match(/peach?/i)) {
+        $('#peach').removeClass('hidden');
+        setTimeout(function() {
+            $('#peach').addClass('hidden');
+        }, 900);
+    }
+
+    if (initialMessagesLoaded === true && (message.message.match(/throws?/i) || message.message.match(/threw/i)) && message.message.match(/dre?/i)) {
+        $('#heydre').removeClass('hidden');
+        setTimeout(function() {
+            $('#heydre').addClass('hidden');
         }, 900);
     }
 
