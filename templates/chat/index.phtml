@@ -546,11 +546,11 @@ function renderMessage(event, message) {
             $message.append($div.append($img));
         }
 
-        if (isMp4Link($(link).attr('href')) || isMp3Link($(link).attr('href'))) {
-            var $div = $('<div class="message media"></div>');
-            var $vid = $('<video controls src="' + $(link).attr('href') + '">Embedded video failed</video>');
-            $message.append($div.append($vid));
-        }
+        //if (isMp4Link($(link).attr('href')) || isMp3Link($(link).attr('href'))) {
+        //    var $div = $('<div class="message media"></div>');
+        //    var $vid = $('<video controls src="' + $(link).attr('href') + '">Embedded video failed</video>');
+        //    $message.append($div.append($vid));
+        //}
 
         if (isAllihoopaLink($(link).attr('href'))) {
             var $div = $('<div class="message media"></div>');
