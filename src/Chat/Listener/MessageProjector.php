@@ -42,11 +42,11 @@ class MessageProjector
 
         if (preg_match('/^\/betterfont (?P<onoff>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             if ($matches['onoff'] === 'on') {
-                setCookie('betterfont', 'on', time()+60*60*24*365);
+                setCookie('betterfont', 'on', time()+60*60*24*365, "/");
                 $message = "{$e->message}\n\n *You are now using the better font.*";
             } else {
                 $message = "{$e->message}\n\n *You are not using the better font.*";
-                setCookie('betterfont', 'off', time()+60*60*24*365);
+                setCookie('betterfont', 'off', time()+60*60*24*365, "/");
             }
         } elseif (preg_match('/^\/hug (?P<username>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
