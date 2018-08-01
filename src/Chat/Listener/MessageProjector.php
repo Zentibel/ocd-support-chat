@@ -40,7 +40,15 @@ class MessageProjector
         $sender = $this->userFinder->findByUserId($e->userId);
         $this->redis->sAdd("ips:{$e->userId}", $_SERVER['REMOTE_ADDR']);
 
-        if (preg_match('/^\/hug (?P<username>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+        if (preg_match('/^\/betterfont (?P<onoff>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+            if ($matches['onoff'] === 'on') {
+                setCookie('betterfont', 'on', time()+60*60*24*365);
+                $message = "{$e->message}\n\n *You are now using the better font.*";
+            } else {
+                $message = "{$e->message}\n\n *You are not using the better font.*";
+                setCookie('betterfont', 'off', time()+60*60*24*365);
+            }
+        } elseif (preg_match('/^\/hug (?P<username>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
             if(!$userId) {
                 $message = "{$e->message}\n\n⛔️ *{$matches['username']} is not a valid username.*";
