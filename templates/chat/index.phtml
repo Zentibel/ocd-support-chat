@@ -558,12 +558,13 @@ function renderMessage(event, message) {
     }
 
     function ytVidId(url) {
-      var p = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+      var p = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:music\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
       return (url.match(p)) ? RegExp.$1 : false;
     }
 
     $messageRendered.find('a').each(function(_, link) {
         if (ytId = ytVidId($(link).attr('href'))) {
+            $(link).attr('href', $(link).attr('href').replace(/music\./, ''));
             var $div = $('<div class="message media"></div>');
             var $img = $('<a class="yt-thumbnail-link" href="' + $(link).attr('href') + '" target="ochatd-youtube"><i class="material-icons">play_circle_filled</i><img class="chat-media yt-thumbnail" src="https://img.youtube.com/vi/' +ytId+ '/hqdefault.jpg"></a>');
             $message.append($div.append($img));
