@@ -107,6 +107,18 @@ span.new-user a {
     color: green;
 }
 
+div.chat-message:not(.first-in-group) > span.avatar-wrapper {
+    display: none !important;
+}
+
+div.chat-message:not(.first-in-group) > span.timestamp {
+    display: none !important;
+}
+
+div.chat-message:not(.first-in-group):not(.verbing) > span.sender {
+    display: none !important;
+}
+
 span.sender.mod:after,
 body.nightmode span.sender.mod:after {
     content: ' (M)';
@@ -206,7 +218,7 @@ body.nightmode .banned-user span.sender a{
 <script src="/emoji-list.js?1"></script>
 
 <script src="/media-uploader.js?1"></script>
-<script src="/chat.js?1"></script>
+<script src="/chat.js?2"></script>
 
 <script>
 // socket.io client lib v1.7.2
@@ -296,7 +308,7 @@ socket.on('disconnect', function(){
 });
 
 socket.on('new-message', function (data) {
-    thisChat.loadMessages(5); // todo implement 'since'
+    thisChat.loadMessages(2); // todo implement 'since'
 });
 
 socket.on('media-upload-progress', function (data) {
@@ -387,7 +399,7 @@ Modernizr.addTest('emoji', function() {
 
 function renderMessage(event, message) {
     if ($('#' + message.id).length > 0) {
-        console.log('duplicate');
+        console.log('duplicate message');
         return;
     }
     if (!message || message.senderName == 'ocdbot' || message.senderName == 'pb.j' || message.senderName == 'iamjj' || message.senderName == 'layla' ) {
@@ -501,6 +513,9 @@ function renderMessage(event, message) {
     if (!lastMessageSameUser) {
         $message.addClass('first-in-group');
     }
+    if (isVerbing) {
+        $message.addClass('verbing');
+    }
 
     if (lastMessageSameUser) {
         var $lastTimestamp = $('.chat-message.first-in-group').last().find('span.timestamp');
@@ -509,13 +524,13 @@ function renderMessage(event, message) {
         $lastTimestamp.data('timestamp', message.timestamp);
     }
 
-    var avatar = '<span class="rounded"><img class="avatar" src="' + message.senderAvatar + '"></span>';
-    var username = '<span ' + (lastMessageSameUser && !isVerbing ? 'style="display:none;" ' : '') + 'class="sender ' + (message.mod ? 'mod ' : '') + 'source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> ';
-    var timestamp = '<span style="position:relative;top:11px;' + (lastMessageSameUser || isVerbing ? 'display:none; ' : '') + '" class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
+    var avatar = '<span class="rounded avatar-wrapper"><img class="avatar" src="' + message.senderAvatar + '"></span>';
+    var username = '<span class="sender ' + (message.mod ? 'mod ' : '') + 'source-'+ message.source + (isVerbing ? ' verbing' : '') + (message.newUser ? ' new-user' : '') + '"><a href="/p/' + message.senderName + '" target="_' + message.senderId + '">' + displayName + (isVerbing ? '' : '') + '</a></span> ';
+    var timestamp = '<span style="position:relative;top:11px;' + (isVerbing ? 'display:none; ' : '') + '" class="timestamp" id="'+tsId+'" data-timestamp="'+message.timestamp+'">' + timeDisplay + '</span>' +
         '<div class="mdl-tooltip mdl-tooltip--large" for="'+tsId+'">' + timeDisplayAlt + '</div>';
 
     $message.append(
-        (lastMessageSameUser ? '' : avatar) +
+        avatar +
         timestamp +
         username
     );
@@ -631,11 +646,21 @@ function renderMessage(event, message) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
+        if (initialMessagesLoaded === true && !message.banned) {
+            thisChat.unloadMessage($first.attr('id'));
+            $first.remove();
+            delete $first;
+            $topMessage = $('.chat-message').first();
+            if (!$topMessage.hasClass('first-in-group')) {
+                $topMessage.addClass('first-in-group');
+            }
+        }
         if (!notificationsMuted && initialMessagesLoaded === true && !message.banned && !lastMessageSameUser && !isSelfMessage) {
             notification.play();
         }
         return;
     }
+    console.log('Something went horribly wrong.');
 
     //alert('If you see this, tell shep something is wrong.');
     return;
@@ -695,8 +720,8 @@ function updateTimestamps() {
     $('span.timestamp:visible').each(function() {
         mTimestamp = moment.unix($(this).data('timestamp'));
         $(this).text(mTimestamp.fromNow());
-        console.log('timestamp update');
     });
+    console.log('timestamps updated');
 };
 
 setInterval(function(){

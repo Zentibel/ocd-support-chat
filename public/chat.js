@@ -25,6 +25,11 @@ function Chat(roomId) {
         });
     }
 
+    this.unloadMessage = function(id) {
+        console.log('Unloaded message: ' + id);
+        delete this.loadedMessages[id];
+    }
+
     var xhrError = function(xhr, textStatus, errorThrown) {
         $('svg.logo')
           .removeClass('connected')
@@ -42,8 +47,10 @@ function Chat(roomId) {
         this.newMessageCount = 0;
         fetchedMessages.forEach((function(message) {
             if (this.loadedMessages[message.id]) {
+                console.log('Already loaded message: '+ message.id)
                 return;
             }
+            console.log('Loaded message: ' + message.id);
             this.newMessageCount++;
             this.loadedMessages[message.id] = true;
             EventBus.dispatch('chat:message-loaded', this, message);
