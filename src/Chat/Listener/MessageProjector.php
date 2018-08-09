@@ -40,7 +40,9 @@ class MessageProjector
         $sender = $this->userFinder->findByUserId($e->userId);
         $this->redis->sAdd("ips:{$e->userId}", $_SERVER['REMOTE_ADDR']);
 
-        if (preg_match('/^\/betterfont (?P<onoff>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
+        if (preg_match('/^\/erp/', $e->message, $matches)) {
+            $message = "{$e->message}\n\n ERP stands for Exposure and Response Prevention. To put it simply, it basically means “facing your fears”. An example of this could be touching a doorknob that you think is contaminated, and then resisting the urge to wash your hands with the help of a therapist. Soon, the initial anxiety will subside. This process can be repeated as needed until the obsession is remedied. In addition to physical compulsions, this technique is also effective in treating mental compulsions. [Click here for more information.](https://iocdf.org/about-ocd/treatment/erp/)";
+        } elseif (preg_match('/^\/betterfont (?P<onoff>[^\s]+)/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             if ($matches['onoff'] === 'on') {
                 setCookie('betterfont', 'on', time()+60*60*24*365, "/");
                 $message = "{$e->message}\n\n *You are now using the better font.*";
