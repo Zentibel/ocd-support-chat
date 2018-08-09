@@ -647,7 +647,7 @@ function renderMessage(event, message) {
         $message.insertAfter($last);
         componentHandler.upgradeDom();
         EventBus.dispatch('chat:message-appended', false, message);
-        if (initialMessagesLoaded === true && !message.banned) {
+        if (initialMessagesLoaded === true && !message.banned && $('.chat-message').length > 20) {
             thisChat.unloadMessage($first.attr('id'));
             $first.remove();
             delete $first;
