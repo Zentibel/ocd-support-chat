@@ -60,7 +60,7 @@ class MessageProjector
                 $this->redis->hIncrBy('hugCounts', $userId, 1);
                 $username = $this->redis->hGet('user:' . $userId, 'username');
                 $kCount = $this->redis->hGet('hugCounts', $userId);
-                $message = "{$e->message}\n\n📈 *{$username} has been hugged {$kCount} time(s).*";
+                $message = "{$e->message}\n\n🤗 *{$username} has been hugged {$kCount} time(s).*";
             }
         } elseif (preg_match('/^\/(?P<username>[^\s]+)\+\+/', $e->message, $matches) && (strpos($e->roomId, ':') === false)) {
             $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
