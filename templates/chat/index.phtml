@@ -566,6 +566,17 @@ function renderMessage(event, message) {
         if (ytId = ytVidId($(link).attr('href'))) {
             $(link).attr('href', $(link).attr('href').replace(/music\./, ''));
             var $div = $('<div class="message media"></div>');
+            $.ajax({
+                url: 'https://www.googleapis.com/youtube/v3/videos?id=' + ytId + '&key=AIzaSyCnsfXG8L9GWHCPswwMPDk_jxbLPSYUxZQ&fields=items(snippet(title))&part=snippet',
+                dataType: "jsonp",
+                success: function(data){
+                     $div.append("<br>" + data.items[0].snippet.title)
+                     console.log(data.items[0].snippet.title);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert (textStatus, + ' | ' + errorThrown);
+                }
+            });
             var $img = $('<a class="yt-thumbnail-link" href="' + $(link).attr('href') + '" target="ochatd-youtube"><i class="material-icons">play_circle_filled</i><img class="chat-media yt-thumbnail" src="https://img.youtube.com/vi/' +ytId+ '/hqdefault.jpg"></a>');
             $message.append($div.append($img));
         }
