@@ -758,11 +758,9 @@ function sendMessage(mediaFiles, callback) {
     var messageText = emojione.shortnameToUnicode($('#compose-message').val());
      $.post('/messages/' + ROOM_ID, { message: messageText, media: mediaFiles }, function(messageId) {
          console.log('Message sent');
-         ga('send', {
-            hitType: 'event',
-            eventCategory: 'Message',
-            eventAction: 'sent',
-            eventLabel: document.title
+         gtag('event', 'sent', {
+           'event_category': 'Message',
+           'event_label': document.title
          });
          $('#compose-message').removeAttr('disabled');
          $('#compose-message').val('');
