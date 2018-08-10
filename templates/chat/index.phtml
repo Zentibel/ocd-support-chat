@@ -667,6 +667,12 @@ function renderMessage(event, message) {
                 $topMessage.addClass('first-in-group');
             }
         }
+        if (initialMessagesLoaded === true && !isSelfMessage) {
+            gtag('event', 'received', {
+              'event_category': 'Message',
+              'event_label': document.title
+            });
+        }
         if (!notificationsMuted && initialMessagesLoaded === true && !message.banned && !lastMessageSameUser && !isSelfMessage) {
             notification.play();
         }
