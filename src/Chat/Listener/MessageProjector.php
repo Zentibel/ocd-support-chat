@@ -156,6 +156,11 @@ help;
         } elseif (strtolower(substr($e->message, 0, 12)) == '/leaderboard') {
             $leaderboard = $this->leaderboard();
             $message = "{$e->message}\n\n---\n\n{$leaderboard}";
+        } elseif (strtolower(substr($e->message, 0, 6)) == '/hugs') {
+            $userId = $e->userId;
+            $username = $this->redis->hGet('user:' . $userId, 'username');
+            $hugCount = $this->redis->hGet('hugCounts', $userId) ?: '0';
+            $message = "{$e->message}\n\n🤗 *{$username} has received {$hugCount} hug(s).*";
         } elseif (strtolower(substr($e->message, 0, 6)) == '/karma') {
             if (preg_match('/^\/karma (?P<username>[^\s]+)/', $e->message, $matches)) {
                 $userId = $this->redis->hGet('index:usernames', strtolower($matches['username']));
