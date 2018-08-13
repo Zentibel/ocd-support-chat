@@ -229,7 +229,7 @@ this.secure=null!=r.secure?r.secure:e.location&&"https:"===location.protocol,r.h
 
 <? if ($_SERVER['HTTP_HOST'] !== 'chat.ocd.community'): ?>
     <script>
-        var socket = io('localhost:9999');
+        var socket = io('<?= explode(':', $_SERVER['HTTP_HOST'])[0] ?>:9999');
     </script>
 <? else: ?>
     <script>
