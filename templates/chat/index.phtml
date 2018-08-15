@@ -321,6 +321,7 @@ socket.on('media-upload-complete', function (mediaId) {
 
 var jazz = new Audio('/jazz.ogg');
 var laugh = new Audio('/laugh.mp3');
+var burp = new Audio('/burp.mp3');
 var wompwomp = new Audio('/wompwomp.mp3');
 var notification = new Audio('/notification.mp3');
 notification.volume = 0.8;
@@ -421,6 +422,9 @@ function renderMessage(event, message) {
     }
     if (initialMessagesLoaded === true && message.message.match(/^\/laugh/i) && !notificationsMuted) {
         laugh.play();
+    }
+    if (initialMessagesLoaded === true && message.message.match(/^\/burp/i) && !notificationsMuted) {
+        burp.play();
     }
     if (initialMessagesLoaded === true && message.message.match(/jazz/i) && !notificationsMuted) {
         jazz.play();
