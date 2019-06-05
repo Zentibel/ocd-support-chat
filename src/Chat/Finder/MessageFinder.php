@@ -123,8 +123,6 @@ class MessageFinder
             'message' => $message['message'],
             'timestamp' => $message['timestamp'],
             'mod' => $senderIsPublicMod,
-            //'eu' => (geoip_continent_code_by_name('84.233.227.3') == 'EU') && $receiverIsMod,
-            'eu' => (geoip_continent_code_by_name($message['ip']) == 'EU') && $receiverIsMod,
         ];
 
         if (isset($message['media']) && $message['media']) {
